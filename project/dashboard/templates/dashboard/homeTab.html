@@ -1,0 +1,202 @@
+{% block homeTab %}
+<div class="tab-pane fade {% if tab == 'home' %}{{ 'show active' }}{% endif %}" id="home" role="tabpanel" aria-labelledby="home-tab">
+    <dl class="row">
+        <dt class="col-sm-2">Device UID</dt>
+        <dd class="col-sm-4">
+            <div id="deviceUid"></div>
+        </dd>
+        <dt class="col-sm-2">Device Name</dt>
+        <dd class="col-sm-4">
+            <div id="deviceName"></div>
+        </dd>
+    </dl>
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-12">
+            <div id="overallSystemStatus">
+                <div class="info-box bg-gradient-secondary">
+                    <span class="info-box-icon">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Overall System</span>
+                        <span class="info-box-number">
+                            <h5><b>Loading...</b></h5>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="col-md-3 col-sm-6 col-12">
+            <div id="nodeServiceStatus">
+                <div class="info-box bg-gradient-secondary">
+                    <span class="info-box-icon">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Node Service</span>
+                        <span class="info-box-number">
+                            <h5><b>Loading...</b></h5>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6 col-12">
+            <div id="sensorServiceStatus">
+                <div class="info-box bg-gradient-secondary">
+                    <span class="info-box-icon">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Sensor Service</span>
+                        <span class="info-box-number">
+                            <h5><b>Loading...</b></h5>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-12">
+            <div id="actuatorServiceStatus">
+                <div class="info-box bg-gradient-secondary">
+                    <span class="info-box-icon">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Actuator Service</span>
+                        <span class="info-box-number">
+                            <h5><b>Loading...</b></h5>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <hr><br>
+
+    <!-- Display Group Sensors -->
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box bg-gradient-navy">
+                <span class="info-box-icon">
+                    <i class="far fa-bookmark"></i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">
+                        Total Actuators
+                    </span>
+                    <span class="info-box-number">
+                        <h5><b><div id="totalActuators"></div></b>
+                        </h5>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box bg-gradient-navy">
+                <span class="info-box-icon">
+                    <i class="far fa-bookmark"></i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">
+                        Total Sensors
+                    </span>
+                    <span class="info-box-number">
+                        <h5><b><div id="totalSensors"></div></b></h5>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box bg-gradient-danger">
+                <span class="info-box-icon"><i class="fas fa-times-circle"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">
+                        Sensor Alarm Error
+                    </span>
+                    <span class="info-box-number">
+                        <h5><b><div id="totalAlarmError"></div></b></h5>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box bg-gradient-success">
+                <span class="info-box-icon"><i class="fas fa-check-circle"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">
+                        Sensor Normal
+                    </span>
+                    <span class="info-box-number">
+                        <h5><b><div id="totalAlarmNormal"></div></b></h5>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box bg-gradient-warning">
+                <span class="info-box-icon"><i class="fas fa-arrow-down"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">
+                        Sensor Alarm Min
+                    </span>
+                    <span class="info-box-number">
+                        <h5><b><div id="totalAlarmMin"></div></b></h5>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box bg-gradient-warning">
+                <span class="info-box-icon"><i class="fas fa-arrow-up"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">
+                        Sensor Alarm Max
+                    </span>
+                    <span class="info-box-number">
+                        <h5><b><div id="totalAlarmMax"></div></b></h5>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box bg-gradient-warning">
+                <span class="info-box-icon"><i class="fas fa-exclamation"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">
+                        Sensor Alarm Tolerance
+                    </span>
+                    <span class="info-box-number">
+                        <h5><b><div id="totalAlarmTolerance"></div></b></h5>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box bg-gradient-warning">
+                <span class="info-box-icon">
+                    <i class="fas fa-exclamation"></i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">
+                        Sensor Alarm Inactive
+                    </span>
+                    <span class="info-box-number">
+                        <h5><b><div id="totalAlarmInactive"></b></h5>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

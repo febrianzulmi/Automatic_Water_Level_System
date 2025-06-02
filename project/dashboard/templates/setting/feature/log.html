@@ -1,0 +1,300 @@
+{% block log %}
+<div class="tab-pane fade {% if 'log' in tab %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-log" role="tabpanel"
+    aria-labelledby="custom-tabs-one-log-tab">
+    <form class="form-horizontal" method="POST" action="/setting/feature">
+        <input type="hidden" name="tab" value="log">
+        <input type="hidden" name="action" value="log-setting">
+        <div class="form-group row">
+            <label class="col-sm-2">Internal Log</label>
+            <div class="col-sm-2">
+                <div class="form-group clearfix">
+                    <div class="icheck-primary d-inline">
+                        <input type="radio" id="logYes" name="log" value="1" {% if feature_setting['log']=='1' %}{{ 'checked'
+                            }}{% endif %}>
+                        <label for="logYes">Yes</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="radio" id="logNo" name="log" value="0" {% if feature_setting['log']=='0' %}{{ 'checked'
+                            }}{% endif %}>
+                        <label for="logNo">No</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-2">Duration Storage Log</label>
+            <div class="col-sm-1">
+                <div class="form-group clearfix">
+                    <input type="number" min="1" class="form-control" value="{{ feature_setting['durationStorageLog'] }}" name="duration_log" required
+                                    autocomplete="off">
+                </div>
+            </div>
+        </div>
+
+        
+
+        <div class="form-group row">
+            <label class="col-sm-2">Duration Log State</label>
+            <div class="col-sm-2">
+                <div class="form-group clearfix">
+                    <div class="icheck-primary d-inline">
+                        <input type="radio" id="duration_state_yes" name="duration_state" value="1" {% if feature_setting['durationStorageLogState']=='1' %}{{ 'checked'
+                            }}{% endif %}>
+                        <label for="duration_state_yes">Yes</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="radio" id="duration_state_no" name="duration_state" value="0" {% if feature_setting['durationStorageLogState']=='0' %}{{ 'checked'
+                            }}{% endif %}>
+                        <label for="duration_state_no">No</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <label class="col-sm-2">Backup Monthly</label>
+            <div class="col-sm-2">
+                <div class="form-group clearfix">
+                    <div class="icheck-primary d-inline">
+                        <input type="radio" id="backup_monthly_yes" name="backup_monthly" value="1" {% if feature_setting['backupMonthlyLog']=='1' %}{{ 'checked'
+                            }}{% endif %}>
+                        <label for="backup_monthly_yes">Yes</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="radio" id="backup_monthly_no" name="backup_monthly" value="0" {% if feature_setting['backupMonthlyLog']=='0' %}{{ 'checked'
+                            }}{% endif %}>
+                        <label for="backup_monthly_no">No</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <button type="submit" class="btn btn-primary float-right">Submit</button>
+    </form>
+    <br><br>
+    <hr>
+    <label>Routine Internal Log Interval Category</label>
+    <br><br>
+    <div class="modal fade" id="modal-add-routineLog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <form class="form-horizontal" method="POST" action="/setting/feature">
+                    <input type="hidden" name="tab" value="log">
+                    <input type="hidden" name="action" value="log-routine-add">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Routine Internal Log Interval</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Interval</label>
+                            <div class="col-sm-3">
+                                <input type="number" min="1" class="form-control" name="interval" required
+                                    autocomplete="off">
+                            </div>
+                            &nbsp;
+                            <div class="col-sm-4">
+                                <select name="unit" class="form-control" required autocomplete="off">
+                                    <option value="1">Seconds</option>
+                                    <option value="2">Minutes</option>
+                                    <option value="3">Hours</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">State</label>
+                            <div class="col-sm-4">
+                                <div class="form-group clearfix col-form-label">
+                                    <div class="icheck-primary d-inline">
+                                        <input type="radio" id="logIntervalStateYes" name="state" value="1" required
+                                            autocomplete="off">
+                                        <label for="logIntervalStateYes">Yes</label>
+                                    </div>
+                                    &nbsp;
+                                    <div class="icheck-primary d-inline">
+                                        <input type="radio" id="logIntervalStateNo" name="state" value="0" required
+                                            autocomplete="off">
+                                        <label for="logIntervalStateNo">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <a href="" data-toggle="modal" data-target="#modal-add-routineLog" role="button">
+        <button type="button" class="btn btn btn-primary">
+            <i class="fas fa-plus" title="Add"></i>
+            Add
+        </button>
+    </a>
+    &nbsp;
+    <a href="/setting/feature?tab=log-setting" role="button">
+        <button type="button" class="btn btn btn-default">
+            <i class="fas fa-sync" title="Refresh"></i></i> Refresh</button>
+    </a>
+
+    <table id="TABLE_1" class="table table-bordered table-hover">
+        <thead>
+            <tr align="center">
+                <th width="10%">No</th>
+                <th>Interval</th>
+                <th>Sensor List</th>
+                <th width="10%">State</th>
+                <th width="10%">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for x in range(routineLog|length) %}
+            <tr align="center">
+                <td>{{ x + 1 }}</td>
+                <td>{{ routineLog[x]['interval'] }}
+                    {% if routineLog[x]['unit']|string == '1' %}{{ 'Seconds' }}
+                    {% elif routineLog[x]['unit']|string == '2' %}{{ 'Minutes' }}
+                    {% elif routineLog[x]['unit']|string == '3' %}{{ 'Hours' }}
+                    {% endif %}
+                </td>
+                <td width="15%">
+                {{ routineLogCount[routineLog[(x)]['id']|string] }}
+                </td>
+                {% if routineLog[(x)]['state']|string == "0" %}
+                <td width="10%" style="color: red; font-weight: bold;">Disable</td>
+                {%else%}
+                <td width="10%" style="color: green; font-weight: bold;">Enable</td>
+                {%endif%}
+
+                {% if routineLog[x]['interval'] != '-'%}
+                <td>
+                    <a href="" data-toggle="modal"
+                        data-target="#modal-update-routineLogUpdate{{ routineLog[x]['id'] }}"
+                        role="button"><i class="nav-icon fas fa-edit"></i></a>
+                    &nbsp;
+                    <a href="" data-toggle="modal"
+                        data-target="#modal-delete-routineLogDelete{{ routineLog[x]['id'] }}"
+                        role="button"><i class="nav-icon fas fa-trash"></i></a>
+                </td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+            </tr>
+            <div class="modal fade" id="modal-update-routineLogUpdate{{ routineLog[x]['id'] }}">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/feature">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Update Routine Internal Log Interval <b>{{
+                                    routineLog[x]['interval']
+                                    }} {% if routineLog[x]['unit']|string == '1' %}{{ 'Seconds' }}
+                                    {% elif routineLog[x]['unit']|string == '2' %}{{ 'Minutes' }}
+                                    {% elif routineLog[x]['unit']|string == '3' %}{{ 'Hours' }}
+                                    {% endif %}</b></h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="tab" value="log">
+                                <input type="hidden" name="action" value="log-routine-update">
+                                <input type="hidden" name="id" value="{{ routineLog[x]['id'] }}">
+                                <input type="hidden" name="lastInterval" value="{{ routineLog[x]['interval'] }}">
+                                <input type="hidden" name="lastUnit" value="{{ routineLog[x]['unit'] }}">
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Interval</label>
+                                    <div class="col-sm-3">
+                                        <input type="number" min="1" class="form-control" name="interval"
+                                            value="{{ routineLog[x]['interval'] }}" autocomplete="off">
+                                    </div>
+                                    &nbsp;
+                                    <div class="col-sm-3">
+                                        <select name="unit" class="form-control" required autocomplete="off">
+                                            <option value="1" {% if routineLog[x]['unit']|string=='1' %}{{ 'selected' }}{% endif %}>Seconds
+                                            </option>
+                                            <option value="2" {% if routineLog[x]['unit']|string=='2' %}{{ 'selected' }}{% endif %}>Minutes
+                                            </option>
+                                            <option value="3" {% if routineLog[x]['unit']|string=='3' %}{{ 'selected' }}{% endif %}>Hours
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">State</label>
+                                    <div class="col-sm-4">
+                                        <div class="form-group clearfix col-form-label">
+                                            <div class="icheck-primary d-inline">
+                                                <input type="radio" id="logIntervalStateYes{{ routineLog[x]['id'] }}" name="state" value="1" required
+                                                    autocomplete="off" {% if routineLog[x]['state']|string=='1' %}{{ 'checked' }}{% endif %}>
+                                                <label for="logIntervalStateYes{{ routineLog[x]['id'] }}">Yes</label>
+                                            </div>
+                                            &nbsp;
+                                            <div class="icheck-primary d-inline">
+                                                <input type="radio" id="logIntervalStateNo{{ routineLog[x]['id'] }}" name="state" value="0" required
+                                                    autocomplete="off" {% if routineLog[x]['state']|string=='0' %}{{ 'checked' }}{% endif %}>
+                                                <label for="logIntervalStateNo{{ routineLog[x]['id'] }}">No</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-dark">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="modal-delete-routineLogDelete{{ routineLog[x]['id'] }}">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/feature">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirmation Delete</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="tab" value="log">
+                                <input type="hidden" name="action" value="log-routine-delete">
+                                <input type="hidden" name="id" value="{{ routineLog[x]['id'] }}">
+                                <p>Are you sure to delete Routine Internal Log Interval 
+                                    <b>{{ routineLog[x]['interval'] }}
+                                        {% if routineLog[x]['unit']|string == '1' %}{{ 'Seconds' }}
+                                        {% elif routineLog[x]['unit']|string == '2' %}{{ 'Minutes' }}
+                                        {% elif routineLog[x]['unit']|string == '3' %}{{ 'Hours' }}
+                                        {% endif %}
+                                    </b>?
+                                </p>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                <button type="submit" class="btn btn-primary">Yes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

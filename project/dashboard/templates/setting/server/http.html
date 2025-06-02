@@ -1,0 +1,311 @@
+{% block http %}
+<div class="tab-pane fade {% if 'http' in tab %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-http"
+	role="tabpanel" aria-labelledby="custom-tabs-one-http-tab">
+	{% if 'http' in tab %}
+	{% set tabHttp = '1' %}
+	{% else %}
+	{% set tabHttp = '0' %}
+	{% endif %}
+	<ul class="nav nav-tabs" id="custom-tabs-two-tab" role="tablist">
+		<li class="nav-item">
+			<a class="nav-link {% if tabHttp == '1' %}{% if tab == 'httpConfig' %}{{ 'active' }}{% endif %}{% elif tabHttp == '0' %}{{ 'active' }}{% endif %}" id="custom-tabs-two-httpConfig-tab" data-toggle="pill" href="#custom-tabs-two-httpConfig" role="tab" aria-controls="custom-tabs-two-httpConfig" aria-selected="true">Configuration</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link {% if tab == 'httpAuth' %}{{ 'active' }}{% endif %}" id="custom-tabs-two-httpAuth-tab"
+				data-toggle="pill" href="#custom-tabs-two-httpAuth" role="tab" aria-controls="custom-tabs-two-httpAuth"
+				aria-selected="true">Authentication</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link {% if tab == 'httpApi' %}{{ 'active' }}{% endif %}" id="custom-tabs-two-httpApi-tab"
+				data-toggle="pill" href="#custom-tabs-two-httpApi" role="tab" aria-controls="custom-tabs-two-httpApi"
+				aria-selected="true">API</a>
+		</li>
+	</ul>
+	<div class="tab-content" id="custom-tabs-two-tabContent">
+		<div class="tab-pane fade {% if tabHttp == '1' %}{% if tab == 'httpConfig' %}{{ 'show active' }}{% endif %}{% elif tabHttp == '0' %}{{ 'show active' }}{% endif %}" id="custom-tabs-two-httpConfig" role="tabpanel" aria-labelledby="custom-tabs-two-httpConfig-tab">
+			<br>
+			<form class="form-horizontal" method="POST" action="/setting/server">
+				<input type="hidden" name="tab" value="httpConfig">
+				<input type="hidden" name="action" value="httpConfig">
+				<div class="form-group row">
+					<label class="col-sm-2 col-form-label">Domain Address</label>
+					<div class="col-sm-3">
+						<input type="text" class="form-control" name="domainAddress"
+							value="{{ serverData['http']['setting']['domainAddress'] }}" autocomplete="off" required>
+					</div>
+				</div>
+				<div class="form-group row">
+					<label class="col-sm-2 col-form-label">IP Address</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" name="ipAddress"
+							value="{{ serverData['http']['setting']['ipAddress']  }}" autocomplete="off" required>
+					</div>
+					<label class="col-form-label">:</label>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="port"
+							value="{{ serverData['http']['setting']['port']  }}" autocomplete="off" placeholder="Port"
+							required>
+					</div>
+				</div>
+				<div class="form-group row">
+					<label class="col-sm-2 col-form-label">HTTP Username</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" name="user"
+							value="{{ serverData['http']['setting']['username'] }}" autocomplete="off">
+					</div>
+					<div class="col-sm-3"></div>
+					<label class="col-sm-2 col-form-label">HTTP Password</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" name="passw"
+							value="{{ serverData['http']['setting']['password'] }}" autocomplete="off">
+					</div>
+				</div>
+				<hr>
+				<a href="/setting/server?tab=httpConfig" role="button">
+					<button type="button" class="btn btn-default">Refresh</button>
+				</a>
+				<button type="submit" class="btn btn-primary float-right">Submit</button>
+			</form>
+		</div>
+		<div class="tab-pane fade {% if tab == 'httpAuth' %}{{ 'show active' }}{% endif %}"
+			id="custom-tabs-two-httpAuth" role="tabpanel" aria-labelledby="custom-tabs-two-httpAuth-tab">
+			<br>
+			<div class="form-group row">
+				<label class="col-sm-1 col-form-label">Token</label>
+				<div class="col-sm-11">
+					<textarea class="form-control" rows="5"
+						disabled>{{ serverData['http']['auth']['token'] }}</textarea>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label class="col-sm-1 col-form-label">Expire Time</label>
+				<div class="col-sm-11">
+					<input type="text" class="form-control" value="{{ serverData['http']['auth']['expire'] }}" disabled>
+				</div>
+			</div>
+			<form class="form-horizontal" method="POST" action="/setting/server">
+				<input type="hidden" name="tab" value="httpAuth">
+				<input type="hidden" name="action" value="httpAuth-new">
+				<button type="submit" class="btn btn-primary float-right">Get New Authentication</button>
+			</form>
+			<form class="form-horizontal" method="POST" action="/setting/server">
+				<input type="hidden" name="tab" value="httpAuth">
+				<input type="hidden" name="action" value="httpAuth-clear">
+				<button type="submit" class="btn btn-danger float-left" {% if serverData['http']['auth']['state']=='0'%}{{ 'disabled' }}{% endif %}>Clear Authentication</button>
+			</form>
+			<br><br>
+			<hr>
+			<a href="/setting/server?tab=httpAuth" role="button">
+				<button type="button" class="btn btn-default">Refresh</button>
+			</a>
+		</div>
+		<div class="tab-pane fade {% if tab == 'httpApi' %}{{ 'show active' }}{% endif %}" id="custom-tabs-two-httpApi" role="tabpanel" aria-labelledby="custom-tabs-two-httpApi-tab">
+			<br>
+			{% if serverData['http']['data']|length > 0 %}
+			{% for x in range(serverData['http']['data']|length) %}
+			<div class="form-group row">
+				<label class="col-sm-2 col-form-label">URL {{ serverData['http']['data'][x]['name']
+					}}</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" value="{{ serverData['http']['data'][x]['api'] }}" readonly>
+				</div>
+			</div>
+			{% endfor %}
+			{% else %}
+			<center>No Available Configuration HTTP API</center>
+			{% endif %}
+			<hr>
+			<div class="modal fade" id="modal-add-http">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<form class="form-horizontal" method="POST" action="/setting/server">
+							<input type="hidden" name="tab" value="httpApi">
+							<input type="hidden" name="action" value="httpApi-add">
+							<div class="modal-header">
+								<h5 class="modal-title">Add HTTP API</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Name</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" name="name" required autocomplete="off">
+									</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Parameter</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" name="parameter" required
+											autocomplete="off">
+									</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-sm-2">Type</label>
+									<div class="col-sm-4">
+										<div class="form-group clearfix">
+											<div class="icheck-primary d-inline">
+												<input type="radio" id="http" name="type" value="0" required>
+												<label for="http">HTTP</label>
+											</div>
+											&nbsp;
+											<div class="icheck-primary d-inline">
+												<input type="radio" id="https" name="type" value="1" required>
+												<label for="https">HTTPS</label>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">API</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" name="api" required autocomplete="off">
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer justify-content-between">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+								<button type="submit" class="btn btn-sm btn-primary">Add</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<a href="" data-toggle="modal" data-target="#modal-add-http" role="button">
+				<button type="button" class="btn btn btn-primary">
+					<i class="fas fa-plus" title="Add"></i>
+					Add</button>
+			</a>
+			&nbsp;
+			<a href="/setting/server?tab=httpApi" role="button">
+				<button type="button" class="btn btn btn-default">
+					<i class="fas fa-sync" title="Refresh"></i>&nbsp;Refresh</button>
+			</a>
+			<table id="TABLE_1" class="table table-bordered table-hover">
+				<thead>
+					<tr align="center">
+						<th width="5%">No</th>
+						<th>Name</th>
+						<th>Parameter</th>
+						<th>Data</th>
+						<th width="10%">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for num in range(serverData['http']['data']|length) %}
+					<tr align="center">
+						<td>{{ num+1 }}</td>
+						<td>{{ serverData['http']['data'][num]['name'] }}</td>
+						<td>{{ serverData['http']['data'][num]['parameter'] }}</td>
+						<td>{{ serverData['http']['data'][num]['data'] }}</td>
+						<td>
+							<a href="" data-toggle="modal"
+								data-target="#modal-update-http{{ serverData['http']['data'][num]['id'] }}"
+								role="button"><i class="nav-icon fas fa-edit"></i></a>
+							&nbsp;
+							<a href="" data-toggle="modal"
+								data-target="#modal-delete-http{{ serverData['http']['data'][num]['id'] }}"
+								role="button"><i class="nav-icon fas fa-trash"></i></a>
+						</td>
+					</tr>
+					<div class="modal fade" id="modal-update-http{{ serverData['http']['data'][num]['id'] }}">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+								<form class="form-horizontal" method="POST" action="/setting/server">
+									<div class="modal-header">
+										<h5 class="modal-title">Update HTTP API <b>{{
+												serverData['http']['data'][num]['name'] }}</b></h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<input type="hidden" name="tab" value="httpApi">
+										<input type="hidden" name="action" value="httpApi-update">
+										<input type="hidden" name="id"
+											value="{{ serverData['http']['data'][num]['id'] }}">
+										<div class="form-group row">
+											<label class="col-sm-2 col-form-label">Name</label>
+											<div class="col-sm-10">
+												<input type="text" class="form-control" name="name" required
+													autocomplete="off"
+													value="{{ serverData['http']['data'][num]['name'] }}">
+											</div>
+										</div>
+										<div class="form-group row">
+											<label class="col-sm-2 col-form-label">Parameter</label>
+											<div class="col-sm-10">
+												<input type="text" class="form-control" name="parameter" required
+													autocomplete="off"
+													value="{{ serverData['http']['data'][num]['parameter'] }}">
+											</div>
+										</div>
+										<div class="form-group row">
+											<label class="col-sm-2">Type</label>
+											<div class="col-sm-4">
+												<div class="form-group clearfix">
+													<div class="icheck-primary d-inline">
+														<input type="radio" id="http{{num}}" name="type" value="0" required {% if serverData['http']['data'][num]['type']=="0" %}{{ 'checked' }}{% endif %}>
+														<label for="http{{num}}">HTTP</label>
+													</div>
+													&nbsp;
+													<div class="icheck-primary d-inline">
+														<input type="radio" id="https{{num}}" name="type" value="1" required {% if serverData['http']['data'][num]['type']=="1" %}{{ 'checked' }}{% endif %}>
+														<label for="https{{num}}">HTTPS</label>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="form-group row">
+											<label class="col-sm-2 col-form-label">API</label>
+											<div class="col-sm-10">
+												<input type="text" class="form-control" name="api" required
+													autocomplete="off"
+													value="{{ serverData['http']['data'][num]['data'] }}">
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer justify-content-between">
+										<button type="button" class="btn btn-default"
+											data-dismiss="modal">Cancel</button>
+										<button type="submit" class="btn btn-dark">Update</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="modal fade" id="modal-delete-http{{ serverData['http']['data'][num]['id'] }}">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<form class="form-horizontal" method="POST" action="/setting/server">
+									<div class="modal-header">
+										<h5 class="modal-title">Confirmation Delete</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<input type="hidden" name="tab" value="httpApi">
+										<input type="hidden" name="action" value="httpApi-delete">
+										<input type="hidden" name="id"
+											value="{{ serverData['http']['data'][num]['id'] }}">
+										<p>Are you sure to delete HTTP API 
+											<b>{{ serverData['http']['data'][num]['name'] }}</b>?
+										</p>
+									</div>
+									<div class="modal-footer justify-content-between">
+										<button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+										<button type="submit" class="btn btn-primary">Yes</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-info">
+			<div class="card-header">
+				<h3 class="card-title">GPIO Control</h3>
+				<div class="card-tools">
+          <a href="/do/clear/gpio"><i class="nav-icon fas fa-sync-alt btn-tool" title="Clear"></i></a> 
+				</div> 
+			</div>
+			<div class="card-body">
+			   <ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
+			    <li class="nav-item">
+			     <a class="nav-link {% if task == '0' %}{{ 'active' }}{% endif %}" id="custom-content-below-input-tab" data-toggle="pill" href="#custom-content-below-input" role="tab" aria-controls="custom-content-below-input" aria-selected="true">Input</a>
+			    </li>
+			    <li class="nav-item">
+			     <a class="nav-link {% if task == '1' %}{{ 'active' }}{% endif %}" id="custom-content-below-output-tab" data-toggle="pill" href="#custom-content-below-output" role="tab" aria-controls="custom-content-below-output" aria-selected="true">Output</a>
+			    </li>
+				 </ul> 
+			  <div class="tab-content" id="custom-content-below-tabContent">
+					<div class="tab-pane fade {% if task == '0' %}{{ 'show active' }}{% endif %}" id="custom-content-below-input" role="tabpanel" aria-labelledby="custom-content-below-input-tab">
+          <br>
+          	<form class="form-horizontal" method="POST" action="/control/gpio">
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">PIN Number</label>
+								<div class="col-sm-2">
+									<input type="text" class="form-control" name="pin2" value="{{ pin2 }}" placeholder="Enter PIN" required>
+								</div>
+							</div>
+							<div class="form-group row">
+									<label class="col-sm-2 col-form-label">PIN Type</label>
+									<div class="col-sm-8 col-form-label">
+										    <div class="form-group clearfix">
+										     <div class="icheck-primary d-inline">
+										       <input type="radio" id="bcm2" name="type2" value="0" {% if type2|string == '0' %}{{ 'checked' }}{% endif %} required>
+										       <label for="bcm2">BCM</label>
+										     </div>
+										     &nbsp;
+										     <div class="icheck-primary d-inline"> 
+										       <input type="radio" id="board2" name="type2" value="1" {% if type2|string == '1' %}{{ 'checked' }}{% endif %} required>
+										       <label for="board2">Board</label>
+										     </div>
+										   </div>
+										</div>
+							</div>
+							<input type="Hidden" value="0" name="task">
+							<button type="submit" class="btn btn-info float-right">Run</button>
+						</form><br><br><hr>
+						<b>Result</b><br>
+					  {% for i in range(result2|length) %} {{ result2[i] }} <br>{% endfor %}
+          </div>
+          <div class="tab-pane fade {% if task == '1' %}{{ 'show active' }}{% endif %}" id="custom-content-below-output" role="tabpanel" aria-labelledby="custom-content-below-output-tab">
+          	<br>
+          	<form class="form-horizontal" method="POST" action="/control/gpio">
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">PIN Number</label>
+								<div class="col-sm-2">
+									<input type="text" class="form-control" name="pin" value="{{ pin }}" placeholder="Enter PIN" required>
+								</div>
+							</div>
+							<div class="form-group row">
+									<label class="col-sm-2 col-form-label">PIN Type</label>
+									<div class="col-sm-8 col-form-label">
+										    <div class="form-group clearfix">
+										     <div class="icheck-primary d-inline">
+										       <input type="radio" id="bcm" name="type" value="0" {% if type|string == '0' %}{{ 'checked' }}{% endif %} required>
+										       <label for="bcm">BCM</label>
+										     </div>
+										     &nbsp;
+										     <div class="icheck-primary d-inline"> 
+										       <input type="radio" id="board" name="type" value="1" {% if type|string == '1' %}{{ 'checked' }}{% endif %} required>
+										       <label for="board">Board</label>
+										     </div>
+										   </div>
+										</div>
+							</div>
+							<div class="form-group row">
+									<label class="col-sm-2 ">Action</label>
+									<div class="col-sm-8">
+						        <div class="form-group clearfix ">
+						         <div class="icheck-primary d-inline">
+						           <input type="radio" id="high" name="action" value="1" {% if action|string == '1' %}{{ 'checked' }}{% endif %} required>
+						           <label for="high">High</label>
+						         </div>
+						         &nbsp;
+						         <div class="icheck-primary d-inline"> 
+						           <input type="radio" id="low" name="action" value="0" {% if action|string == '0'%}{{ 'checked' }}{% endif %} required>
+						           <label for="low">Low</label>
+						         </div>
+						       </div>
+									</div>
+							</div>
+							<input type="Hidden" value="1" name="task">
+							<button type="submit" class="btn btn-info float-right">Run</button>
+						</form><br><br><hr>
+						<b>Result</b><br>
+					  {% for i in range(result|length) %} {{ result[i] }} <br>{% endfor %}
+          </div>			  
+			  </div>
+			</div>	
+		</div>
+	</div>
+</div>
+ {% endblock %}

@@ -1,0 +1,27 @@
+{% block actuatorTab %}
+<div class="tab-pane fade {% if tab == 'actuator' %}{{ 'show active' }}{% endif %}" id="actuator" role="tabpanel"
+    aria-labelledby="actuator-tab">
+    <ul class="nav nav-tabs" id="subActuator-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="subActuator-service-tab" data-toggle="pill" href="#subActuator-service"
+                role="tab" aria-controls="subActuator-service" aria-selected="false">Service</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="subActuator-data-tab" data-toggle="pill" href="#subActuator-data" role="tab"
+                aria-controls="subActuator-data" aria-selected="false">Data</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="subActuator-tabContent">
+        <div class="tab-pane fade show active" id="subActuator-service" role="tabpanel"
+            aria-labelledby="subActuator-service-tab">
+            <br>
+            <h7 class="mt-4 mb-2"><b>Summary Actuator Service</b></h7><br><br>
+            <div id="actuatorService"></div>
+        </div>
+        <div class="tab-pane fade" id="subActuator-data" role="tabpanel" aria-labelledby="subActuator-data-tab">
+            <br>
+            <div id="actuatorInfo"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% block notification %}
+<div class="tab-pane fade {% if 'notif' in tab %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-notif"
+    role="tabpanel" aria-labelledby="custom-tabs-one-notif-tab">
+    <form class="form-horizontal" method="POST" action="/setting/feature">
+        <input type="hidden" name="tab" value="notif">
+        <div class="form-group row">
+            <label class="col-sm-2">Notification</label>
+            <div class="col-sm-2">
+                <div class="form-group clearfix">
+                    <div class="icheck-primary d-inline">
+                        <input type="radio" id="notifYes" name="notification" value="1" {% if
+                            feature_setting['notification']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifYes">Yes</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="radio" id="notifNo" name="notification" value="0" {% if
+                            feature_setting['notification']=='0' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifNo">No</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2"></div>
+            <label class="col-sm-2 col-form-label">Notification Interval</label>
+            <div class="col-sm-1">
+                <input type="text" name="notificationInterval" class="form-control" required autocomplete="off"
+                    value="{{ feature_setting['notificationInterval'] }}">
+            </div>&nbsp;
+            <div class="col-sm-2">
+                <select name="notificationUnit" class="form-control" required autocomplete="off">
+                    <option value="1" {% if feature_setting['notificationUnit']=='1' %}{{ 'selected' }}{% endif %}>Seconds
+                    </option>
+                    <option value="2" {% if feature_setting['notificationUnit']=='2' %}{{ 'selected' }}{% endif %}>Minutes
+                    </option>
+                    <option value="3" {% if feature_setting['notificationUnit']=='3' %}{{ 'selected' }}{% endif %}>Hours
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2">Notification Node Option</label>
+            <div class="col-sm-8">
+                <div class="form-group clearfix">
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="notifNodeWeb" value="1" name="notifNodeWeb" {% if feature_setting['notificationNodeWeb']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifNodeWeb">Web</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="notifNodeWA" value="1" name="notifNodeWA" {% if feature_setting['notificationNodeWA']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifNodeWA">Whatsapp </label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="notifNodeEmail" value="1" name="notifNodeEmail" {% if feature_setting['notificationNodeEmail']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifNodeEmail">Email</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="notifNodeTelegram" value="1" name="notifNodeTelegram" {% if feature_setting['notificationNodeTelegram']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifNodeTelegram">Telegram</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2">Notification Sensor Option</label>
+            <div class="col-sm-8">
+                <div class="form-group clearfix">
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="notifSensorWeb" value="1" name="notifSensorWeb" {% if feature_setting['notificationSensorWeb']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifSensorWeb">Web</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="notifSensorWA" value="1" name="notifSensorWA" {% if feature_setting['notificationSensorWA']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifSensorWA">Whatsapp</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="notifSensorEmail" value="1" name="notifSensorEmail" {% if feature_setting['notificationSensorEmail']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifSensorEmail">Email</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="notifSensorTelegram" value="1" name="notifSensorTelegram" {% if feature_setting['notificationSensorTelegram']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifSensorTelegram">Telegram</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2">Notification Actuator Option</label>
+            <div class="col-sm-8">
+                <div class="form-group clearfix">
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="notifActuatorWeb" value="1" name="notifActuatorWeb" {% if feature_setting['notificationActuatorWeb']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifActuatorWeb">Web</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="notifActuatorWA" value="1" name="notifActuatorWA" {% if feature_setting['notificationActuatorWA']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifActuatorWA">Whatsapp</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="notifActuatorEmail" value="1" name="notifActuatorEmail" {% if feature_setting['notificationActuatorEmail']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifActuatorEmail">Email</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="notifActuatorTelegram" value="1" name="notifActuatorTelegram" {% if feature_setting['notificationActuatorTelegram']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="notifActuatorTelegram">Telegram</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <a href="/setting/feature?tab=notif" role="button">
+            <button type="button" class="btn btn-default">Refresh</button>
+        </a>
+        <button type="submit" class="btn btn-primary float-right">Submit</button>
+    </form>
+</div>
+{% endblock %}

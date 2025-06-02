@@ -1,0 +1,51 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-dark">
+			<div class="card-header">
+				<h3 class="card-title">Actuator Check</h3>
+			</div>
+			<div class="card-body">
+				<form class="form-horizontal" method="POST" action="/check/actuator">
+					<div class="form-group row">
+						<div class="col-sm-3">
+							<select name="actuator" class="form-control" required>
+								<option value="">--- Choose Actuator ---</option>
+								{% for actuator in actuators %}
+								<option value="{{ actuator['id'] }}" {% if
+									actuator['id']|string==actuator_list_id|string %} {{ "selected" }} {% endif %}>{{
+									actuator['name'] }}
+								</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<select name="action" class="form-control" required>
+								<option value="">--- Choose Action ---</option>
+								<option value="0" {% if action|string=='0' %} {{ "selected" }} {% endif %}>OFF</option>
+								<option value="1" {% if action|string=='1' %} {{ "selected" }} {% endif %}>ON</option>
+							</select>
+						</div>
+						<button type="submit" class="btn btn-primary float-right">
+							Run
+						</button>
+					</div>
+				</form>
+				<b>
+					Result
+				</b>
+				<br>
+				{% for i in range(result|length) %}
+				{{ result[i] }}
+				<br>
+				{% endfor %}
+			</div>
+			<div class="card-footer">
+				<font style="color:red">
+					Note : Based on Group Actuator
+				</font>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

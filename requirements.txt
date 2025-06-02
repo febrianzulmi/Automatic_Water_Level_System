@@ -1,0 +1,16 @@
+werkzeug
+flask
+mysql.connector
+schedule
+adafruit-circuitpython-dht
+pytz
+adafruit_ads1x15
+netifaces
+paho.mqtt
+python-magic
+pythonping
+pyexcel
+pandas
+pymodbus
+wifi
+puresnmp==1.11.0

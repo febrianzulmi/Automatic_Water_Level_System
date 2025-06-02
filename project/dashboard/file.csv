@@ -1,0 +1,28 @@
+actuator_name;value;action;timestamp
+Remote AC 1;1;Boot;2025-01-21 17:13:09
+Remote AC 1;1;Boot;2025-01-21 17:07:06
+Remote AC 2;1;Local Remote;2025-01-21 17:05:55
+Remote AC 1;1;Boot;2025-01-21 17:05:26
+Remote AC 1;1;Local Remote;2025-01-21 17:00:13
+Remote AC 1;1;Boot;2025-01-21 16:54:27
+Remote AC 1;1;Local Remote;2025-01-21 16:52:03
+Remote AC 2;1;Local Remote;2025-01-21 16:46:56
+Remote AC 1;1;Local Remote;2025-01-21 16:46:38
+Test;0;Local Remote;2025-01-21 16:46:21
+6;0;Local Remote;2025-01-21 16:46:14
+Remote AC 1;0;Boot;2025-01-21 16:44:19
+Remote AC 1;0;Boot;2025-01-21 16:43:07
+Remote AC 1;0;Boot;2025-01-21 16:35:53
+Remote AC 1;0;Server Remote;2025-01-20 13:52:01
+Remote AC 1;1;Server Remote;2025-01-20 13:51:46
+Remote AC 1;0;Server Remote;2025-01-20 13:25:34
+Remote AC 1;1;Server Remote;2025-01-20 13:02:56
+Remote AC 1;0;Server Remote;2025-01-20 13:01:39
+Remote AC 1;1;Server Remote;2025-01-20 13:00:51
+Remote AC 1;0;Server Remote;2025-01-20 12:59:23
+Remote AC 1;1;Boot;2025-01-20 11:49:25
+Remote AC 1;1;Boot;2025-01-20 11:35:08
+Remote AC 1;1;Boot;2025-01-20 10:39:05
+Remote AC 1;1;Boot;2025-01-20 10:24:33
+Remote AC 1;1;Boot;2025-01-20 10:20:19
+Remote AC 1;1;Local Remote;2025-01-19 21:06:56

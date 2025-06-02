@@ -1,0 +1,111 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+	  <div class="card card-info card-tabs">
+     <div class="card-header p-0 pt-1">
+      <ul class="nav nav-tabs" id="custom-content-header-tab" role="tablist">
+			  <li class="nav-item">
+			    <a class="nav-link {% if page == '1' %}{{ 'active' }}{% endif %}" id="custom-content-header-name-tab" data-toggle="pill" href="#custom-content-header-name" role="tab" aria-controls="custom-content-header-name" aria-selected="true">Name</a>
+				</li>
+				<li class="nav-item">
+				  <a class="nav-link {% if page == '2' %}{{ 'active' }}{% endif %}" id="custom-content-header-port-tab" data-toggle="pill" href="#custom-content-header-port" role="tab" aria-controls="custom-content-header-port" aria-selected="false">Port</a>
+				</li>
+				<li class="nav-item {% if page == '3' %}{{ 'active' }}{% endif %}">
+				  <a class="nav-link" id="custom-content-header-logo-tab" data-toggle="pill" href="#custom-content-header-logo" role="tab" aria-controls="custom-content-header-logo" aria-selected="false">Logo</a>
+				</li>
+			</ul> 
+    </div>
+    <div class="card-body">
+      <div class="tab-content" id="custom-content-header-tab">
+         <div class="tab-pane fade {% if page == '1' %}{{ 'show active' }}{% endif %}" id="custom-content-header-name" role="tabpanel" aria-labelledby="custom-content-header-name-tab">
+		         <form class="form-horizontal" method="POST" action="/setting/dashboard">
+												<div class="form-group row">
+													<label class="col-sm-1 col-form-label">Name</label>
+													<div class="col-sm-2">
+														<input type="text" class="form-control" name="dashboard_name" value="{{ dashboard_name }}"></div>
+														<input type="hidden" name="page" value="1">
+												</div>
+												<button type="submit" class="btn btn-info float-right">Submit</button>
+											</form>
+		       </div>
+         <div class="tab-pane fade {% if page == '2' %}{{ 'show active' }}{% endif %}" id="custom-content-header-port" role="tabpanel" aria-labelledby="custom-content-header-port-tab">
+		         <form class="form-horizontal" method="POST" action="/setting/dashboard">
+												<div class="form-group row">
+													<label class="col-sm-1 col-form-label">Port</label>
+													<div class="col-sm-2">
+														<input type="text" class="form-control" name="dashboard_port" value="{{ dashboard_port }}"></div>
+														<input type="hidden" name="page" value="2">
+												</div>
+												<button type="submit" class="btn btn-info float-right">Submit</button>
+											</form>
+		       </div> 
+         <div class="tab-pane fade {% if page == '3' %}{{ 'show active' }}{% endif %}" id="custom-content-header-logo" role="tabpanel" aria-labelledby="custom-content-header-logo-tab">
+		         <center>
+           <div class="filtr-item col-sm-2" data-category="1" data-sort="Dashboard Logo">
+             <a href="../static/img/logo.png" data-toggle="lightbox" data-title="Dashboard Logo">
+               <img src="../static/img/logo.png" class="img-fluid mb-2" alt="Dashboard Logo"/>
+             </a>
+           </div>
+           <div class="modal fade" id="modals-upload">
+												<div class="modal-dialog">
+													<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title">Upload Logo</h5>
+																<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+																				<span aria-hidden="true">&times;</span>
+																</button>
+														</div>
+														<div class="modal-body">
+																		<form method="POST" action="/setting/dashboard" enctype="multipart/form-data">
+																<div class="form-group">
+																	<div class="input-group">
+																		<div class="custom-file">
+																			<input type="file" class="custom-file-input" name="file" accept="image/*" required>
+																			<label class="custom-file-label">Choose Image</label>
+																		</div>
+																		<div class="input-group-append">
+																			<input type="submit" class="input-group-text" value="Upload">
+																			<input type="hidden" name="page" value="3">
+																		</div>
+																	</div>
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+           <a href="" data-toggle="modal" data-target="#modals-upload" role="button">
+												<button type="button" class="btn btn-info">Change</button>
+											</a>	
+		        </center>
+		       </div> 		               
+      </div>
+    </div>
+  </div>		
+</div>
+{% endblock %}
+{% block lightbox %}
+<script>
+  $(function () {
+    $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+      event.preventDefault();
+      $(this).ekkoLightbox({
+        alwaysShowClose: true
+      });
+    });
+
+    $('.filter-container').filterizr({gutterPixels: 3});
+    $('.btn[data-filter]').on('click', function() {
+      $('.btn[data-filter]').removeClass('active');
+      $(this).addClass('active');
+    });
+  })
+</script>
+{% endblock %}
+{% block script %}
+<script>
+$(function () {
+  bsCustomFileInput.init();
+});
+</script>
+ {% endblock %}

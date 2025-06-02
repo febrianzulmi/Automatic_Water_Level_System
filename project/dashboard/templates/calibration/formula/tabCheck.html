@@ -1,0 +1,42 @@
+{% block check %}
+<form class="form-horizontal" method="POST" action="/calibration/formula">
+    <div class="form-group row">
+        <div class="col-sm-4">
+            <select name="formulaId" class="form-control" required>
+                <option value="">--- Choose Formula ---</option>
+                {% for i in range(formulaData|length) %}
+                <option value="{{ formulaData[i]['id']}}" {% if formulaData[i]['id']|string==formulaId|string %}
+                    {{ "selected" }} {% endif %}>{{
+                    formulaData[i]['name'] }}</option>
+                {% endfor %}
+            </select>
+            <input type="hidden" name="tab" value="check">
+        </div>
+        <div class="col-sm-2">
+            <input type="number" class="form-control" name="sampleValue" placeholder="Sample Value"
+                value="{{ sampleValue }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary float-right">Run</button>
+    </div>
+</form>
+<hr>
+<b>Result</b>
+<br>
+{% if result['state'] == '1' %}
+Timestamp : {{ check['timestamp'] }}<br>
+Formula Name : {{ check['name'] }}<br>
+Coeficient A : {{ check['name'] }}<br>
+Coeficient B : {{ check['name'] }}<br>
+Formula : {{ check['formula'] }}<br>
+Sample Value : {{ sampleValue }}<br>
+Calibration Value : {{ check['calibrateValue'] }}
+{% else %}
+-
+{% endif %}
+<hr>
+<a href="/calibration/formula?tab=check" role="button">
+    <button type="button" class="btn btn-default">
+        <i class="fas fa-sync" title="Refresh"></i> Refresh
+    </button>
+</a>
+{% endblock %}

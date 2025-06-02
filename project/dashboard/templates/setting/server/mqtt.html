@@ -1,0 +1,253 @@
+{% block mqtt %}
+<div class="tab-pane fade {% if 'mqtt' in tab %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-mqtt" role="tabpanel" aria-labelledby="custom-tabs-one-mqtt-tab">
+	{% if 'mqtt' in tab %}
+	{% set tabMqtt = '1' %}
+	{% else %}
+	{% set tabMqtt = '0' %}
+	{% endif %}
+	<ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
+		<li class="nav-item">
+			<a class="nav-link {% if tabMqtt == '1' %}{% if tab == 'mqttConfig' %}{{ 'active' }}{% endif %}{% elif tabMqtt == '0' %}{{ 'active' }}{% endif %}"
+				id="custom-tabs-three-mqttConfig-tab" data-toggle="pill"
+				href="#custom-tabs-three-mqttConfig" role="tab"
+				aria-controls="custom-tabs-three-mqttConfig" aria-selected="true">Configuration</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link {% if tab == 'mqttTopic' %}{{ 'active' }}{% endif %}"
+				id="custom-tabs-three-mqttTopic-tab" data-toggle="pill" href="#custom-tabs-three-mqttTopic"
+				role="tab" aria-controls="custom-tabs-three-mqttTopic" aria-selected="true">Topic</a>
+		</li>
+	</ul>
+	<div class="tab-content" id="custom-tabs-three-tabContent">
+		<div class="tab-pane fade {% if tabMqtt == '1' %}{% if tab == 'mqttConfig' %}{{ 'show active' }}{% endif %}{% elif tabMqtt == '0' %}{{ 'show active' }}{% endif %}"
+			id="custom-tabs-three-mqttConfig" role="tabpanel"
+			aria-labelledby="custom-tabs-three-mqttConfig-tab">
+			<br>
+			<form class="form-horizontal" method="POST" action="/setting/server">
+				<input type="hidden" name="tab" value="mqttConfig">
+				<input type="hidden" name="action" value="mqttConfig">
+				<div class="form-group row">
+					<label class="col-sm-2 col-form-label">Domain Address</label>
+					<div class="col-sm-3">
+						<input type="text" class="form-control" name="domainAddress"
+							value="{{ serverData['mqtt']['setting']['domainAddress'] }}"
+							autocomplete="off" required>
+					</div>
+					<div class="col-sm-2"></div>
+					<label class="col-sm-2 col-form-label">IP Address</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" name="ipAddress"
+							value="{{ serverData['mqtt']['setting']['ipAddress']  }}"
+							autocomplete="off" required>
+					</div>
+				</div>
+				<div class="form-group row">
+					<label class="col-sm-2 col-form-label">Port</label>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="port"
+							value="{{ serverData['mqtt']['setting']['port']  }}" autocomplete="off"
+							placeholder="Port" required>
+					</div>
+				</div>
+				<div class="form-group row">
+					<label class="col-sm-2 col-form-label">MQTT Username</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" name="user"
+							value="{{ serverData['mqtt']['setting']['username'] }}"
+							autocomplete="off">
+					</div>
+					<div class="col-sm-3"></div>
+					<label class="col-sm-2 col-form-label">MQTT Password</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" name="passw"
+							value="{{ serverData['mqtt']['setting']['password'] }}"
+							autocomplete="off">
+					</div>
+				</div>
+				<hr>
+				<a href="/setting/server?tab=mqttConfig" role="button">
+					<button type="button" class="btn btn-default">Refresh</button>
+				</a>
+				<button type="submit" class="btn btn-primary float-right">Submit</button>
+			</form>
+		</div>
+		<div class="tab-pane fade {% if tab == 'mqttTopic' %}{{ 'show active' }}{% endif %}" id="custom-tabs-three-mqttTopic" role="tabpanel" aria-labelledby="custom-tabs-three-mqttTopic-tab">
+			<br>
+			{% if serverData['mqtt']['data']|length > 0 %}
+			{% for item in range(serverData['mqtt']['data']|length) %}
+			<div class="form-group row">
+				<label class="col-sm-2 col-form-label">Topic {{ serverData['mqtt']['data'][item]['name'] }}</label>
+				<div class="col-sm-6">
+					<input type="text" class="form-control" value="{{ serverData['mqtt']['data'][item]['topic'] }}" readonly>
+				</div>
+			</div>
+			{% endfor %}
+			{% else %}
+			<center>No Available Configuration MQTT Topic</center>
+			{% endif %}
+			<hr>
+			<div class="modal fade" id="modal-add-mqtt">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<form class="form-horizontal" method="POST" action="/setting/server">
+							<div class="modal-header">
+								<h5 class="modal-title">Add MQTT Topic</h5>
+								<button type="button" class="close" data-dismiss="modal"
+										aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<input type="hidden" name="tab" value="mqttTopic">
+								<input type="hidden" name="action" value="mqttTopic-add">
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Name</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" name="name" required
+											   autocomplete="off">
+									</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Parameter</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" name="parameter"
+											   required autocomplete="off">
+									</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Topic</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" name="topic" required
+											   autocomplete="off">
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer justify-content-between">
+								<button type="button" class="btn btn-default"
+										data-dismiss="modal">
+									Cancel
+								</button>
+								<button type="submit" class="btn btn-dark">Add</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<a href="" data-toggle="modal" data-target="#modal-add-mqtt" role="button">
+				<button type="button" class="btn btn-primary float-left">
+					<i class="fas fa-plus" title="Add"></i>
+					Add
+				</button>
+			</a>
+			&nbsp;
+			<a href="/setting/server?tab=mqttTopic" role="button">
+				<button type="button" class="btn btn-default">
+					<i class="fas fa-sync" title="Refresh"></i>
+						Refresh
+				</button>
+			</a>
+			<table id="TABLE_2" class="table table-bordered table-hover">
+				<thead>
+					<tr align="center">
+						<th width="5%">No</th>
+						<th>Name</th>
+						<th>Parameter</th>
+						<th>Data</th>
+						<th width="10%">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for item in range(serverData['mqtt']['data']|length) %}
+					<tr align="center">
+						<td>{{ item+1 }}</td>
+						<td>{{ serverData['mqtt']['data'][item]['name'] }}</td>
+						<td>{{ serverData['mqtt']['data'][item]['parameter'] }}</td>
+						<td>{{ serverData['mqtt']['data'][item]['data'] }}</td>
+						<td>
+							<a href="" data-toggle="modal"
+							   data-target="#modal-update-mqtt{{ serverData['mqtt']['data'][item]['id'] }}"
+							   role="button"><i class="nav-icon fas fa-edit"></i></a>
+							&nbsp;
+							<a href="" data-toggle="modal"
+							   data-target="#modal-delete-mqtt{{ serverData['mqtt']['data'][item]['id'] }}"
+							   role="button"><i class="nav-icon fas fa-trash"></i></a>
+						</td>
+					</tr>
+					<div class="modal fade" id="modal-update-mqtt{{ serverData['mqtt']['data'][item]['id'] }}">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+								<form class="form-horizontal" method="POST" action="/setting/server">
+									<div class="modal-header">
+										<h5 class="modal-title">Update MQTT Topic <b>{{ serverData['mqtt']['data'][item]['name'] }}</b></h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<input type="hidden" name="tab" value="mqttTopic">
+										<input type="hidden" name="action" value="mqttTopic-update">
+										<input type="hidden" name="id" value="{{ serverData['mqtt']['data'][item]['id'] }}">
+										<div class="form-group row">
+											<label class="col-sm-2 col-form-label">Name</label>
+											<div class="col-sm-10">
+												<input type="text" class="form-control" name="name" required
+													   autocomplete="off" value="{{ serverData['mqtt']['data'][item]['name'] }}">
+											</div>
+										</div>
+										<div class="form-group row">
+											<label class="col-sm-2 col-form-label">Parameter</label>
+											<div class="col-sm-10">
+												<input type="text" class="form-control" name="parameter"
+													   required autocomplete="off" value="{{ serverData['mqtt']['data'][item]['parameter'] }}">
+											</div>
+										</div>
+										<div class="form-group row">
+											<label class="col-sm-2 col-form-label">Topic</label>
+											<div class="col-sm-10">
+												<input type="text" class="form-control" name="topic" required
+													   autocomplete="off" value="{{ serverData['mqtt']['data'][item]['data'] }}">
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer justify-content-between">
+										<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+										<button type="submit" class="btn btn-dark">Update</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="modal fade" id="modal-delete-mqtt{{ serverData['mqtt']['data'][item]['id'] }}">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<form class="form-horizontal" method="POST" action="/setting/server">
+									<div class="modal-header">
+										<h5 class="modal-title">Confirmation Delete</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<input type="hidden" name="tab" value="mqttTopic">
+										<input type="hidden" name="action" value="mqttTopic-delete">
+										<input type="hidden" name="id" value="{{ serverData['mqtt']['data'][item]['id'] }}">
+										<p>Are you sure to delete MQTT Topic <b>{{ serverData['mqtt']['data'][item]['name'] }}</b>?</p>
+									</div>
+									<div class="modal-footer justify-content-between">
+										<button type="button" class="btn btn-default"
+												data-dismiss="modal">
+											No
+										</button>
+										<button type="submit" class="btn btn-primary">Yes</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,627 @@
+{% block power %}
+<div class="tab-pane fade {% if 'power' in tab %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-power"
+    role="tabpanel" aria-labelledby="custom-tabs-one-power-tab">
+
+    {% set tabPower = '0' %}
+    {% if 'power' in tab %}
+    {% set tabPower = '1' %}
+    {% endif %}
+
+    <ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link {% if tabPower == '1' %}{% if tab == 'power-general' %}{{ 'active' }}{% endif %}{% elif tabPower == '0' %}{{ 'active' }}{% endif %}"
+                id="custom-content-below-power-general-tab" data-toggle="pill"
+                href="#custom-content-below-power-general" role="tab" aria-controls="custom-content-below-power-general"
+                aria-selected="true">General</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if tab == 'power-device' %}{{ 'active' }}{% endif %}"
+                id="custom-content-below-power-device-tab" data-toggle="pill" href="#custom-content-below-power-device"
+                role="tab" aria-controls="custom-content-below-power-device" aria-selected="true">Device</a>
+        </li>
+        <!-- <li class="nav-item">
+            <a class="nav-link {% if tab == 'power-master' %}{{ 'active' }}{% endif %}"
+                id="custom-content-below-power-master-tab" data-toggle="pill" href="#custom-content-below-power-master"
+                role="tab" aria-controls="custom-content-below-power-master" aria-selected="true">Master Data</a>
+        </li> -->
+    </ul>
+
+    <div class="tab-content" id="custom-content-below-tabContent">
+        <div class="tab-pane fade {% if tabPower == '1' %}{% if tab == 'power-general' %}show active{% endif %}{% elif tabPower == '0' %}show active{% endif %}"
+            id="custom-content-below-power-general" role="tabpanel"
+            aria-labelledby="custom-content-below-power-general-tab">
+            <br>
+            Soon
+
+        </div>
+
+        <!-- Device Tab Content -->
+        <div class="tab-pane fade {% if tab == 'power-device' %}show active{% endif %}"
+            id="custom-content-below-power-device" role="tabpanel"
+            aria-labelledby="custom-content-below-power-device-tab">
+            <br>
+
+            <!-- Add Button to Trigger the Modal -->
+            <div class="row col-md-12">
+                {% if sessionData['level'] == 1 %}
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#modal-extension-power-device-add">
+                    <i class="fas fa-plus" title="Add"></i> Add
+                </button>
+                &nbsp;&nbsp;
+                <a href="/setting/extension?tab=power-device" role="button">
+                    <button type="button" class="btn btn-default">
+                        <i class="fas fa-sync" title="Refresh"></i> Refresh
+                    </button>
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Modal for Adding Extension Device -->
+            <div class="modal fade" id="modal-extension-power-device-add" tabindex="-1" role="dialog"
+                aria-labelledby="modalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/extension">
+                            <input type="hidden" name="tab" value="power-device">
+                            <input type="hidden" name="action" value="powerDeviceExtensionAdd">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel">Add Extension Device</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Device Number</label>
+                                    <div class="col-sm-8">
+                                        <input type="number" name="powerExtensionDeviceNumber" class="form-control"
+                                            min="1" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Name</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="powerExtensionDeviceName" required
+                                            autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">IP Address</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="powerExtensionDeviceIp" required
+                                            autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">State</label>
+                                    <div class="col-sm-8">
+                                        <select name="powerExtensionDeviceState" class="form-control" required>
+                                            <option value="">--- Choose State ---</option>
+                                            <option value="0">Disable</option>
+                                            <option value="1">Enable</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- Table for Extension Devices -->
+            <table id="TABLE_1" class="table table-bordered table-hover">
+                <thead>
+                    <tr align="center">
+                        <th width="5%">No</th>
+                        <th>Name</th>
+                        <th>IP Address</th>
+                        <th width="7%">Connection</th>
+                        <th width="7%">State</th>
+                        <th width="7%">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(powerDeviceData|length) %}
+                    <tr align="center">
+                        <td>{{ powerDeviceData[i]['number'] }}</td>
+                        <td>{{ powerDeviceData[i]['name'] }}</td>
+                        <td>{{ powerDeviceData[i]['ip'] }}</td>
+                        <td>
+                            {% if powerDeviceData[i]['connection'] == 0 %}
+                            <span style="color: darkred; font-weight: bold;">Offline</span>
+                            {% elif powerDeviceData[i]['connection'] == 1 %}
+                            <span style="color: green; font-weight: bold;">Online</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if powerDeviceData[i]['state'] == 0 %}
+                            <span style="color: darkred; font-weight: bold;">Disable</span>
+                            {% elif powerDeviceData[i]['state'] == 1 %}
+                            <span style="color: green; font-weight: bold;">Enable</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-edit-powerextensionDeviceData{{powerDeviceData[i]['id']}}"
+                                role="button">
+                                <i class="nav-icon fas fa-edit"></i>
+                            </a>
+                            &nbsp;
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-delete-powerextensionDeviceData{{powerDeviceData[i]['id']}}"
+                                role="button">
+                                <i class="nav-icon fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <div class="modal fade" id="modal-edit-powerextensionDeviceData{{powerDeviceData[i]['id']}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/extension">
+                                    <input type="hidden" name="tab" value="power-device">
+                                    <input type="hidden" name="action" value="powerDeviceExtensionEdit">
+                                    <input type="hidden" name="id" value="{{ powerDeviceData[i]['id'] }}">
+                                    <input type="hidden" name="last_number" value="{{ powerDeviceData[i]['number'] }}">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Update Extension Device
+                                            <b>{{ powerDeviceData[i]['name'] }}</b>
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" class="form-control" name="lastNumber"
+                                            value="{{ powerDeviceData[i]['number'] }}">
+                                        <input type="hidden" class="form-control" name="lastName"
+                                            value="{{ powerDeviceData[i]['name'] }}">
+                                        <input type="hidden" class="form-control" name="lastIp"
+                                            value="{{ powerDeviceData[i]['ip'] }}">
+
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Device Number</label>
+                                            <div class="col-sm-8">
+                                                <input type="number" name="powerExtensionDeviceNumber"
+                                                    class="form-control" value="{{ powerDeviceData[i]['number'] }}"
+                                                    min="1" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Name</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="powerExtensionDeviceName"
+                                                    value="{{ powerDeviceData[i]['name'] }}" required
+                                                    autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">IP Address</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="powerExtensionDeviceIp"
+                                                    value="{{ powerDeviceData[i]['ip'] }}" required autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">State</label>
+                                            <div class="col-sm-8">
+                                                <select name="powerExtensionDeviceState" class="form-control" required>
+                                                    <option value="0" {% if powerDeviceData[i]['state']==0 %}selected{%
+                                                        endif %}>Disable</option>
+                                                    <option value="1" {% if powerDeviceData[i]['state']==1 %}selected{%
+                                                        endif %}>Enable</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Update
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modal-delete-powerextensionDeviceData{{powerDeviceData[i]['id']}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/extension">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Confirmation Delete
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="tab" value="power-device">
+                                        <input type="hidden" name="action" value="powerDeviceExtensionDelete">
+                                        <input type="hidden" name="id" value="{{ powerDeviceData[i]['id'] }}">
+                                        <input type="hidden" name="name" value="{{ powerDeviceData[i]['name'] }}">
+                                        <input type="hidden" name="number" value="{{ powerDeviceData[i]['number'] }}">
+                                        <p>
+                                            Are you sure to delete Extension Device
+                                            <b>
+                                                {{ powerDeviceData[i]['name'] }}
+                                            </b>?
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            No
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Yes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Master Data Tab Content -->
+        <div class="tab-pane fade {% if tab == 'power-master' %}show active{% endif %}"
+            id="custom-content-below-power-master" role="tabpanel"
+            aria-labelledby="custom-content-below-power-master-tab">
+            <br>
+
+            <!-- Add Button to Trigger the Modal -->
+            <div class="row col-md-12">
+                {% if sessionData['level'] == 1 %}
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#modal-extension-power-master-sensor-add">
+                    <i class="fas fa-plus" title="Add"></i> Add Sensor
+                </button>
+                &nbsp;&nbsp;
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#modal-extension-power-master-parameter-add">
+                    <i class="fas fa-plus" title="Add"></i> Add Parameter
+                </button>
+                &nbsp;&nbsp;
+                <a href="/setting/extension?tab=power-master" role="button">
+                    <button type="button" class="btn btn-default">
+                        <i class="fas fa-sync" title="Refresh"></i> Refresh
+                    </button>
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="modal fade" id="modal-extension-power-master-sensor-add" tabindex="-1" role="dialog"
+                aria-labelledby="modalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/extension">
+                            <input type="hidden" name="tab" value="power-master">
+                            <input type="hidden" name="action" value="powerMasterSensorAdd">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel">Add Master Sensor</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Name</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="powerMasterSensorName" required
+                                            autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Sensor ID</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="powerMasterSensorId" required
+                                            autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modal-extension-power-master-parameter-add" tabindex="-1" role="dialog"
+                aria-labelledby="modalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/extension">
+                            <input type="hidden" name="tab" value="power-master">
+                            <input type="hidden" name="action" value="powerMasterParameterAdd">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel">Add Master Parameter</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Name</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="powerMasterParameterName" required
+                                            autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Parameter Code</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="powerMasterParameterCode" required
+                                            autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table for Master Sensor -->
+            <br>
+            <h5 class="modal-title">
+                Master Data Sensor
+            </h5>
+            <table id="TABLE_1" class="table table-bordered table-hover">
+                <thead>
+                    <tr align="center">
+                        <th width="5%">No</th>
+                        <th>Name</th>
+                        <th>Sensor ID</th>
+                        <th width="7%">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(powerMasterSensorData|length) %}
+                    <tr align="center">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ powerMasterSensorData[i]['name'] }}</td>
+                        <td>{{ powerMasterSensorData[i]['sensorId'] }}</td>
+                        <td>
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-edit-powerextensionMasterSensorData{{powerMasterSensorData[i]['id']}}"
+                                role="button">
+                                <i class="nav-icon fas fa-edit"></i>
+                            </a>
+                            &nbsp;
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-delete-powerextensionMasterSensorData{{powerMasterSensorData[i]['id']}}"
+                                role="button">
+                                <i class="nav-icon fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <div class="modal fade"
+                        id="modal-edit-powerextensionMasterSensorData{{powerMasterSensorData[i]['id']}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/extension">
+                                    <input type="hidden" name="tab" value="power-master">
+                                    <input type="hidden" name="action" value="powerMasterSensorEdit">
+                                    <input type="hidden" name="id" value="{{ powerMasterSensorData[i]['id'] }}">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Update Master Sensor
+                                            <b>{{ powerMasterSensorData[i]['name'] }}</b>
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Name</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="powerMasterSensorName"
+                                                    value="{{ powerMasterSensorData[i]['name'] }}" required
+                                                    autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Sensor ID</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="powerMasterSensorId"
+                                                    value="{{ powerMasterSensorData[i]['sensorId'] }}" required
+                                                    autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Update
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade"
+                        id="modal-delete-powerextensionMasterSensorData{{powerMasterSensorData[i]['id']}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/extension">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Confirmation Delete
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="tab" value="power-master">
+                                        <input type="hidden" name="action" value="powerMasterSensorDelete">
+                                        <input type="hidden" name="id" value="{{ powerMasterSensorData[i]['id'] }}">
+                                        <input type="hidden" name="name" value="{{ powerMasterSensorData[i]['name'] }}">
+                                        <p>
+                                            Are you sure to delete Master Sensor
+                                            <b>
+                                                {{ powerMasterSensorData[i]['name'] }}
+                                            </b>?
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            No
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Yes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <br>
+            <hr>
+            <!-- Table for Master Parameter -->
+            <h5 class="modal-title">
+                Master Data Parameter
+            </h5>
+            <table id="TABLE_1" class="table table-bordered table-hover">
+                <thead>
+                    <tr align="center">
+                        <th width="5%">No</th>
+                        <th>Name</th>
+                        <th>Parameter Code</th>
+                        <th width="7%">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(powerMasterParameterData|length) %}
+                    <tr align="center">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ powerMasterParameterData[i]['name'] }}</td>
+                        <td>{{ powerMasterParameterData[i]['parameterCode'] }}</td>
+                        <td>
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-edit-powerextensionMasterParameterData{{powerMasterParameterData[i]['id']}}"
+                                role="button">
+                                <i class="nav-icon fas fa-edit"></i>
+                            </a>
+                            &nbsp;
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-delete-powerextensionMasterParameterData{{powerMasterParameterData[i]['id']}}"
+                                role="button">
+                                <i class="nav-icon fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <div class="modal fade"
+                        id="modal-edit-powerextensionMasterParameterData{{powerMasterParameterData[i]['id']}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/extension">
+                                    <input type="hidden" name="tab" value="power-master">
+                                    <input type="hidden" name="action" value="powerMasterParameterEdit">
+                                    <input type="hidden" name="id" value="{{ powerMasterParameterData[i]['id'] }}">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Update Master Parameter
+                                            <b>{{ powerMasterParameterData[i]['name'] }}</b>
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Name</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="powerMasterParameterName"
+                                                    value="{{ powerMasterParameterData[i]['name'] }}" required
+                                                    autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Parameter Code</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="powerMasterParameterCode"
+                                                    value="{{ powerMasterParameterData[i]['parameterCode'] }}" required
+                                                    autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Update
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade"
+                        id="modal-delete-powerextensionMasterParameterData{{powerMasterParameterData[i]['id']}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/extension">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Confirmation Delete
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="tab" value="power-master">
+                                        <input type="hidden" name="action" value="powerMasterParameterDelete">
+                                        <input type="hidden" name="id" value="{{ powerMasterParameterData[i]['id'] }}">
+                                        <input type="hidden" name="name"
+                                            value="{{ powerMasterParameterData[i]['name'] }}">
+                                        <p>
+                                            Are you sure to delete Master Parameter
+                                            <b>
+                                                {{ powerMasterParameterData[i]['name'] }}
+                                            </b>?
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            No
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Yes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

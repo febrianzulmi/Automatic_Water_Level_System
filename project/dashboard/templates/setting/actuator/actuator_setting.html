@@ -1,0 +1,65 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-dark card-tabs">
+			<div class="card-header p-0 pt-1">
+				<ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link {% if 'groupActuator' in tab %}{{ 'active' }}{% endif %}"
+						   id="custom-tabs-one-groupActuator-tab" data-toggle="pill" href="#custom-tabs-one-groupActuator" role="tab"
+						   aria-controls="custom-tabs-one-groupActuator" aria-selected="true">Group</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {% if 'listActuator' in tab %}{{ 'active' }}{% endif %}"
+						   id="custom-tabs-one-listActuator-tab" data-toggle="pill" href="#custom-tabs-one-listActuator" role="tab"
+						   aria-controls="custom-tabs-one-listActuator" aria-selected="true">List</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {% if 'paramActuatorGroup' in tab %}{{ 'active' }}{% endif %}"
+						   id="custom-tabs-one-paramActuatorGroup-tab" data-toggle="pill" href="#custom-tabs-one-paramActuatorGroup" role="tab"
+						   aria-controls="custom-tabs-one-paramActuatorGroup" aria-selected="true">Parameter Group</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {% if 'paramActuatorList' in tab %}{{ 'active' }}{% endif %}"
+						   id="custom-tabs-one-paramActuatorList-tab" data-toggle="pill" href="#custom-tabs-one-paramActuatorList" role="tab"
+						   aria-controls="custom-tabs-one-paramActuatorList" aria-selected="true">Parameter List</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {% if 'scheduleActuator' in tab %}{{ 'active' }}{% endif %}"
+						   id="custom-tabs-one-scheduleActuator-tab" data-toggle="pill" href="#custom-tabs-one-scheduleActuator" role="tab"
+						   aria-controls="custom-tabs-one-scheduleActuator" aria-selected="true">Schedule</a>
+					</li>
+				</ul>
+			</div>
+			<div class="card-body">
+				<div class="tab-content" id="custom-tabs-one-tabContent">
+					{% include "setting/actuator/actuator_group.html" %}
+					{% include "setting/actuator/actuator_list.html" %}
+					{% include "setting/actuator/actuator_param_group.html" %}
+					{% include "setting/actuator/actuator_param_list.html" %}
+					{% include "setting/actuator/actuator_schedule.html" %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block toast %}
+{% if result['state'] != '' %}
+<script>
+	$(function () {
+		var Toast = Swal.mixin({
+			toast: true,
+			position: 'top-end',
+			showConfirmButton: false,
+			timer: 5000
+		});
+		Toast.fire({
+			icon: "{% if result['state'] == '0' %}{{ 'error' }}{% elif result['state'] == '1' %}{{ 'success' }}{% elif result['state'] == '2' %}{{ 'warning' }}{% endif %}",
+			title: "&nbsp;&nbsp;{{ result['message'] }}"
+		})
+	});
+</script>
+{% endif %}
+{% endblock %}

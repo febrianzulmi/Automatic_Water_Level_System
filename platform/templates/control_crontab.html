@@ -1,0 +1,194 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-info">
+			<div class="card-header">
+				<h3 class="card-title">Crontab Table&nbsp;&nbsp;
+					<a href="" data-toggle="modal" data-target="#modal-add" role="button"><i
+							class="nav-icon fas fa-plus-square" title="Add"></i></a>&nbsp;
+				</h3>
+			</div>
+			<div class="modal fade" id="modal-add">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<form class="form-horizontal" method="POST" action="/crontab/add">
+							<div class="modal-header">
+								<h5 class="modal-title">Add Crontab</h5>
+								<button type="button" class="close" data-dismiss="modal"
+									aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="form-group row">
+									<label
+										class="col-sm-2 col-form-label">Name</label>
+									<div class="col-sm-3">
+										<input type="text" class="form-control"
+											name="name">
+									</div>
+								</div>
+								<div class="form-group row">
+									<label
+										class="col-sm-2 col-form-label">Schedule</label>
+									<div class="col-sm-3">
+										<input type="text" class="form-control"
+											name="schedule">
+									</div>
+								</div>
+								<div class="form-group row">
+									<label
+										class="col-sm-2 col-form-label">Command</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control"
+											name="command">
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer justify-content-between">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">Cancel</button>
+								<button type="submit" class="btn btn-info">Add</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				<table id="TABLE_1" class="table table-bordered table-hover">
+					<thead>
+						<tr align="center">
+							<th>No</th>
+							<th>Name</th>
+							<th>Schedule</th>
+							<th>Command</th>
+							<th>State</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for i in range(fetch|length) %}
+						<tr align="center">
+							<td>{{ i+1 }}</td>
+							<td>{{ fetch[i]['name'] }}</td>
+							<td>{{ fetch[i]['schedule'] }}</td>
+							<td>{{ fetch[i]['command'] }}</td>
+							<td>{% if fetch[i]['state'] == 0 %}{{ 'Nonactive' }}{% else %}{{
+								'Active' }}{% endif %}&nbsp;</td>
+							<td>
+								<a href='/crontab/start/{{fetch[i]["id"]}}'><i
+										class="nav-icon fas fa-check"
+										title="Enable"></i></a>&nbsp;
+								<a href='/crontab/stop/{{fetch[i]["id"]}}'><i
+										class="nav-icon fas fa-times"
+										title="Disable"></i></a>&nbsp;
+								<a href="" data-toggle="modal"
+									data-target="#modal-edit{{ fetch[i]['id'] }}"
+									role="button"><i class="nav-icon fas fa-edit"
+										title="Edit"></i></a>&nbsp;
+								<a href="" data-toggle="modal"
+									data-target="#modal-delete{{ fetch[i]['id'] }}"
+									role="button"><i class="nav-icon fas fa-trash"
+										title="Delete"></i></a>
+							</td>
+						</tr>
+						<div class="modal fade" id="modal-edit{{ fetch[i]['id'] }}">
+							<div class="modal-dialog modal-lg">
+								<div class="modal-content">
+									<form class="form-horizontal" method="POST"
+										action="/crontab/edit/{{fetch[i]['id']}}">
+										<div class="modal-header">
+											<h5 class="modal-title">Update
+												Crontab</h5>
+											<button type="button"
+												class="close"
+												data-dismiss="modal"
+												aria-label="Close">
+												<span
+													aria-hidden="true">&times;</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<div class="form-group row">
+												<label
+													class="col-sm-2 col-form-label">Name</label>
+												<div class="col-sm-3">
+													<input type="text"
+														class="form-control"
+														name="name"
+														value="{{ fetch[i]['name'] }}">
+												</div>
+											</div>
+											<div class="form-group row">
+												<label
+													class="col-sm-2 col-form-label">Schedule</label>
+												<div class="col-sm-3">
+													<input type="text"
+														class="form-control"
+														name="schedule"
+														value="{{ fetch[i]['schedule'] }}">
+												</div>
+											</div>
+											<div class="form-group row">
+												<label
+													class="col-sm-2 col-form-label">Command</label>
+												<div class="col-sm-10">
+													<input type="text"
+														class="form-control"
+														name="command"
+														value="{{ fetch[i]['command'] }}">
+												</div>
+											</div>
+											<input type="hidden"
+												name="state"
+												value="{{ fetch[i]['state'] }}" />
+										</div>
+										<div
+											class="modal-footer justify-content-between">
+											<button type="button"
+												class="btn btn-default"
+												data-dismiss="modal">Cancel</button>
+											<button type="submit"
+												class="btn btn-info">Update</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<div class="modal fade" id="modal-delete{{ fetch[i]['id'] }}">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title">Confirmation
+											Delete</h5>
+										<button type="button" class="close"
+											data-dismiss="modal"
+											aria-label="Close">
+											<span
+												aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<p>Are you sure to delete this crontab?
+										</p>
+									</div>
+									<div
+										class="modal-footer justify-content-between">
+										<button type="button"
+											class="btn btn-default"
+											data-dismiss="modal">No</button>
+										<a
+											href="/crontab/delete/{{fetch[i]['id']}}"><button
+												type="button"
+												class="btn btn-info">Yes</button></a>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

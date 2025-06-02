@@ -1,0 +1,29 @@
+{% block remote %}
+<div class="tab-pane fade {% if 'remote' in tab %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-remote" role="tabpanel" aria-labelledby="custom-tabs-one-remote-tab">
+    {% if 'general' in tab %}
+    {% set tabRemote = '1' %}							
+    {% else %}
+    {% set tabRemote = '0' %}
+    {% endif %}
+    <ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link {% if tabRemote == '1' %}{% if tab == 'remote-general' %}{{ 'active' }}{% endif %}{% elif tabRemote == '0' %}{{ 'active' }}{% endif %}" id="custom-content-below-remote-general-tab" data-toggle="pill" href="#custom-content-below-remote-general" role="tab" aria-controls="custom-content-below-remote-general" aria-selected="true">General</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if tab == 'remote-device' %}{{ 'active' }}{% endif %}" id="custom-content-below-remote-device-tab" data-toggle="pill" href="#custom-content-below-remote-device" role="tab" aria-controls="custom-content-below-remote-device" aria-selected="true">Device</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if tab == 'remote-master' %}{{ 'active' }}{% endif %}" id="custom-content-below-remote-master-tab" data-toggle="pill" href="#custom-content-below-remote-master" role="tab" aria-controls="custom-content-below-remote-master" aria-selected="true">Master Data</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="custom-content-below-tabContent">
+        <div class="tab-pane fade {% if tabRemote == '1' %}{% if tab == 'remote-general' %}{{ 'show active' }}{% endif %}{% elif tabRemote == '0' %}{{ 'show active' }}{% endif %}" id="custom-content-below-remote-general" role="tabpanel" aria-labelledby="custom-content-below-remote-general-tab">
+            <br>
+        </div>
+        <div class="tab-pane fade {% if tab == 'system-alarm' %}{{ 'show active' }}{% endif %}" id="custom-content-below-alarm" role="tabpanel" aria-labelledby="custom-content-below-alarm">
+            <br>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

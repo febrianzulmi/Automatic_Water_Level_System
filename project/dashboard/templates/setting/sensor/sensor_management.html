@@ -1,0 +1,45 @@
+{% block sensor_management %}
+<div class="tab-pane fade {% if 'sensor-management' in tab %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-sensor-management"
+    role="tabpanel" aria-labelledby="custom-tabs-one-sensor-management-tab">
+    {% if 'sensor-management' in tab %}
+	{% set tab_sensor_management = '1' %}
+	{% else %}
+	{% set tab_sensor_management = '0' %}
+	{% endif %}
+
+    <ul class="nav nav-tabs" id="custom-content-env-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link {% if tab_sensor_management == '1' %}{% if tab == 'sensor-management-group' %}{{ 'active' }}{% endif %}{% elif tab_sensor_management == '0' %}{{ 'active' }}{% endif %}"
+                id="custom-content-env-sensor-management-group-tab" data-toggle="pill"
+                href="#custom-content-env-sensor-management-group" role="tab"
+                aria-controls="custom-content-env-sensor-management-group" aria-selected="false">Sensor Group</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if tab == 'sensor-management-list' %}{{ 'active' }}{% endif %}"
+                id="custom-content-env-sensor-management-list-tab" data-toggle="pill"
+                href="#custom-content-env-sensor-management-list" role="tab"
+                aria-controls="custom-content-env-sensor-management-list" aria-selected="false">Sensor List</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if tab == 'sensor-management-param-group' %}{{ 'active' }}{% endif %}"
+                id="custom-content-env-sensor-management-param-group-tab" data-toggle="pill"
+                href="#custom-content-env-sensor-management-param-group" role="tab"
+                aria-controls="custom-content-env-sensor-management-param-group" aria-selected="false">Parameter Group</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if tab == 'sensor-management-param-list' %}{{ 'active' }}{% endif %}"
+                id="custom-content-env-sensor-management-param-list-tab" data-toggle="pill"
+                href="#custom-content-env-sensor-management-param-list" role="tab"
+                aria-controls="custom-content-env-sensor-management-param-list" aria-selected="false">Paramater List</a>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="custom-content-env-tabContent">
+        {% include "setting/sensor/sensor_group.html" %}
+        {% include "setting/sensor/sensor_list.html" %}
+        {% include "setting/sensor/sensor_param_group.html" %}
+        {% include "setting/sensor/sensor_param_list.html" %}
+    </div>
+    
+</div>
+{% endblock %}

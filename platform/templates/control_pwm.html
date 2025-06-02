@@ -1,0 +1,56 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-info">
+			<div class="card-header">
+				<h3 class="card-title">PWM Control</h3>
+				<div class="card-tools">
+          <a href="/do/clear/pwm"><i class="nav-icon fas fa-sync-alt btn-tool" title="Clear"></i></a> 
+				</div> 
+			</div>
+			<div class="card-body">
+			    <br>
+          	<form class="form-horizontal" method="POST" action="/control/pwm">
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">PIN Number</label>
+								<div class="col-sm-2">
+									<input type="text" class="form-control" name="pin" value="{{ pin }}" placeholder="Enter PIN" required>
+								</div>
+							</div>
+							<div class="form-group row">
+									<label class="col-sm-2 col-form-label">PIN Type</label>
+									<div class="col-sm-8 col-form-label">
+										    <div class="form-group clearfix">
+										     <div class="icheck-primary d-inline">
+										       <input type="radio" id="bcm" name="type" value="0" {% if type|string == '0' %}{{ 'checked' }}{% endif %} required>
+										       <label for="bcm">BCM</label>
+										     </div>
+										     &nbsp;
+										     <div class="icheck-primary d-inline"> 
+										       <input type="radio" id="board" name="type" value="1" {% if type|string == '1' %}{{ 'checked' }}{% endif %} required>
+										       <label for="board">Board</label>
+										     </div>
+										   </div>
+										</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">Frekuensi</label>
+								<div class="col-sm-3">
+									<input type="text" class="form-control" name="frekuensi" value="{{ frekuensi }}" placeholder="Enter Frekuensi (Hz)" required>
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">Duty Cycle</label>
+								<div class="col-sm-3">
+									<input type="text" class="form-control" name="cycle" value="{{ cycle }}" placeholder="Enter Duty Cycle (0-100)" required>
+								</div>
+							</div>
+							<button type="submit" class="btn btn-info float-right">Run</button>
+						</form><br><br><hr>
+						<b>Result</b><br>
+					  {% for i in range(result|length) %} {{ result[i] }} <br>{% endfor %}
+			</div>	
+		</div>
+	</div>
+</div>
+ {% endblock %}

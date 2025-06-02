@@ -1,0 +1,73 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-info">
+			<div class="card-header">
+				<h3 class="card-title">RTC Control</h3>
+				<div class="card-tools">
+          <a href="/do/clear/ntp"><i class="nav-icon fas fa-sync-alt btn-tool" title="Clear"></i></a> 
+				</div> 
+			</div>
+			<div class="card-body">
+			  <ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
+			    <li class="nav-item">
+			     <a class="nav-link {% if task == '0' %}{{ 'active' }}{% endif %}" id="custom-content-below-read-tab" data-toggle="pill" href="#custom-content-below-read" role="tab" aria-controls="custom-content-below-read" aria-selected="true">Read</a>
+			    </li>
+			    <li class="nav-item">
+			     <a class="nav-link {% if task == '1' %}{{ 'active' }}{% endif %}" id="custom-content-below-write-tab" data-toggle="pill" href="#custom-content-below-write" role="tab" aria-controls="custom-content-below-write" aria-selected="true">Write</a>
+			    </li>
+				</ul> 
+				<div class="tab-content" id="custom-content-below-tabContent">
+					<div class="tab-pane fade {% if task == '0' %}{{ 'show active' }}{% endif %}" id="custom-content-below-read" role="tabpanel" aria-labelledby="custom-content-below-read-tab">
+				  	<form class="form-horizontal" method="POST" action="/control/rtc">
+								<div class="form-group row">
+								  <input type="hidden" name="task" value="0">
+								</div>
+								<button type="submit" class="btn btn-info float-left">Read RTC</button>
+						</form><br><br><hr>
+						<b>Result</b><br>
+						{% for i in range(result|length) %} {{ result[i] }} <br>{% endfor %}
+				  </div>
+				  <div class="tab-pane fade {% if task == '1' %}{{ 'show active' }}{% endif %}" id="custom-content-below-write" role="tabpanel" aria-labelledby="custom-content-below-write-tab">	
+			    	<form class="form-horizontal" method="POST" action="/control/rtc">
+							 <div class="form-group row">
+								  <input type="hidden" name="task" value="1">
+								  <input type="hidden" name="write" value="auto">
+								 </div>
+								 <button type="submit" class="btn btn-info float-left">Write RTC From System Time</button>
+							 </form><br><br>
+							 <b>Result</b><br>
+							 {% for i in range(result2|length) %} {{ result2[i] }} <br>{% endfor %}
+							 <hr>
+							 <form class="form-horizontal" method="POST" action="/control/rtc">
+								 <div class="form-group row">
+								  <input type="hidden" name="task" value="1">
+								  <input type="hidden" name="write" value="manual">
+								  <div class="col-sm-2">
+					     	<input type="date" class="form-control" name="date" autocomplete="off" value="{{ date_now }}">
+					     </div>
+					     <div class="col-sm-2">
+						     <input type="time" class="form-control" name="time" autocomplete="off" value="{{ time_now }}">
+					     </div>
+					     <button type="submit" class="btn btn-info float-left">Write RTC Manual</button>
+								 </div>
+							 </form>
+							 <b>Result</b><br>
+							 {% for i in range(result3|length) %} {{ result3[i] }} <br>{% endfor %}
+							 <hr>
+							 <form class="form-horizontal" method="POST" action="/control/rtc">
+								 <div class="form-group row">
+								  <input type="hidden" name="task" value="1">
+								  <input type="hidden" name="write" value="system">
+								  <button type="submit" class="btn btn-info float-left">Write System Time from RTC</button>
+								 </div>
+							 </form>
+							 <b>Result</b><br>
+							 {% for i in range(result4|length) %} {{ result4[i] }} <br>{% endfor %}
+			    </div>	 
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+ {% endblock %}

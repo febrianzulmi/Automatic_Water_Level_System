@@ -1,0 +1,216 @@
+{% extends "base.html" %} {% block content %}
+<div class="row">
+	  <div class="col-md-12">
+			  <form method="POST" action="/log/send_node">
+				<div class="form-group row">
+					<div class="col-sm-2">
+						<input type="date" class="form-control" name="date1" autocomplete="off" value="{{date1}}">
+					</div>
+					<div class="col-sm-2">
+						<input type="time" class="form-control" name="time1" autocomplete="off" value="{{time1}}">
+					</div>
+					<div class="col-sm-2">
+						<input type="date" class="form-control" name="date2" autocomplete="off" value="{{date2}}">
+					</div>
+					<div class="col-sm-2">
+						<input type="time" class="form-control" name="time2" autocomplete="off" value="{{time2}}">
+					</div>
+					<button type="submit" class="btn btn-primary float-right"><i class="fas fa-search" title="Search"></i></button>  
+			    </form>&nbsp;&nbsp;
+			    <form method="POST" action="/log/send_node">
+			    <input type="hidden" name="date1" value=""/>
+			    <input type="hidden" name="time1" value=""/>
+			    <input type="hidden" name="date2" value=""/>
+			    <input type="hidden" name="time2" value=""/>
+			    <button type="submit" class="btn btn-primary float-right" title="No Filter"><font style="font-size:17px">All</font></i></button>  
+			    </form>
+				</div>	
+		</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+	  <div class="form-group row">
+		<div class="col-sm-12">
+		  <input type="text" class="form-control" style="font-weight: bold; text-align:center;" disabled value="{{ fetch|length }} Data">
+		</div>
+  	</div>
+  </div>
+</div>
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-dark">
+			<div class="card-header">
+				<h3 class="card-title">Node Send Log</h3>
+				<div class="card-tools">
+				  <div class="row">
+						<a href="" data-toggle="modal" data-target="#modals-upload" role="button"><button type="button" class="btn btn-tool"><i class="fas fa-upload" title="Upload"></i></button></a>
+						<form method="POST" action="/log/send_node/download">
+						  {% set datetimes1 = date1 + " " + time1 %}
+		          {% set datetimes2 = date2 + " " + time2 %}
+					    <input type="hidden" name="datetimes1" value="{{ datetimes1 }}"/>
+					    <input type="hidden" name="datetimes2" value="{{ datetimes2 }}"/>
+							<button type="submit" class="btn btn-tool"><i class="fas fa-download" title="Download"></i></button>
+						</form>
+						<a href="" data-toggle="modal" data-target="#modals-delete" role="button"><button type="button" class="btn btn-tool"><i class="fas fa-trash" title="Delete"></i></button></a>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" id="modals-upload">
+				<div class="modal-dialog">
+					<div class="modal-content">
+				  	<div class="modal-header">
+						  <h5 class="modal-title">Upload Node Send File Log</h5>
+						  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				   	    <span aria-hidden="true">&times;</span>
+						  </button>
+						</div>
+						<div class="modal-body">
+				 	    <form method="POST" action="/log/send_node/upload" enctype="multipart/form-data">
+                  <div class="form-group">
+								 <div class="input-group">
+								  <div class="custom-file">
+								   <input type="file" class="custom-file-input" name="file" accept=".csv">
+								   <label class="custom-file-label">Choose file</label>
+								  </div>
+								  <div class="input-group-append">
+								   <input type="submit" class="input-group-text" value="Upload">
+								  </div>
+								 </div>
+								</div>
+              </form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" id="modals-delete">
+				<div class="modal-dialog">
+					<div class="modal-content">
+				  	<div class="modal-header">
+						  <h5 class="modal-title">Confirmation Delete</h5>
+						  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				   	    <span aria-hidden="true">&times;</span>
+						  </button>
+						</div>
+						<div class="modal-body">
+				 	    {% set datetime1 = date1 + " " + time1 %}
+					    {% set datetime2 = date2 + " " + time2 %}
+							{% if datetime1 == ' ' and datetime2 ==  ' ' %}
+							   <p>Are you sure to delete <b>All Data</b>?</p>
+							{% else %}
+							   <p>Are you sure to delete Data <b>between {{ datetime1 }} and {{ datetime2 }}</b>?</p>  
+							{% endif %}   
+						</div>
+						<form method="POST" action="/log/send_node/delete">
+						<div class="modal-footer justify-content-between">
+					    <input type="hidden" name="datetime1" value="{{ datetime1 }}"/>
+					    <input type="hidden" name="datetime2" value="{{ datetime2 }}"/>
+						  <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+              <button type="submit" class="btn btn-dark">Yes</button>
+						</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+					<table id="TABLE_1" class="table table-bordered table-hover">
+                  <thead>
+                  <tr align="center">
+                    <th>No</th>
+                    <th>Data</th>
+                    <th>State</th>
+                    <th>Buffer</th>
+                    <th>Timestamp</th>
+                    <th>Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for i in range(fetch|length) %}
+                  <tr align="center">
+                    <td>{{ i+1 }}</td>
+                    <td>{{ fetch[i][1] }}</td>
+                    <td>{{ fetch[i][2] }}</td>
+                    <td>{% if fetch[i][3] == 0 %}{{ 'Yes' }}{% elif fetch[i][3] == 1 %}{{ 'No' }}{% else  %}{{ 'Done' }}{% endif %}</td>
+                    <td>{{ fetch[i][4] }}</td>
+                    <td>
+                    	<a href="" data-toggle="modal" data-target="#modal-edit{{ fetch[i][0] }}" role="button"><i class="nav-icon fas fa-edit"></i></a>&nbsp;
+                    	<a href="" data-toggle="modal" data-target="#modal-delete{{ fetch[i][0] }}" role="button"><i class="nav-icon fas fa-trash"></i></a>
+                    </td>
+                  </tr>
+                  <div class="modal fade" id="modal-edit{{ fetch[i][0] }}">
+										<div class="modal-dialog modal-lg">
+											<div class="modal-content">
+												<form class="form-horizontal" method="POST" action="/log/send_node/update/{{ fetch[i][0] }}">
+												<div class="modal-header">
+												  <h5 class="modal-title">Update Data Number <b>{{ i+1 }}</b></h5>
+												  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												    <span aria-hidden="true">&times;</span>
+												  </button>
+												</div>
+												<div class="modal-body">
+													<div class="form-group row">
+														<label class="col-sm-2 col-form-label">Data</label>
+														<div class="col-sm-10">
+															<input type="text" class="form-control" name="data" value="{{ fetch[i][1] }}"></div>
+													</div>
+													<div class="form-group row">
+														<label class="col-sm-2 col-form-label">State</label>
+														<div class="col-sm-3">
+															<input type="text" class="form-control" name="state" value="{{ fetch[i][2] }}"></div>
+													</div>
+													<div class="form-group row">
+														<label class="col-sm-2 col-form-label">Buffer</label>
+														<div class="col-sm-2">
+														  <select name="buffer" class="form-control">
+																<option value="0" {% if fetch[i][3] == 0 %} {{ "selected" }} {% endif %}>Yes</option>
+																<option value="1" {% if fetch[i][3] == 1 %} {{ "selected" }} {% endif %}>No</option> 
+																<option value="2" {% if fetch[i][3] == 2 %} {{ "selected" }} {% endif %}>Done</option>  
+															</select>
+													  </div>
+													</div>
+													<div class="form-group row">
+														<label class="col-sm-2 col-form-label">Timestamp</label>
+														<div class="col-sm-4">
+															<input type="text" class="form-control" name="timestamp" value="{{ fetch[i][4] }}"></div>
+													</div>
+												</div>
+												<div class="modal-footer justify-content-between">
+												  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+												  <button type="submit" class="btn btn-dark">Update</button>
+												</div>
+												</form>
+											</div>
+										</div>
+									</div>
+                  <div class="modal fade" id="modal-delete{{ fetch[i][0] }}">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+												  <h5 class="modal-title">Confirmation Delete</h5>
+												  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												    <span aria-hidden="true">&times;</span>
+												  </button>
+												</div>
+												<div class="modal-body">
+												  <p>Are you sure to delete Data Number <b>{{ i+1 }}</b></p>
+												</div>
+												<div class="modal-footer justify-content-between">
+												  <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                          <a href="/log/send_node/delete/{{ fetch[i][0] }}"><button type="button" class="btn btn-dark">Yes</button></a>
+												</div>
+											</div>
+										</div>
+									</div>
+                  {% endfor %}
+         </table>
+				</div>
+		</div>
+	</div>
+</div>
+ {% endblock %}
+{% block script %}
+<script>
+$(function () {
+  bsCustomFileInput.init();
+});
+</script>
+{% endblock %}

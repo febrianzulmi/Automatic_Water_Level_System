@@ -1,0 +1,73 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+	  <div class="card card-dark">
+    <div class="card-header">
+      <h3 class="card-title">Display Update</h3>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="/display" enctype="multipart/form-data">
+							<input type="hidden" name="upload" value="external">
+							<div class="form-group">
+								<div class="col-sm-6">
+								 <div class="input-group">
+									 <div class="custom-file">
+										 <input type="file" class="custom-file-input" name="file" accept=".tft" required>
+										 <label class="custom-file-label">Choose File TFT Display</label>
+									 </div>
+									 <div class="input-group-append">
+									 	<input type="submit" class="input-group-text" value="Upload">
+									 </div>
+								 </div>
+								</div>
+							</div>
+						</form>
+						{% if files == True %}
+						<form method="POST" action="/display" enctype="multipart/form-data">
+							<input type="hidden" name="upload" value="internal">
+							<div class="form-group">
+								<div class="col-sm-6">
+								 <div class="input-group">
+									 <div class="input-group-append">
+									 	<input type="submit" class="input-group-text" value="Upload By Existing File">
+									 </div>
+								 </div>
+								</div>
+							</div>
+						</form>
+						{% endif %}
+						<b>Last Update : </b> {{ last }} <br>
+						<b>Result :</b> <br>
+					 {% for i in range(result|length) %}
+         {{ result[i] }}
+         <br>
+      {% endfor %}
+    </div>
+  </div>		
+</div>
+{% endblock %}
+{% block lightbox %}
+<script>
+  $(function () {
+    $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+      event.preventDefault();
+      $(this).ekkoLightbox({
+        alwaysShowClose: true
+      });
+    });
+
+    $('.filter-container').filterizr({gutterPixels: 3});
+    $('.btn[data-filter]').on('click', function() {
+      $('.btn[data-filter]').removeClass('active');
+      $(this).addClass('active');
+    });
+  })
+</script>
+ {% endblock %}
+ {% block script %}
+<script>
+$(function () {
+  bsCustomFileInput.init();
+});
+</script>
+ {% endblock %}

@@ -1,0 +1,742 @@
+{% extends "base.html" %} {% block content %}
+
+{% if project_protocol == 1 %}{% set pro = 'API' %}
+{% elif project_protocol == 2 %}{% set pro = 'Topic' %}
+{% elif project_protocol == 3 %}{% set pro = 'OID' %}{% endif %}
+
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-dark card-tabs">
+			<div class="card-header p-0 pt-1">
+				<ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link active" id="custom-tabs-one-param-tab" data-toggle="pill" href="#custom-tabs-one-param" role="tab" aria-controls="custom-tabs-one-param" aria-selected="true">Parameter</a>
+					</li>
+					{% if project_protocol == 1 %}
+					<li class="nav-item">
+						<a class="nav-link" id="custom-tabs-one-token-tab" data-toggle="pill" href="#custom-tabs-one-token" role="tab" aria-controls="custom-tabs-one-token" aria-selected="false">Token</a>
+					</li>
+					{% endif %}
+					<li class="nav-item">
+						<a class="nav-link" id="custom-tabs-one-api-tab" data-toggle="pill" href="#custom-tabs-one-api" role="tab" aria-controls="custom-tabs-one-api" aria-selected="false">{{ pro }}</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="custom-tabs-one-interval-tab" data-toggle="pill" href="#custom-tabs-one-interval" role="tab" aria-controls="custom-tabs-one-interval" aria-selected="false">Interval</a>
+					</li>
+					{% if project_gateway == 1 %}
+					<li class="nav-item">
+						<a class="nav-link" id="custom-tabs-one-gateway-tab" data-toggle="pill" href="#custom-tabs-one-gateway" role="tab" aria-controls="custom-tabs-one-gateway" aria-selected="false">Gateway</a>
+					</li>
+					{% endif %}
+					{% if project_node == 1 %}
+					<li class="nav-item">
+						<a class="nav-link" id="custom-tabs-one-sensor-tab" data-toggle="pill" href="#custom-tabs-one-sensor" role="tab" aria-controls="custom-tabs-one-sensor" aria-selected="false">Sensor</a>
+					</li>
+					{% endif %}
+					<!--<li class="nav-item">
+						<a class="nav-link" id="custom-tabs-one-actuator-tab" data-toggle="pill" href="#custom-tabs-one-actuator" role="tab" aria-controls="custom-tabs-one-actuator" aria-selected="false">Actuator</a>
+					</li>-->
+				</ul>
+			</div>
+
+			<div class="card-body">
+				<div class="tab-content" id="custom-tabs-one-tabContent">
+					<div class="tab-pane fade show active" id="custom-tabs-one-param" role="tabpanel" aria-labelledby="custom-tabs-one-param-tab">
+						<form class="form-horizontal" method="POST" action="/setting_post">
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">Device UID</label>
+								<div class="col-sm-2">
+									<input type="text" class="form-control" name="node_id" value="{{ node_id }}">
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">Name</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" name="name" value="{{ name }}">
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">IP Address Server</label>
+								<div class="col-sm-2">
+									<input type="text" class="form-control" name="ip" value="{{ ip }}">
+								</div>
+								<label class="col-sm-2 col-form-label"></label>
+								<label class="col-sm-1 col-form-label">Port</label>
+								<div class="col-sm-2">
+									<input type="text" class="form-control" name="port" value="{{ port }}">
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">API Key</label>
+								<div class="col-sm-4">
+									<input type="text" class="form-control" name="key" value="{{ key }}">
+								</div>
+							</div>
+							<button type="submit" class="btn btn-dark float-right">Submit</button>
+						</form>
+					</div>
+
+					<div class="tab-pane fade" id="custom-tabs-one-token" role="tabpanel" aria-labelledby="custom-tabs-one-token-tab">
+						<div class="col-sm-12">
+							<div class="form-group">
+								<textarea class="form-control" rows='10"' disabled>{{ token }}</textarea>
+							</div>
+						</div>
+						<a href="/token/get"><button type="submit" class="btn btn-dark float-right">Get Token</button></a>
+						<a href="/token/reset"><button type="submit" class="btn btn-default float-left">Reset</button></a>
+					</div>
+
+					<div class="tab-pane fade" id="custom-tabs-one-api" role="tabpanel" aria-labelledby="custom-tabs-one-api-tab">
+						<div class="modal fade" id="modal-attribute">
+							<div class="modal-dialog modal-sm">
+								<div class="modal-content">
+									<form class="form-horizontal" method="POST" action="/attribute_post">
+										<div class="modal-header">
+											<h5 class="modal-title">Add {{ pro }}</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<div class="form-group row">
+													<label class="col-sm-3 col-form-label">Name</label>
+													<div class="col-sm-9">
+														<input type="text" class="form-control" name="name">
+													</div>
+											</div>
+											<div class="form-group row">
+													<label class="col-sm-3 col-form-label">{{ pro }}</label>
+													<div class="col-sm-9">
+														<input type="text" class="form-control" name="value">
+													</div>
+											</div>
+										</div>
+										<div class="modal-footer justify-content-between">
+											<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+											<button type="submit" class="btn btn-dark">Add</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<a href="" data-toggle="modal" data-target="#modal-attribute" role="button">
+							<button type="button" class="btn btn-dark float-left"><i class="fas fa-plus"></i> Add</button>
+						</a>
+						<table id="TABLE_4" class="table table-bordered table-hover">
+							<thead>
+								<tr align="center">
+									<th width="5%">No</th>
+									<th>Name</th>
+									<th>{{ pro }}</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for i in range(attribute|length) %}
+								<tr align="center">
+									<td>{{ i+1 }}</td>
+									<td>{{ attribute[i][1] }}</td>
+									<td>{{ attribute[i][2] }}</td>
+									<td>
+										<a href="" data-toggle="modal" data-target="#modal-update-attribute{{ attribute[i][0] }}" role="button"><i class="nav-icon fas fa-edit"></i></a>
+										<a href="" data-toggle="modal" data-target="#modal-delete-attribute{{ attribute[i][0] }}" role="button"><i class="nav-icon fas fa-trash"></i></a>
+									</td>
+								</tr>
+								<div class="modal fade" id="modal-update-attribute{{ attribute[i][0] }}">
+									<div class="modal-dialog modal-sm">
+										<div class="modal-content">
+											<form class="form-horizontal" method="POST" action="/attribute_update/{{ attribute[i][0] }}">
+												<div class="modal-header">
+													<h5 class="modal-title">Update {{ pro }} <b>{{ attribute[i][1] }}</b></h5>
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<div class="modal-body">
+													<input type="hidden" class="form-control" name="name" value="{{ attribute[i][1] }}">
+													<div class="form-group row">
+														<label class="col-sm-3 col-form-label">{{ pro }}</label>
+														<div class="col-sm-9">
+															<input type="text" class="form-control" name="value" value="{{ attribute[i][2] }}">
+														</div>
+													</div>
+												</div>
+												<div class="modal-footer justify-content-between">
+													<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+													<button type="submit" class="btn btn-dark">Update</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+								<div class="modal fade" id="modal-delete-attribute{{ attribute[i][0] }}">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title">Confirmation Delete</h5>
+												<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+											<div class="modal-body">
+												<p> Are you sure to delete {{ pro }} <b>{{ attribute[i][1] }}</b></p>
+											</div>
+											<div class="modal-footer justify-content-between">
+												<button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+												<a href="/attribute_delete/{{ attribute[i][0] }}"><button type="button" class="btn btn-dark">Yes</button></a>
+											</div>
+										</div>
+									</div>
+								</div>
+								{% endfor %}
+							</tbody>	
+						</table>
+					</div>
+
+					<div class="tab-pane fade" id="custom-tabs-one-interval" role="tabpanel" aria-labelledby="custom-tabs-one-interval-tab">
+						<div class="modal fade" id="modal-interval">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<form class="form-horizontal" method="POST" action="/interval/add">
+										<div class="modal-header">
+											<h5 class="modal-title">Add Interval</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<div class="form-group row">
+												<label class="col-sm-3 col-form-label">Name</label>
+												<div class="col-sm-8">
+													<input type="text" class="form-control" name="name">
+												</div>
+											</div>
+											<div class="form-group row">
+												<label class="col-sm-3 col-form-label">Interval</label>
+				    	                    	<div class="col-sm-4">
+						                            <input type="text" name="interval" class="form-control">
+					                        	</div>&nbsp;
+					                        	<div class="col-sm-4">
+					                        		<select name="unit" class="form-control">
+						                          		<option value="1">Seconds</option>  
+						                          		<option value="2">Minutes</option>
+						                          		<option value="3">Hours</option>                   
+					                        		</select>
+					                        	</div>
+				                    		</div>
+										</div>
+										<div class="modal-footer justify-content-between">
+											<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+											<button type="submit" class="btn btn-dark">Add</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<a href="" data-toggle="modal" data-target="#modal-interval" role="button"><button type="button" class="btn btn-dark float-left"><i class="fas fa-plus"></i> Add</button></a>
+						<table id="TABLE_3" class="table table-bordered table-hover">
+							<thead>
+								<tr align="center">
+									<th width="5%">No</th>
+										<th>Name</th>
+										<th>Interval</th>
+										<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for i in range(interval|length) %}
+								<tr align="center">
+									<td>{{ i+1 }}</td>
+									<td>{{ interval[i][1] }}</td>
+									<td>{{ interval[i][2] }}
+									    {% if interval[i][3] == 1 %}{{ 'Seconds' }}
+									    {% elif interval[i][3] == 2 %}{{ 'Minutes' }}
+	 								    {% else %}{{ 'Hours' }}{% endif %}								
+									</td>
+									<td>
+										<a href="" data-toggle="modal" data-target="#modal-update-interval{{ interval[i][0] }}" role="button"><i class="nav-icon fas fa-edit"></i></a>
+										<a href="" data-toggle="modal" data-target="#modal-delete-interval{{ interval[i][0] }}" role="button"><i class="nav-icon fas fa-trash"></i></a>
+									</td>
+								</tr>
+								<div class="modal fade" id="modal-update-interval{{ interval[i][0] }}">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<form class="form-horizontal" method="POST" action="/interval/update/{{ interval[i][0] }}">
+												<div class="modal-header">
+													<h5 class="modal-title">Update Interval <b>{{ interval[i][1] }}</b></h5>
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<div class="modal-body">
+													<input type="hidden" class="form-control" name="name" value="{{ interval[i][1] }}">
+													<div class="form-group row">
+									                   	<label class="col-sm-3 col-form-label">Interval</label>
+								                       	<div class="col-sm-4">
+									                        <input type="text" name="interval" class="form-control" value="{{ interval[i][2] }}">
+								                       	</div>&nbsp;
+								                       	<div class="col-sm-4">
+								                       		<select name="unit" class="form-control">
+									                       		<option value="1" {% if interval[i][3] == 1 %}{{ 'selected' }}{% endif %}>Seconds</option>  
+									                      		<option value="2" {% if interval[i][3] == 2 %}{{ 'selected' }}{% endif %}>Minutes</option>
+										                   		<option value="3" {% if interval[i][3] == 3 %}{{ 'selected' }}{% endif %}>Hours</option>                   
+							                        		</select>
+							                        	</div>
+						                    		</div>
+												</div>
+												<div class="modal-footer justify-content-between">
+													<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+													<button type="submit" class="btn btn-dark">Update</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+								<div class="modal fade" id="modal-delete-interval{{ interval[i][0] }}">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title">Confirmation Delete</h5>
+												<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+											<div class="modal-body">
+												<p> Are you sure to delete Interval <b>{{ interval[i][1] }}</b></p>
+											</div>
+											<div class="modal-footer justify-content-between">
+												<button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+												<a href="/interval/delete/{{ interval[i][0] }}"><button type="button" class="btn btn-dark">Yes</button></a>
+											</div>
+										</div>
+									</div>
+								</div>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+
+					<div class="tab-pane fade" id="custom-tabs-one-gateway" role="tabpanel" aria-labelledby="custom-tabs-one-gateway-tab">
+						<form class="form-horizontal" method="POST" action="/gateway/add">
+							<div class="form-group row">
+								<label class="col-sm-1 col-form-label">{% if project_protocol == 1 %}API Port{% elif project_protocol == 2 %}Topic {% endif %}</label>
+								<div class="col-sm-2">
+									<input type="text" class="form-control" name="value" value="{{ gateway_value }}">
+								</div>
+							</div>
+							<button type="submit" class="btn btn-dark float-right">Submit</button>
+						</form>
+					</div>
+
+					<div class="tab-pane fade" id="custom-tabs-one-sensor" role="tabpanel" aria-labelledby="custom-tabs-one-sensor-tab">
+						<div class="modal fade" id="modal-sensor">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<form class="form-horizontal" method="POST" action="/sensor/add">
+										<div class="modal-header">
+											<h5 class="modal-title">Add Sensor</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<div class="form-group row">
+												<label class="col-sm-3 col-form-label">Sensor ID</label>
+												<div class="col-sm-4">
+													<input type="text" class="form-control" name="sensor_id">
+												</div>
+											</div>
+											<div class="form-group row">
+						                       	<label class="col-sm-3 col-form-label">Group Sensor</label>
+												<div class="col-sm-4">
+													<select name="group_id" class="form-control">
+						                        		{% for x in range(group|length) %}
+							                       		<option value="{{ group[x][0] }}">{{group[x][1]}}</option>  
+							                         	{% endfor %}
+							                       	</select>
+						                       	</div>
+					                   		</div>
+											<div class="form-group row">
+												<label class="col-sm-3 col-form-label">Name</label>
+												<div class="col-sm-8">
+													<input type="text" class="form-control" name="name">
+												</div>
+											</div>
+					                   	</div>
+										<div class="modal-footer justify-content-between">
+											<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+											<button type="submit" class="btn btn-dark">Add</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<h6><b>List Sensor Table</b></h6>
+						<a href="" data-toggle="modal" data-target="#modal-sensor" role="button"><button type="button" class="btn btn-sm btn-dark float-left"><i class="fas fa-plus"></i> Add</button></a>
+						<table id="TABLE_5" class="table table-bordered table-hover">
+							<thead>
+								<tr align="center">
+									<th>Group Sensor</th>
+									<th>Sensor ID</th>	
+									<th>Name</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for i in range(sensors|length) %}
+								<tr align="center">
+									<td>{{ sensors[i][5] }}</td>
+									<td>{{ sensors[i][1] }}</td>
+									<td>{{ sensors[i][3] }}</td>
+									<td>
+										<a href="" data-toggle="modal" data-target="#modal-edit-sensor{{ sensors[i][0] }}" role="button"><i class="nav-icon fas fa-edit"></i></a>
+										<a href="" data-toggle="modal" data-target="#modal-delete-sensor{{ sensors[i][0] }}" role="button"><i class="nav-icon fas fa-trash"></i></a>
+									</td>
+								</tr>
+								<div class="modal fade" id="modal-edit-sensor{{ sensors[i][0] }}">				
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<form class="form-horizontal" method="POST" action="/sensor/update/{{ sensors[i][0] }}">
+												<div class="modal-header">
+													<h5 class="modal-title">Update Sensor <b>{{ sensors[i][3] }}</b></h5>
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<div class="modal-body">
+													<div class="form-group row">
+														<label class="col-sm-3 col-form-label">Sensor ID</label>
+														<div class="col-sm-4">
+															<input type="text" class="form-control" name="sensor_id" value="{{ sensors[i][1] }}">
+														</div>
+													</div>
+													<div class="form-group row">
+														<label class="col-sm-3 col-form-label">Group Sensor</label>
+														<div class="col-sm-4">
+															<select name="group_id" class="form-control">
+																{% for x in range(group|length) %}
+																<option value="{{ group[x][0] }}" {% if group[x][0] == sensors[i][2] %}{{ 'selected' }}{% endif %}>{{group[x][1]}}</option>  
+																{% endfor %}
+															</select>
+														</div>
+													</div>
+													<div class="form-group row">
+														<label class="col-sm-3 col-form-label">Name</label>
+														<div class="col-sm-9">
+															<input type="text" class="form-control" name="name" value="{{ sensors[i][3] }}">
+														</div>
+													</div>
+												</div>
+												<div class="modal-footer justify-content-between">
+													<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+													<button type="submit" class="btn btn-dark">Update</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+								<div class="modal fade" id="modal-delete-sensor{{ sensors[i][0] }}">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title">Confirmation Delete</h5>
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<div class="modal-body">
+													<p> Are you sure to delete Sensor <b>{{ sensors[i][3] }}</b>?</p>
+												</div>
+												<div class="modal-footer justify-content-between">
+													<button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+													<a href="/sensor/delete/{{ sensors[i][0] }}"><button type="button" class="btn btn-dark">Yes</button></a>
+												</div>
+											</div>
+										</div>
+								</div>
+								{% endfor %}
+						 	</tbody>
+						</table>
+						<br><hr>
+						<div class="modal fade" id="modal-param">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<form class="form-horizontal" method="POST" action="/param/add">
+										<div class="modal-header">
+											<h5 class="modal-title">Add Parameter Sensor</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+										<div class="modal-body">
+										 	<div class="form-group row">
+					                        	<label class="col-sm-3 col-form-label">Group Sensor</label>
+					                        	<div class="col-sm-4">
+					                        		<select name="group_id" class="form-control">
+						                        		{% for x in range(group|length) %}
+						                          		<option value="{{ group[x][0] }}">{{group[x][1]}}</option>  
+							                          	{% endfor %}
+						                          	</select>
+					                        	</div>
+				                    		</div>
+											<div class="form-group row">
+												<label class="col-sm-3 col-form-label">Name</label>
+												<div class="col-sm-8">
+													<input type="text" class="form-control" name="name">
+												</div>
+											</div>
+											<div class="form-group row">
+												<label class="col-sm-3 col-form-label">Parameter</label>
+												<div class="col-sm-8">
+													<input type="text" class="form-control" name="param">
+												</div>
+											</div>
+					                    </div>
+										<div class="modal-footer justify-content-between">
+											<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+											<button type="submit" class="btn btn-dark">Add</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<h6><b>Parameter Sensor Table</b></h6>
+						<a href="" data-toggle="modal" data-target="#modal-param" role="button"><button type="button" class="btn btn-sm btn-dark float-left"><i class="fas fa-plus"></i> Add</button></a>
+						<table id="TABLE_3" class="table table-bordered table-hover">
+							<thead>
+								<tr align="center">
+									<th>Group Sensor</th>
+									<th>Name</th>
+									<th>Parameter</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for i in range(param|length) %}
+								<tr align="center">
+									<td>{{ param[i][5] }}</td>
+									<td>{{ param[i][2] }}</td>
+									<td>{{ param[i][3] }}</td>
+									<td>
+										<a href="" data-toggle="modal" data-target="#modal-edit-param{{ param[i][0] }}" role="button"><i class="nav-icon fas fa-edit"></i></a>
+										<a href="" data-toggle="modal" data-target="#modal-delete-param{{ param[i][0] }}" role="button"><i class="nav-icon fas fa-trash"></i></a>
+									</td>
+								</tr>
+								<div class="modal fade" id="modal-edit-param{{ param[i][0] }}">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<form class="form-horizontal" method="POST" action="/param/update/{{ param[i][0] }}">
+												<div class="modal-header">
+													<h5 class="modal-title">Update Param <b>{{ param[i][2] }}</b></h5>
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<div class="modal-body">
+													<div class="form-group row">
+								                    	<label class="col-sm-3 col-form-label">Group Sensor</label>
+								                    	<div class="col-sm-4">
+															<select name="group_id" class="form-control">
+									                    		{% for x in range(group|length) %}
+									                      		<option value="{{ group[x][0] }}" {% if group[x][0] == param[i][1] %}{{ 'selected' }}{% endif %}>{{group[x][1]}}</option>  
+										                      	{% endfor %}
+									                      	</select>
+								                    	</div>
+							                		</div>
+													<div class="form-group row">
+														<label class="col-sm-3 col-form-label">Name</label>
+														<div class="col-sm-9">
+															<input type="text" class="form-control" name="name" value="{{ param[i][2] }}">
+														</div>
+													</div>
+													<div class="form-group row">
+														<label class="col-sm-3 col-form-label">Parameter</label>
+														<div class="col-sm-9">
+															<input type="text" class="form-control" name="param" value="{{ param[i][3] }}">
+														</div>
+													</div>
+												</div>
+												<div class="modal-footer justify-content-between">
+													<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+													<button type="submit" class="btn btn-dark">Update</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+								<div class="modal fade" id="modal-delete-param{{ param[i][0] }}">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title">Confirmation Delete</h5>
+												<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+											<div class="modal-body">
+												<p>Are you sure to delete Parameter <b>{{ param[i][2] }}</b>?</p>
+											</div>
+											<div class="modal-footer justify-content-between">
+												<button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+												<a href="/param/delete/{{ param[i][0] }}"><button type="button" class="btn btn-dark">Yes</button></a>
+											</div>
+										</div>
+									</div>
+								</div>
+								{% endfor %}
+						 	</tbody>
+						</table>
+						<br><hr>
+						<div class="modal fade" id="modal-group">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<form class="form-horizontal" method="POST" action="/group/add">
+										<div class="modal-header">
+											<h5 class="modal-title">Add Group Sensor</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<div class="form-group row">
+												<label class="col-sm-3 col-form-label">Name</label>
+												<div class="col-sm-8">
+													<input type="text" class="form-control" name="name">
+												</div>
+											</div>
+											<div class="form-group row">
+												<label class="col-sm-3 col-form-label">Interval</label>	
+												<div class="col-sm-4">
+													<input type="text" name="interval" class="form-control">
+												</div>&nbsp;
+												<div class="col-sm-4">
+													<select name="unit" class="form-control">
+														<option value="1">Seconds</option>  
+														<option value="2">Minutes</option>
+														<option value="3">Hours</option>                   
+													</select>
+												</div>
+											</div>
+											<div class="form-group row">
+												<label class="col-sm-3 col-form-label">Frekuensi</label>
+												<div class="col-sm-4">
+													<input type="text" class="form-control" name="frekuensi">
+												</div>
+											</div>
+				                   		</div>
+										<div class="modal-footer justify-content-between">
+											<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+											<button type="submit" class="btn btn-dark">Add</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<h6><b>Group Sensor Table</b></h6>
+						<a href="" data-toggle="modal" data-target="#modal-group" role="button"><button type="button" class="btn btn-sm btn-dark float-left"><i class="fas fa-plus"></i> Add</button></a>
+						<table id="TABLE_2" class="table table-bordered table-hover">
+							<thead>
+								<tr align="center">
+									<th width="10%">Group ID</th>
+									<th>Name</th>
+									<th>Interval</th>
+									<th>Frekuensi</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+							    {% for i in range(group|length) %}
+								<tr align="center">
+									<td>{{ group[i][0] }}</td>
+									<td>{{ group[i][1] }}</td>
+									<td>{{ group[i][2] }}
+										 {% if group[i][3] == 1 %}{{ 'Seconds' }}
+										 {% elif group[i][3] == 2 %}{{ 'Minutes' }}
+										 {% else %}{{ 'Hours' }}{% endif %}								
+									</td>
+									<td width="10%">{{ group[i][4] }}</td>
+									<td>
+										<a href="" data-toggle="modal" data-target="#modal-edit-group{{ group[i][0] }}" role="button"><i class="nav-icon fas fa-edit"></i></a>
+										<a href="" data-toggle="modal" data-target="#modal-delete-group{{ group[i][0] }}" role="button"><i class="nav-icon fas fa-trash"></i></a>
+									</td>
+								</tr>
+								<div class="modal fade" id="modal-edit-group{{ group[i][0] }}">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<form class="form-horizontal" method="POST" action="/group/update/{{ group[i][0] }}">
+												<div class="modal-header">
+													<h5 class="modal-title">Update Group <b>{{ group[i][1] }}</b></h5>
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<div class="modal-body">
+													<div class="form-group row">
+														<label class="col-sm-3 col-form-label">Name</label>
+														<div class="col-sm-9">
+															<input type="text" class="form-control" name="name" value="{{ group[i][1] }}">
+														</div>
+													</div>
+													<div class="form-group row">
+								                    	<label class="col-sm-3 col-form-label">Interval</label>
+								                    	<div class="col-sm-4">
+									                        <input type="text" name="interval" class="form-control" value="{{ group[i][2] }}">
+								                    	</div>&nbsp;
+								                    	<div class="col-sm-4">
+								                    		<select name="unit" class="form-control">
+									                      		<option value="1" {% if group[i][3] == 1 %}{{ 'selected' }}{% endif %}>Seconds</option>  
+									                      		<option value="2" {% if group[i][3] == 2 %}{{ 'selected' }}{% endif %}>Minutes</option>
+									                      		<option value="3" {% if group[i][3] == 3 %}{{ 'selected' }}{% endif %}>Hours</option>                   
+								                    		</select>
+								                    	</div>
+							                		</div>
+							                		<div class="form-group row">
+														<label class="col-sm-3 col-form-label">Frekuensi</label>
+														<div class="col-sm-4">
+															<input type="text" class="form-control" name="frekuensi" value="{{ group[i][4] }}">
+														</div>
+													</div>
+													<input type="hidden" class="form-control" name="service_id" value="{{ group[i][5] }}">
+												</div>
+												<div class="modal-footer justify-content-between">
+													<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+													<button type="submit" class="btn btn-dark">Update</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+								<div class="modal fade" id="modal-delete-group{{ group[i][0] }}">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title">Confirmation Delete</h5>
+												<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+											<div class="modal-body">
+												<p>Are you sure to delete Group <b>{{ group[i][1] }}</b>?</p>
+											</div>
+											<div class="modal-footer justify-content-between">
+												<button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+												<a href="/group/delete/{{ group[i][0] }}"><button type="button" class="btn btn-dark">Yes</button></a>
+											</div>
+										</div>
+									</div>
+								</div>
+								{% endfor %}
+							 </tbody>
+						</table>
+					</div>
+
+				   <div class="tab-pane fade" id="custom-tabs-one-actuator" role="tabpanel" aria-labelledby="custom-tabs-one-actuator-tab">
+						Actuator
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

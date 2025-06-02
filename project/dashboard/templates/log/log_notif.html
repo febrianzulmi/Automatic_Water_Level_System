@@ -1,0 +1,236 @@
+{% extends "base.html" %} {% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <form method="POST" action="/log/notif">
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <input type="date" class="form-control" name="date1" autocomplete="off" value="{{date1}}">
+                </div>
+                <div class="col-sm-2">
+                    <input type="time" class="form-control" name="time1" autocomplete="off" value="{{time1}}">
+                </div>
+                <div class="col-sm-2">
+                    <input type="date" class="form-control" name="date2" autocomplete="off" value="{{date2}}">
+                </div>
+                <div class="col-sm-2">
+                    <input type="time" class="form-control" name="time2" autocomplete="off" value="{{time2}}">
+                </div>
+                <input type="hidden" name="action" value="filter" />
+                <button type="submit" class="btn btn-primary float-right"><i class="fas fa-search"
+                        title="Search"></i></button>
+        </form>&nbsp;&nbsp;
+        <form method="POST" action="/log/notif">
+            <input type="hidden" name="date1" value="" />
+            <input type="hidden" name="time1" value="" />
+            <input type="hidden" name="date2" value="" />
+            <input type="hidden" name="time2" value="" />
+            <input type="hidden" name="action" value="filter" />
+            <button type="submit" class="btn btn-primary float-right" title="No Filter">
+                <font style="font-size:17px">All</font></i>
+            </button>
+        </form>
+    </div>
+</div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group row">
+            <div class="col-sm-12">
+                <input type="text" class="form-control" style="font-weight: bold; text-align:center;" disabled
+                    value="{{ logNotifData|length }} Data">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card card-dark">
+            <div class="card-header">
+                <h3 class="card-title">Notification Log</h3>
+                <div class="card-tools">
+                    <div class="row">
+                        {% if sessionData['level'] == 1 %}
+                        <a href="" data-toggle="modal" data-target="#modals-upload" role="button"><button type="button"
+                                class="btn btn-tool"><i class="fas fa-upload" title="Upload"></i></button></a>
+                        {% endif %}
+                        <form method="POST" action="/log/notif">
+                            {% set datetimes1 = date1 + " " + time1 %}
+                            {% set datetimes2 = date2 + " " + time2 %}
+                            <input type="hidden" name="date1" value="{{ date1 }}" />
+                            <input type="hidden" name="time1" value="{{ time1 }}" />
+                            <input type="hidden" name="date2" value="{{ date2 }}" />
+                            <input type="hidden" name="time2" value="{{ time2 }}" />
+                            <input type="hidden" name="action" value="download" />
+                            <button type="submit" class="btn btn-tool"><i class="fas fa-download"
+                                    title="Download"></i></button>
+                        </form>
+                        {% if sessionData['level'] == 1 %}
+                        <a href="" data-toggle="modal" data-target="#modals-delete" role="button"><button type="button"
+                                class="btn btn-tool"><i class="fas fa-trash" title="Delete"></i></button></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="modals-upload">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Upload Notification File Log</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" action="/log/notif" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="hidden" name="date1" value="{{ date1 }}" />
+                                            <input type="hidden" name="time1" value="{{ time1 }}" />
+                                            <input type="hidden" name="date2" value="{{ date2 }}" />
+                                            <input type="hidden" name="time2" value="{{ time2 }}" />
+                                            <input type="hidden" name="action" value="upload" />
+                                            <input type="file" class="custom-file-input" name="file" accept=".csv">
+                                            <label class="custom-file-label">Choose file</label>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <input type="submit" class="input-group-text" value="Upload">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="modals-delete">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirmation Delete</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {% set datetime1 = date1 + " " + time1 %}
+                            {% set datetime2 = date2 + " " + time2 %}
+                            {% if datetime1 == ' ' and datetime2 == ' ' %}
+                            <p>Are you sure to delete <b>All Notification Data</b>?</p>
+                            {% else %}
+                            <p>Are you sure to delete Notification Data <b>between {{ datetime1 }} and {{ datetime2
+                                    }}</b>?</p>
+                            {% endif %}
+                        </div>
+                        <form method="POST" action="/log/notif">
+                            <div class="modal-footer justify-content-between">
+                                <input type="hidden" name="date1" value="{{ date1 }}" />
+                                <input type="hidden" name="time1" value="{{ time1 }}" />
+                                <input type="hidden" name="date2" value="{{ date2 }}" />
+                                <input type="hidden" name="time2" value="{{ time2 }}" />
+                                <input type="hidden" name="action" value="delete" />
+                                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                <button type="submit" class="btn btn-primary">Yes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="TABLE_1" class="table table-bordered table-hover">
+                    <thead>
+                        <tr align="center">
+                            <th width="5%">No</th>
+                            <th>Type</th>
+                            <th>Source</th>
+                            <th>Condition</th>
+                            <th>Notification</th>
+                            <th>State</th>
+                            <th>Create Time</th>
+                            <th>Send Time</th>
+                            {% if sessionData['level'] == 1 %}<th width="5%">Action</th>{% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in range(logNotifData|length) %}
+                        <tr align="center">
+                            <td>{{ i+1 }}</td>
+                            <td>{{ logNotifData[i]['type'] }}</td>
+                            <td>{{ logNotifData[i]['sensor'] }}</td>
+                            <td>{{ logNotifData[i]['conditions'] }}</td>
+                            <td>{{ logNotifData[i]['notif'] }}</td>
+                            <td>{{ logNotifData[i]['state'] }}</td>
+                            <td>{{ logNotifData[i]['create_time'] }}</td>
+                            <td>{% if logNotifData[i]['send_time'] == None %}{{ "-" }}{% else %}{{
+                                logNotifData[i]['send_time'] }}{%
+                                endif %}</td>
+                            {% if sessionData['level'] == 1 %}
+                            <td>
+                                <a href="" data-toggle="modal" data-target="#modal-delete{{ logNotifData[i]['id'] }}"
+                                    role="button"><i class="nav-icon fas fa-trash"></i></a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <div class="modal fade" id="modal-delete{{ logNotifData[i]['id'] }}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form class="form-horizontal" method="POST" action="/log/notif">
+                                        <input type="hidden" name="action" value="deleteOne">
+                                        <input type="hidden" name="date1" value="{{ date1 }}" />
+                                        <input type="hidden" name="time1" value="{{ time1 }}" />
+                                        <input type="hidden" name="date2" value="{{ date2 }}" />
+                                        <input type="hidden" name="time2" value="{{ time2 }}" />
+                                        <input type="hidden" name="idLog" value="{{ logNotifData[i]['id'] }}">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirmation Delete</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure to delete Data Number <b>{{ i+1 }}</b></p>
+                                        </div>
+                                        <div class="modal-footer justify-content-between">
+                                            <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">No</button>
+                                            <button type="submit" class="btn btn-primary">Yes</button>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    $(function () {
+        bsCustomFileInput.init();
+    });
+</script>
+{% endblock %}
+
+
+{% block toast %}
+{% if result['state'] != '' %}
+<script>
+    $(function () {
+        var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 5000
+        });
+        Toast.fire({
+            icon: "{% if result['state'] == '0' %}{{ 'error' }}{% elif result['state'] == '1' %}{{ 'success' }}{% elif result['state'] == '2' %}{{ 'warning' }}{% endif %}",
+            title: "&nbsp;&nbsp;{{ result['message'] }}"
+        })
+    });
+</script>
+{% endif %}
+{% endblock %}

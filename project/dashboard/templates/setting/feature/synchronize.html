@@ -1,0 +1,71 @@
+{% block synchronize %}
+<div class="tab-pane fade {% if 'sync' in tab %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-sync"
+    role="tabpanel" aria-labelledby="custom-tabs-one-sync-tab">
+    <form class="form-horizontal" method="POST" action="/setting/feature">
+        <input type="hidden" name="tab" value="sync">
+        <div class="form-group row">
+            <label class="col-sm-2">Synchronize from Server</label>
+            <div class="col-sm-2">
+                <div class="form-group clearfix">
+                    <div class="icheck-primary d-inline">
+                        <input type="radio" id="syncYes" name="synchronize" value="1" {% if
+                            feature_setting['synchronize']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="syncYes">Yes</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="radio" id="syncNo" name="synchronize" value="0" {% if
+                            feature_setting['synchronize']=='0' %}{{ 'checked' }}{% endif %}>
+                        <label for="syncNo">No</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2"></div>
+            <label class="col-sm-2 col-form-label">Synchronize Interval</label>
+            <div class="col-sm-1">
+                <input type="text" name="synchronizeInterval" class="form-control" required autocomplete="off"
+                    value="{{ feature_setting['synchronizeInterval'] }}">
+            </div>&nbsp;
+            <div class="col-sm-2">
+                <select name="synchronizeUnit" class="form-control" required autocomplete="off">
+                    <option value="1" {% if feature_setting['synchronizeUnit']=='1' %}{{ 'selected' }}{% endif %}>Seconds
+                    </option>
+                    <option value="2" {% if feature_setting['synchronizeUnit']=='2' %}{{ 'selected' }}{% endif %}>Minutes
+                    </option>
+                    <option value="3" {% if feature_setting['synchronizeUnit']=='3' %}{{ 'selected' }}{% endif %}>Hours
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2">Synchronize Option</label>
+            <div class="col-sm-8">
+                <div class="form-group clearfix">
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="syncNode" value="1" name="syncNode" {% if feature_setting['syncNode']=='1'
+                            %}{{ 'checked' }}{% endif %}>
+                        <label for="syncNode">Node</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="syncSensor" value="1" name="syncSensor" {% if
+                            feature_setting['syncSensor']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="syncSensor">Sensor</label>
+                    </div>
+                    &nbsp;
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="syncActuator" value="1" name="syncActuator" {% if
+                            feature_setting['syncActuator']=='1' %}{{ 'checked' }}{% endif %}>
+                        <label for="syncActuator">Actuator</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <a href="/setting/feature?tab=sync" role="button">
+            <button type="button" class="btn btn-default">Refresh</button>
+        </a>
+        <button type="submit" class="btn btn-primary float-right">Submit</button>
+    </form>
+</div>
+{% endblock %}

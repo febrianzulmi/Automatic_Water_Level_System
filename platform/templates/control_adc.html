@@ -1,0 +1,46 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-info">
+			<div class="card-header">
+				<h3 class="card-title">ADC Control</h3>
+				<div class="card-tools">
+          <a href="/do/clear/adc"><i class="nav-icon fas fa-sync-alt btn-tool" title="Clear"></i></a> 
+				</div> 
+			</div>
+			<div class="card-body">
+			  <form class="form-horizontal" method="POST" action="/control/adc">
+							<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Analog Pin Number</label>
+									<div class="col-sm-2">
+						       <select name="pin" class="form-control" required>
+				              <option value="0" {% if pin|string == '0' %}{{ 'selected' }}{% endif %}>Analog 0</option>
+				              <option value="1" {% if pin|string == '1' %}{{ 'selected' }}{% endif %}>Analog 1</option>
+				              <option value="2" {% if pin|string == '2' %}{{ 'selected' }}{% endif %}>Analog 2</option>  
+				              <option value="3" {% if pin|string == '3' %}{{ 'selected' }}{% endif %}>Analog 3</option>  
+				           </select>
+									</div>
+							</div>
+							<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Gain</label>
+									<div class="col-sm-2">
+						       <select name="gain" class="form-control" required>
+				              <option value="0" {% if gain|string == '0' %}{{ 'selected' }}{% endif %}>2/3 | +/-6.144V</option>
+				              <option value="1" {% if gain|string == '1' %}{{ 'selected' }}{% endif %}>1 | +/-4.096V</option>
+				              <option value="2" {% if gain|string == '2' %}{{ 'selected' }}{% endif %}>2 | +/-2.048V</option>  
+				              <option value="4" {% if gain|string == '4' %}{{ 'selected' }}{% endif %}>4 | +/-1.024V</option>  
+				              <option value="8" {% if gain|string == '8' %}{{ 'selected' }}{% endif %}>8 | +/-0.512V</option>  
+				              <option value="16" {% if gain|string == '16' %}{{ 'selected' }}{% endif %}>16 | +/-0.256V</option>
+				           </select>
+									</div>
+							</div>
+							<button type="submit" class="btn btn-info float-right">Run</button>
+						</form><br><br>
+						<hr>
+						<b>Result</b><br>
+					  {% for i in range(result|length) %} {{ result[i] }} <br>{% endfor %}</div>
+			</div>	
+		</div>
+	</div>
+</div>
+ {% endblock %}

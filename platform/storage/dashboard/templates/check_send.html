@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-dark">
+			<div class="card-header">
+				<h3 class="card-title">Send Check</h3>
+			</div>
+			<div class="card-body">
+				  <form class="form-horizontal" method="POST" action="/check/send">
+					<div class="form-group row">
+						<div class="col-sm-4">
+							<select name="tipe" class="form-control" {% if project_gateway == 0 and project_node == 0 %}{{'disabled'}}{% endif %} required>
+							<option value="">--- Choose Data ---</option>
+							{% if project_gateway == 1 and project_node == 1 %}
+								<option value="node">Node Data</option>
+								<option value="gateway">Gateway Data</option>
+						  {% else %}
+						    {% if project_gateway == 1%}
+						    <option value="gateway">Gateway Data</option>
+						    {% endif %}
+						    {% if project_node == 1%}
+						    <option value="node">Node Data</option>
+						    {% endif %}
+						  {% endif %}
+							</select>
+						</div>	
+						<button type="submit" class="btn btn-dark float-right" {% if project_gateway == 0 and project_node == 0 %}{{'disabled'}}{% endif %}>Run</button> 
+					</div> 
+					</form>
+					<b>Result</b> <br>
+					{% for i in range(result|length) %}
+             {{ result[i] }}
+          <br>
+          {% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

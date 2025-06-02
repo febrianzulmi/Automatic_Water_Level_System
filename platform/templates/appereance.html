@@ -1,0 +1,169 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+	  <div class="card card-info card-tabs">
+     <div class="card-header p-0 pt-1">
+      <ul class="nav nav-tabs" id="custom-content-header-tab" role="tablist">
+			  <li class="nav-item">
+			    <a class="nav-link {% if page == '1' %}{{ 'active' }}{% endif %}" id="custom-content-header-wallpaper-tab" data-toggle="pill" href="#custom-content-header-wallpaper" role="tab" aria-controls="custom-content-header-wallpaper" aria-selected="true">Wallpaper</a>
+				</li>
+				<li class="nav-item">
+				  <a class="nav-link {% if page == '2' %}{{ 'active' }}{% endif %}" id="custom-content-header-splash-tab" data-toggle="pill" href="#custom-content-header-splash" role="tab" aria-controls="custom-content-header-splash" aria-selected="false">Splash</a>
+				</li>
+				<li class="nav-item">
+				  <a class="nav-link {% if page == '3' %}{{ 'active' }}{% endif %}" id="custom-content-header-menu-tab" data-toggle="pill" href="#custom-content-header-menu" role="tab" aria-controls="custom-content-header-menu" aria-selected="false">Menu Logo</a>
+				</li>
+			</ul> 
+    </div>
+    <div class="card-body">
+      <div class="tab-content" id="custom-content-header-tab">
+         <div class="tab-pane fade {% if page == '1' %}{{ 'show active' }}{% endif %}" id="custom-content-header-wallpaper" role="tabpanel" aria-labelledby="custom-content-header-wallpaper-tab">
+		         <center>
+           <div class="filtr-item col-sm-2" data-category="1" data-sort="Wallpaper">
+             <a href="../static/img/wallpaper.jpg" data-toggle="lightbox" data-title="Wallpaper">
+               <img src="../static/img/wallpaper.jpg" class="img-fluid mb-2" alt="Wallpaper"/>
+             </a>
+           </div>
+           <div class="modal fade" id="modals-upload">
+												<div class="modal-dialog">
+													<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title">Upload Wallpaper</h5>
+																<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+																				<span aria-hidden="true">&times;</span>
+																</button>
+														</div>
+														<div class="modal-body">
+																		<form method="POST" action="/setting/appereance" enctype="multipart/form-data">
+																<div class="form-group">
+																	<div class="input-group">
+																		<div class="custom-file">
+																			<input type="file" class="custom-file-input" name="file" accept="image/*" required>
+																			<label class="custom-file-label">Choose Image</label>
+																		</div>
+																		<div class="input-group-append">
+																			<input type="submit" class="input-group-text" value="Upload">
+																			<input type="hidden" name="page" value="1">
+																		</div>
+																	</div>
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+           <a href="" data-toggle="modal" data-target="#modals-upload" role="button">
+												<button type="button" class="btn btn-info">Change</button>
+											</a>	
+		        </center>
+		       </div>
+         <div class="tab-pane fade {% if page == '2' %}{{ 'show active' }}{% endif %}" id="custom-content-header-splash" role="tabpanel" aria-labelledby="custom-content-header-splash-tab">
+		       <center>
+           <div class="filtr-item col-sm-2" data-category="1" data-sort="Splash">
+             <a href="../static/img/splash.png" data-toggle="lightbox" data-title="Splash">
+               <img src="../static/img/splash.png" class="img-fluid mb-2" alt="Splash"/>
+             </a>
+           </div>
+           <div class="modal fade" id="modals-splash">
+												<div class="modal-dialog">
+													<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title">Upload Splash</h5>
+																<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+																				<span aria-hidden="true">&times;</span>
+																</button>
+														</div>
+														<div class="modal-body">
+																		<form method="POST" action="/setting/appereance" enctype="multipart/form-data">
+																<div class="form-group">
+																	<div class="input-group">
+																		<div class="custom-file">
+																			<input type="file" class="custom-file-input" name="file" accept="image/*" required>
+																			<label class="custom-file-label">Choose Image</label>
+																			<input type="hidden" name="page" value="2">
+																		</div>
+																		<div class="input-group-append">
+																			<input type="submit" class="input-group-text" value="Upload">
+																		</div>
+																	</div>
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+           <a href="" data-toggle="modal" data-target="#modals-splash" role="button">
+												<button type="button" class="btn btn-info">Change</button>
+											</a>	
+		        </center>
+		       </div>
+		       <div class="tab-pane fade {% if page == '3' %}{{ 'show active' }}{% endif %}" id="custom-content-header-menu" role="tabpanel" aria-labelledby="custom-content-header-menu-tab">
+		       <center>
+           <div class="filtr-item col-sm-2" data-category="1" data-sort="Menu Logo">
+             <a href="../static/img/menu.png" data-toggle="lightbox" data-title="Menu Logo">
+               <img src="../static/img/menu.png" class="img-fluid mb-2" alt="Menu Logo"/>
+             </a>
+           </div>
+           <div class="modal fade" id="modals-menu">
+												<div class="modal-dialog">
+													<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title">Upload Menu Logo</h5>
+																<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+																				<span aria-hidden="true">&times;</span>
+																</button>
+														</div>
+														<div class="modal-body">
+															<form method="POST" action="/setting/appereance" enctype="multipart/form-data">
+																<div class="form-group">
+																	<div class="input-group">
+																		<div class="custom-file">
+																			<input type="file" class="custom-file-input" name="file" accept="image/*" required>
+																			<label class="custom-file-label">Choose Image</label>
+																			<input type="hidden" name="page" value="3">
+																		</div>
+																		<div class="input-group-append">
+																			<input type="submit" class="input-group-text" value="Upload">
+																		</div>
+																	</div>
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+           <a href="" data-toggle="modal" data-target="#modals-menu" role="button">
+												<button type="button" class="btn btn-info">Change</button>
+											</a>	
+		        </center>
+		       </div> 		               
+      </div>
+    </div>
+  </div>		
+</div>
+{% endblock %}
+{% block lightbox %}
+<script>
+  $(function () {
+    $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+      event.preventDefault();
+      $(this).ekkoLightbox({
+        alwaysShowClose: true
+      });
+    });
+
+    $('.filter-container').filterizr({gutterPixels: 3});
+    $('.btn[data-filter]').on('click', function() {
+      $('.btn[data-filter]').removeClass('active');
+      $(this).addClass('active');
+    });
+  })
+</script>
+ {% endblock %}
+ {% block script %}
+<script>
+$(function () {
+  bsCustomFileInput.init();
+});
+</script>
+ {% endblock %}

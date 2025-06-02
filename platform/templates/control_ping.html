@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-info">
+			<div class="card-header">
+				<h3 class="card-title">Ping Control</h3>
+				<div class="card-tools">
+          <a href="/do/clear/ping"><i class="nav-icon fas fa-sync-alt btn-tool" title="Clear"></i></a> 
+				</div> 
+			</div>
+				<div class="card-body">
+				  <form class="form-horizontal" method="POST" action="/control/ping">
+					<div class="form-group row">
+						<div class="col-sm-11">
+							<input type="text" class="form-control" name="ip" value="{{ip}}"placeholder="Enter IP or DNS"></div>
+							<button type="submit" class="btn btn-info float-right">Run</button> 
+					</div> 
+					</form>
+					<b>Result</b> <br>
+					{% for i in range(result|length) %}
+             {{ result[i] }}
+          <br>
+          {% endfor %}
+				</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

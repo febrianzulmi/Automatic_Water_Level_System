@@ -1,0 +1,58 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-dark">
+			<div class="card-header">
+				Device Setting
+			</div>			
+			<div class="card-body">
+				<form class="form-horizontal" method="POST" action="/setting/device">
+					<div class="form-group row">
+						<label class="col-sm-2 col-form-label">Device UID</label>
+						<div class="col-sm-4">
+							<input type="text" class="form-control" name="deviceUID" value="{{ deviceSetting['uid'] }}" required autocomplete="off">
+						</div>
+					</div>
+					<div class="form-group row">
+						<label class="col-sm-2 col-form-label">Name</label>
+						<div class="col-sm-4">
+							<input type="text" class="form-control" name="deviceName" value="{{ deviceSetting['name'] }}" required autocomplete="off">
+						</div>
+					</div>
+					<div class="form-group row">
+						<label class="col-sm-2 col-form-label">Version</label>
+						<div class="col-sm-4">
+							<input type="text" class="form-control" name="deviceVersion" value="{{ deviceSetting['version'] }}" required autocomplete="off">
+						</div>
+					</div>
+					<hr>
+					<a href="/setting/device" role="button">
+						<button type="button" class="btn btn-default">Refresh</button>
+					</a>
+					<button type="submit" class="btn btn-primary float-right">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block toast %}
+{% if result['state'] != '' %}
+<script>
+	$(function () {
+		var Toast = Swal.mixin({
+			toast: true,
+			position: 'top-end',
+			showConfirmButton: false,
+			timer: 5000
+		});
+		Toast.fire({
+			icon: "{% if result['state'] == '0' %}{{ 'error' }}{% elif result['state'] == '1' %}{{ 'success' }}{% endif %}",
+			title: "&nbsp;&nbsp;{{ result['message'] }}"
+		})
+	});
+</script>
+{% endif %}
+{% endblock %}

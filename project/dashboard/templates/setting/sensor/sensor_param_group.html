@@ -1,0 +1,248 @@
+{% block sensor_param_group %}
+
+<div class="tab-pane fade {% if tab == 'sensor-management-param-group' %}show active{% endif %}"
+            id="custom-content-env-sensor-management-param-group" role="tabpanel"
+            aria-labelledby="custom-content-env-sensor-management-param-group-tab">
+            <br>
+            <div class="row col-md-12">
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#modal-sensor-parameter-group-add">
+                    <i class="fas fa-plus" title="Add"></i> Add
+                </button>
+                &nbsp;&nbsp;
+                <a href="/setting/sensor?tab=sensor-management-param-group" role="button">
+                    <button type="button" class="btn btn-default">
+                        <i class="fas fa-sync" title="Refresh"></i> Refresh
+                    </button>
+                </a>
+            </div>
+
+            <div class="modal fade" id="modal-sensor-parameter-group-add" tabindex="-1" role="dialog"
+                aria-labelledby="modalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/sensor">
+                            <input type="hidden" name="tab" value="sensor-management-param-group">
+                            <input type="hidden" name="action" value="sensorParamGroupAdd">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    Add Parameter Group Sensor
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Group Sensor</label>
+                                    <div class="col-sm-9">
+                                        <select name="group_id" class="form-control" required
+                                            autocomplete="off">
+                                            {% for itemGroup in range(sensorGroup|length) %}
+                                            <option value="{{ sensorGroup[itemGroup]['id'] }}">
+                                                {{sensorGroup[itemGroup]['name']}}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Name</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="name" required
+                                            autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Parameter</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="parameter" required autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Value</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="value" required autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default"
+                                    data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <form class="form-horizontal" method="POST" action="/setting/sensor">
+                <div class="form-group row">
+                    <input type="hidden" name="tab" value="sensor-management-param-group">
+                    <input type="hidden" name="action" value="sensorParamGroupFilter">
+                    <div class="col-sm-4">
+                        <select name="groupID2" class="form-control" required autocomplete="off">
+                            <option value="All">--- All Group Sensor ---</option>
+                            {% for itemGroup2 in range(sensorGroup|length) %}
+                            <option value="{{ sensorGroup[itemGroup2]['id']}}" {% if sensorGroup[itemGroup2]['id']|string==groupID2|string %}{{ "selected" }}{% endif %}>{{ sensorGroup[itemGroup2]['name']}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-filter" title="Filter"></i></button>
+                </div>
+            </form>
+
+            <table id="TABLE_4" class="table table-bordered table-hover">
+                <thead>
+                    <tr align="center">
+                        <th width="15%">Group Sensor</th>
+                        <th>Name</th>
+                        {% if sessionData['level'] == 1 %}
+                        <th>Parameter</th>
+                        {% endif %}
+                        <th>Value</th>
+                        <th width="10%">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for itemParam in range(parameterGroup|length) %}
+                    <tr align="center">
+                        <td>{{ parameterGroup[itemParam]['name'] }}</td>
+                        <td>{{ parameterGroup[itemParam]['name_param'] }}</td>
+                        {% if sessionData['level'] == 1 %}
+                        <td>{{ parameterGroup[itemParam]['parameter'] }}</td>
+                        {% endif %}
+                        <td>{{ parameterGroup[itemParam]['value'] }}</td>
+                        <td>
+                            <a href="" data-toggle="modal" data-target="#modal-edit-paramGroup{{ parameterGroup[itemParam]['id_param'] }}" role="button">
+                                <i class="nav-icon fas fa-edit">
+                                    <!-- Button Edit -->
+                                </i>
+                            </a>
+                            &nbsp;
+                            {% if sessionData['level'] == 1 %}
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-delete-paramGroup{{ parameterGroup[itemParam]['id_param'] }}" role="button">
+                                <i class="nav-icon fas fa-trash">
+                                    <!-- Button Delete -->
+                                </i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <div class="modal fade" id="modal-edit-paramGroup{{ parameterGroup[itemParam]['id_param'] }}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/sensor">
+                                    <input type="hidden" name="tab" value="sensor-management-param-group">
+                                    <input type="hidden" name="action" value="sensorParamGroupUpdate">
+                                    <input type="hidden" name="id" value="{{ parameterGroup[itemParam]['id_param'] }}">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Update Parameter
+                                            <b>{{ parameterGroup[itemParam]['name_param'] }}</b>
+                                            of Group Sensor
+                                            <b>{{ parameterGroup[itemParam]['name'] }}</b>
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="groupID2" value="{{ groupID2 }}">
+                                        {% if sessionData['level'] == 1 %}
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">
+                                                Group Sensor
+                                            </label>
+                                            <div class="col-sm-9">
+                                                <select name="group_id" class="form-control"
+                                                    required autocomplete="off">
+                                                    {% for itemGroup3 in range(sensorGroup|length) %}
+                                                    <option value="{{ sensorGroup[itemGroup3]['id'] }}" {% if sensorGroup[itemGroup3]['id']==parameterGroup[itemParam]['group_id'] %}{{ 'selected' }}{% endif %}> 
+                                                        {{sensorGroup[itemGroup3]['name']}}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Name</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="name" value="{{ parameterGroup[itemParam]['name_param']  }}" required autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Parameter</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="parameter" value="{{ parameterGroup[itemParam]['parameter'] }}" required autocomplete="off">
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <input type="hidden" name="group_id" value="{{ parameterGroup[itemParam]['group_id'] }}">
+                                        <input type="hidden" name="name" value="{{ parameterGroup[itemParam]['name_param'] }} ">
+                                        <input type="hidden" name="parameter" value="{{ parameterGroup[itemParam]['parameter'] }}">
+                                        {% endif %}
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Value</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="value" value="{{ parameterGroup[itemParam]['value'] }}" required autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modal-delete-paramGroup{{ parameterGroup[itemParam]['id_param'] }}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/sensor">
+                                    <input type="hidden" name="tab" value="sensor-management-param-group">
+                                    <input type="hidden" name="action" value="sensorParamGroupDelete">
+                                    <input type="hidden" name="id" value="{{ parameterGroup[itemParam]['id_param'] }}">
+                                    <input type="hidden" name="name" value="{{ parameterGroup[itemParam]['name_param'] }}">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Confirmation Delete
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="groupID2" value="{{ groupID2 }}">
+                                        <p>
+                                            Are you sure to delete Parameter
+                                            <b>
+                                                {{
+                                                parameterGroup[itemParam]['name_param']
+                                                }}
+                                            </b>
+                                            of Group Sensor
+                                            <b>{{ parameterGroup[itemParam]['name'] }}</b>?
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">
+                                            No
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">Yes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+{% endblock %}

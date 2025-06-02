@@ -1,0 +1,114 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-info">
+			<div class="card-header">
+				<h3 class="card-title">Serial Control</h3>
+				<div class="card-tools">
+          <a href="/do/clear/serial"><i class="nav-icon fas fa-sync-alt btn-tool" title="Clear"></i></a> 
+				</div> 
+			</div>
+			<div class="card-body">
+				<ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
+			    <li class="nav-item">
+			     <a class="nav-link {% if task == '0' %}{{ 'active' }}{% endif %}" id="custom-content-below-detect-tab" data-toggle="pill" href="#custom-content-below-detect" role="tab" aria-controls="custom-content-below-detect" aria-selected="true">Detect</a>
+			    </li>
+			    <li class="nav-item">
+			     <a class="nav-link {% if task == '1' %}{{ 'active' }}{% endif %}" id="custom-content-below-read-tab" data-toggle="pill" href="#custom-content-below-read" role="tab" aria-controls="custom-content-below-read" aria-selected="true">Read</a>
+			    </li>
+			    <li class="nav-item">
+			     <a class="nav-link {% if task == '2' %}{{ 'active' }}{% endif %}" id="custom-content-below-write-tab" data-toggle="pill" href="#custom-content-below-write" role="tab" aria-controls="custom-content-below-write" aria-selected="true">Write</a>
+			    </li>
+				</ul> 
+				<div class="tab-content" id="custom-content-below-tabContent">
+					<div class="tab-pane fade {% if task == '0' %}{{ 'show active' }}{% endif %}" id="custom-content-below-detect" role="tabpanel" aria-labelledby="custom-content-below-detect-tab">	
+			      <form class="form-horizontal" method="POST" action="/control/serial">
+				   	<div class="form-group row">
+						  <input type="hidden" name="task" value="0">
+						</div>
+						<button type="submit" class="btn btn-info float-left">Detect Serial Port</button>
+						</form><br><br><hr>
+						<b>Result</b><br>
+						{% for i in range(result|length) %} {{ result[i] }} <br>{% endfor %}
+			    </div>
+					<div class="tab-pane fade {% if task == '1' %}{{ 'show active' }}{% endif %}" id="custom-content-below-read" role="tabpanel" aria-labelledby="custom-content-below-read-tab">
+				  	<br> 
+				  	<form class="form-horizontal" method="POST" action="/control/serial">
+							<div class="form-group row">
+									<label class="col-sm-1 col-form-label">Serial Port</label>
+									<div class="col-sm-3">
+						       <select name="pin" class="form-control" required>
+				              {% if serial|length > 0 %}
+				              {% for i in range(serial|length) %}
+				              <option value="{{ serial[i] }}" {% if pin|string == serial[i] %}{{ 'selected' }}{% endif %}>{{ serial[i] }}</option>
+				              {% endfor %}
+				              {% else %}
+				              <option value="">No Serial Port Detected</option>
+				              {% endif %}
+				           </select>
+									</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-1 col-form-label">Baudrate</label>
+								<div class="col-sm-2">
+									<input type="text" class="form-control" name="rate" value="{{ rate }}" placeholder="Enter Baudrate" required>
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-1 col-form-label">Timeout</label>
+								<div class="col-sm-2">
+									<input type="text" class="form-control" name="timeout" value="{{ timeout }}" placeholder="Seconds" required>
+								</div>
+							</div>
+							<input type="hidden" name="task" value="1">
+							<button type="submit" class="btn btn-info float-right" {% if serial|length == 0 %}{{ 'disabled' }}{% endif %}>Run</button>
+						</form><br><br><hr>
+						<b>Result</b><br>
+					  {% for i in range(result2|length) %} {{ result2[i] }} <br>{% endfor %}
+					</div> 
+					<div class="tab-pane fade {% if task == '2' %}{{ 'show active' }}{% endif %}" id="custom-content-below-write" role="tabpanel" aria-labelledby="custom-content-below-write-tab">	
+			    	<br> 
+				  	<form class="form-horizontal" method="POST" action="/control/serial">
+							<div class="form-group row">
+									<label class="col-sm-1 col-form-label">Serial Port</label>
+									<div class="col-sm-3">
+						       <select name="pin2" class="form-control" required>
+				              {% if serial|length > 0 %}
+				              {% for i in range(serial|length) %}
+				              <option value="{{ serial[i] }}" {% if pin2|string == serial[i] %}{{ 'selected' }}{% endif %}>{{ serial[i] }}</option>
+				              {% endfor %}
+				              {% else %}
+				              <option value="">No Serial Port Detected</option>
+				              {% endif %}
+				           </select>
+									</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-1 col-form-label">Baudrate</label>
+								<div class="col-sm-2">
+									<input type="text" class="form-control" name="rate2" value="{{ rate2 }}" placeholder="Enter Baudrate" required>
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-1 col-form-label">Timeout</label>
+								<div class="col-sm-2">
+									<input type="text" class="form-control" name="timeout2" value="{{ timeout2 }}" placeholder="Seconds" required>
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-1 col-form-label">Data</label>
+								<div class="col-sm-11">
+									<input type="text" class="form-control" name="value" value="{{ value }}" placeholder="Enter Data" required>
+								</div>
+							</div>
+							<input type="hidden" name="task" value="2">
+							<button type="submit" class="btn btn-info float-right" {% if serial|length == 0 %}{{ 'disabled' }}{% endif %}>Run</button>
+						</form><br><br><hr>
+						<b>Result</b><br>
+					  {% for i in range(result3|length) %} {{ result3[i] }} <br>{% endfor %}
+			    </div>
+			</div>	
+		</div>
+	</div>
+</div>
+ {% endblock %}

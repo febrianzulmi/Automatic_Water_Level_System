@@ -1,0 +1,67 @@
+{% block sensor %}
+<div class="tab-pane fade {% if 'sensor-config' in tab %}{{ 'show active' }}{% endif %}"
+    id="custom-tabs-one-sensor-config" role="tabpanel" aria-labelledby="custom-tabs-one-sensor-config-tab">
+
+    {% if 'sensor-config' in tab %}
+    {% set tab_sensor_config = '1' %}
+    {% else %}
+    {% set tab_sensor_config = '0' %}
+    {% endif %}
+    
+    <ul class="nav nav-tabs" id="custom-content-env-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link {% if tab_sensor_config == '1' %}{% if tab == 'sensor-config-group' %}{{ 'active' }}{% endif %}{% elif tab_sensor_config == '0' %}{{ 'active' }}{% endif %}"
+                id="custom-content-env-sensor-config-group-tab" data-toggle="pill"
+                href="#custom-content-env-sensor-config-group" role="tab"
+                aria-controls="custom-content-env-sensor-config-group" aria-selected="false">Configuration</a>
+        </li>
+    </ul>
+    <br>
+    <div class="card-body">
+        <form class="form-horizontal" method="POST" action="/setting/sensor">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Port</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" value="/dev/ttys0" disabled>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Baudrate</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" value="9600" disabled>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Old Modbus ID</label>
+                <div class="col-sm-3">
+                    <input type="number" min="1" max="247" class="form-control" >
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">New Modbus ID</label>
+                <div class="col-sm-3">
+                    <input type="number" min="1" max="247" class="form-control" >
+                </div>
+            </div>
+            <input type="hidden" name="tab" value="sensor-config">
+            <input type="hidden" name="action" value="settingSensorConfig">
+            <button type="submit" class="btn btn-primary float-right" >Run</button>
+        </form>
+        <b>Result</b> <br>
+        {% if hasil %}
+        {% for res in hasil %}
+        {{ res }}<br>
+        {% endfor %}
+        {% else %}
+        <p>No result yet or error occurred.</p>
+        {% endif %}
+
+        <br>
+    </div>
+    <div>
+        <font style="color:red"><b>Note : Make sure only 1 SHT20 Sensor is plug on the port device</b> </font>
+    </div>
+</div>
+    
+</div>
+{% endblock %}

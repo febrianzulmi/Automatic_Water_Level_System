@@ -1,0 +1,163 @@
+{% extends "base.html" %}{% block sidebar %}
+<!-- Main Sidebar Container -->
+	<aside class="main-sidebar sidebar-dark-primary elevation-4">
+	<!-- Brand Logo -->
+	<a href="/" class="brand-link">
+	<img src="../static/img/logo.png" alt="Synapsis" class="brand-image img-circle elevation-3" style="opacity: .8">
+	<span class="brand-text font-weight-light">Synapsis Control</span>
+	</a>
+	<!-- Sidebar Menu -->
+	<nav class="mt-2">
+	<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+		<li class="nav-item {% if rule == "/" %}{{ 'menu-open' }}{%endif%}">
+			<a href="/" class="nav-link {% if rule == "/" %}{{ 'active' }}{%endif%}">
+			<i class="nav-icon fas fa-tachometer-alt"></i>
+			<p>
+				 Dashboard
+			</p>
+			</a>
+		</li>
+		{% if status == 0 %}
+		<li class="nav-item {% if rule == '/login' %}{{ 'menu-open' }}{%endif%}">
+			<a href="/login" class="nav-link {% if rule == "/login" %}{{ 'active' }}{%endif%}">
+			<i class="nav-icon fas fa-user"></i>
+			<p>
+				 Login
+			</p>
+			</a>
+		</li>
+		 {% endif %} {% if status == 1 %}
+		<li class="nav-item {% if 'setting' in rule or 'network' in rule%}{{ 'menu-open' }}{% endif %}">
+			<a href="#" class="nav-link {% if 'setting' in rule or 'network' in rule %}{{ 'active' }}{% endif %}">
+			<i class="nav-icon fas fa-cog"></i>
+			<p>
+				 Setting <i class="right fas fa-angle-left"></i>
+			</p>
+			</a>
+			<ul class="nav nav-treeview">
+				<li class="nav-item">
+					<a href="/setting/identity" class="nav-link {% if rule == '/setting/identity' %}{{ 'active' }}{%endif%}">
+					<i class="nav-icon far fa-circle"></i>
+					<p>
+						 Identity
+					</p>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="/setting/appereance" class="nav-link {% if rule == '/setting/appereance' %}{{ 'active' }}{%endif%}">
+					<i class="nav-icon far fa-circle"></i>
+					<p>
+						 Appereance
+					</p>
+					</a>
+				</li>
+				<li class="nav-item {% if 'network' in rule %}{{ 'menu-open' }}{% endif %}">
+					<a href="#" class="nav-link {% if 'network' in rule %}{{ 'active' }}{% endif %}">
+					<i class="far fa-circle nav-icon"></i>
+					<p>
+						 Network<i class="right fas fa-angle-left"></i>
+					</p>
+					</a>
+					<ul class="nav nav-treeview">
+						 {% for i in range(length) %} {% set a = '/network/'+data[i] %}
+						<li class="nav-item">
+							<a href="{{ a }}" class="nav-link {% if rule == a %}{{ 'active' }}{%endif%}">
+							<i class="far fa-dot-circle nav-icon"></i>
+							<p>
+								 {{ data[i] }}
+							</p>
+							</a>
+						</li>
+						 {% endfor %}
+					</ul>
+				</li>
+				<li class="nav-item">
+					<a href="/setting/ntp" class="nav-link {% if rule == '/setting/ntp' %}{{ 'active' }}{%endif%}">
+					<i class="nav-icon far fa-circle"></i>
+					<p>
+						 NTP
+					</p>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="/setting/project" class="nav-link {% if rule == '/setting/project' %}{{ 'active' }}{%endif%}">
+					<i class="nav-icon far fa-circle"></i>
+					<p>
+						 Project
+					</p>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="/setting/crontab" class="nav-link {% if rule == '/setting/crontab' %}{{ 'active' }}{%endif%}">
+					<i class="nav-icon far fa-circle"></i>
+					<p>
+						 Crontab
+					</p>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="/setting/service" class="nav-link {% if rule == '/setting/service' %}{{ 'active' }}{%endif%}">
+					<i class="nav-icon far fa-circle"></i>
+					<p>
+						 Services
+					</p>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li class="nav-item {% if 'control' in rule %}{{ 'menu-open' }}{% endif %}">
+			<a href="#" class="nav-link {% if 'control' in rule %}{{ 'active' }}{% endif %}">
+			<i class="nav-icon fas fa-terminal"></i>
+			<p>
+				 Control <i class="right fas fa-angle-left"></i>
+			</p>
+			</a>
+			<ul class="nav nav-treeview">
+				<li class="nav-item">
+					<a href="/control/ping" class="nav-link {% if rule == '/control/ping' %}{{ 'active' }}{%endif%}">
+					<i class="nav-icon far fa-circle"></i>
+					<p>
+						 Ping
+					</p>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="/control/ntp" class="nav-link {% if rule == '/control/ntp' %}{{ 'active' }}{%endif%}">
+					<i class="nav-icon far fa-circle"></i>
+					<p>
+						 NTP
+					</p>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="/control/crontab" class="nav-link {% if rule == '/control/crontab' %}{{ 'active' }}{%endif%}">
+					<i class="nav-icon far fa-circle"></i>
+					<p>
+						 Crontab
+					</p>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="/control/service" class="nav-link {% if rule == '/control/service' %}{{ 'active' }}{%endif%}">
+					<i class="nav-icon far fa-circle"></i>
+					<p>
+						 Services
+					</p>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li class="nav-item {% if rule == '/logout' %}{{ 'menu-open' }}{%endif%}">
+			<a href="/logout" class="nav-link {% if rule == '/logout' %}{{ 'active' }}{%endif%}">
+			<i class="nav-icon fas fa-sign-out-alt"></i>
+			<p>
+				 Logout
+			</p>
+			</a>
+		</li>
+		 {% endif %}
+	</ul>
+	</nav>
+	</aside>
+	
+{% endblock %}

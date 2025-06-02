@@ -1,0 +1,258 @@
+{% block sensor_param_list %}
+<div class="tab-pane fade {% if tab == 'sensor-management-param-list' %}show active{% endif %}"
+            id="custom-content-env-sensor-management-param-list" role="tabpanel"
+            aria-labelledby="custom-content-env-sensor-management-param-list-tab">
+            <br>
+            <div class="row col-md-12">
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#modal-sensor-parameter-list-add">
+                    <i class="fas fa-plus" title="Add"></i> Add
+                </button>
+                &nbsp;&nbsp;
+                <a href="/setting/sensor?tab=sensor-management-param-list" role="button">
+                    <button type="button" class="btn btn-default">
+                        <i class="fas fa-sync" title="Refresh"></i> Refresh
+                    </button>
+                </a>
+            </div>
+
+            <div class="modal fade" id="modal-sensor-parameter-list-add" tabindex="-1" role="dialog"
+                aria-labelledby="modalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/sensor">
+                            <input type="hidden" name="tab" value="sensor-management-param-list">
+                            <input type="hidden" name="action" value="sensorParamListAdd">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    Add Parameter List Sensor
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="groupID3" value="{{ groupID3 }}">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">List Sensor</label>
+                                    <div class="col-sm-9">
+                                        <select name="sensor_id" class="form-control" required
+                                            autocomplete="off">
+                                            {% for itemSensor in range(sensorDetail|length) %}
+                                            <option value="{{ sensorDetail[itemSensor]['id'] }}">
+                                                {{ sensorDetail[itemSensor]['name'] }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Name</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="name" required
+                                            autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Parameter</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="parameter"
+                                            required autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Value</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="value"
+                                            required autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default"
+                                    data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <form class="form-horizontal" method="POST" action="/setting/sensor">
+                <div class="form-group row">
+                    <input type="hidden" name="tab" value="sensor-management-param-list">
+                    <input type="hidden" name="action" value="sensorParamListFilter">
+                    <div class="col-sm-4">
+                        <select name="groupID3" class="form-control">
+                            <option value="All">--- All Group Sensor ---</option>
+                            {% for itemSensorGroup in range(sensorGroup|length) %}
+                            <option value="{{ sensorGroup[itemSensorGroup]['id']}}" {% if sensorGroup[itemSensorGroup]['id']|string==groupID3|string %}{{ "selected" }}{% endif %}>
+                                {{ sensorGroup[itemSensorGroup]['name']}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-filter" title="Filter"></i></button>
+                </div>
+            </form>
+
+            <table id="TABLE_4" class="table table-bordered table-hover">
+                <thead>
+                    <tr align="center">
+                        <th width="20%">List Sensor</th>
+                        <th>Name</th>
+                        {% if sessionData['level'] == 1 %}
+                        <th>Parameter</th>
+                        {% endif %}
+                        <th>Value</th>
+                        <th width="10%">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for itemParam in range(parameterList|length) %}
+                    <tr align="center">
+                        <td>{{ parameterList[itemParam]['name'] }}</td>
+                        <td>{{ parameterList[itemParam]['name_param_list'] }}</td>
+                        {% if sessionData['level'] == 1 %}
+                        <td>{{ parameterList[itemParam]['parameter'] }}</td>
+                        {%
+                        endif %}
+                        <td>{{ parameterList[itemParam]['value_param_list'] }}</td>
+                        <td>
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-edit-parameterList{{ parameterList[itemParam]['id_param_value'] }}" role="button">
+                                <i class="nav-icon fas fa-edit">
+                                    <!-- Button Edit -->
+                                </i>
+                            </a>
+                            &nbsp;
+                            {% if sessionData['level'] == 1 %}
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-delete-parameterList{{ parameterList[itemParam]['id_param_value'] }}"
+                                role="button">
+                                <i class="nav-icon fas fa-trash">
+                                    <!-- Button Delete -->
+                                </i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <div class="modal fade" id="modal-edit-parameterList{{ parameterList[itemParam]['id_param_value'] }}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/sensor">
+                                    <input type="hidden" name="tab" value="sensor-management-param-list">
+                                    <input type="hidden" name="action" value="sensorParamListUpdate">
+                                    <input type="hidden" name="id" value="{{ parameterList[itemParam]['id_param_value'] }}"> 
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Update
+                                            Parameter
+                                            <b>{{ parameterList[itemParam]['name_param_list'] }}</b>
+                                            of
+                                            List
+                                            Sensor
+                                            <b>{{ parameterList[itemParam]['name'] }}</b>
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="groupID3" value="{{  groupID3 }}">
+                                        {% if sessionData['level'] == 1 %}
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">List Sensor</label>
+                                            <div class="col-sm-9">
+                                                <select name="sensor_id" class="form-control" required
+                                                    autocomplete="off">
+                                                    {% for itemSensor in range(sensorDetail|length) %}
+                                                    <option value="{{ sensorDetail[itemSensor]['id'] }}" {% if sensorDetail[itemSensor]['sensor_id']==parameterList[itemParam]['sensor_id']
+                                                    %}{{ 'selected' }}{% endif %}>
+                                                    {{ sensorDetail[itemSensor]['name'] }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Name</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="name" value="{{ parameterList[itemParam]['name_param_list'] }}" required autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Parameter</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="parameter" value="{{ parameterList[itemParam]['parameter'] }}" required autocomplete="off">
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <input type="hidden" name="sensor_id"
+                                        value="{{ parameterList[itemParam]['sensor_id'] }}">
+                                        <input type="hidden" name="name" value="{{ parameterList[itemParam]['name_param_list'] }}">
+                                        <input type="hidden" name="parameter" value="{{ parameterList[itemParam]['parameter'] }}">
+                                        {% endif %}
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Value</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="value" value="{{ parameterList[itemParam]['value_param_list']}}" required autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modal-delete-parameterList{{ parameterList[itemParam]['id_param_value'] }}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/sensor">
+                                    <input type="hidden" name="tab" value="sensor-management-param-list">
+                                    <input type="hidden" name="action" value="sensorParamListDelete">
+                                    <input type="hidden" name="id" value="{{ parameterList[itemParam]['id_param_value'] }}"> 
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Confirmation Delete
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="groupID3" value="{{ groupID3 }}">
+                                        <p>Are you
+                                            sure
+                                            to
+                                            delete
+                                            Parameter
+                                            <b>{{ parameterList[itemParam]['name_param_list'] }}</b>
+                                            of
+                                            List
+                                            Sensor
+                                            <b>{{ parameterList[itemParam]['name']
+                                                }}</b>?
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">No</button>
+                                        <button type="submit" class="btn btn-primary">Yes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+{% endblock %}

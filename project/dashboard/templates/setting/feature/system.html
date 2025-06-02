@@ -1,0 +1,181 @@
+{% block system %}
+<div class="tab-pane fade {% if 'system' in tab %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-system" role="tabpanel" aria-labelledby="custom-tabs-one-system-tab">
+    {% if 'system' in tab %}
+    {% set tabServices = '1' %}							
+    {% else %}
+    {% set tabServices = '0' %}
+    {% endif %}
+    <ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link {% if tabServices == '1' %}{% if tab == 'system-service' %}{{ 'active' }}{% endif %}{% elif tabServices == '0' %}{{ 'active' }}{% endif %}" id="custom-content-below-system-service-tab" data-toggle="pill" href="#custom-content-below-system-service" role="tab" aria-controls="custom-content-below-system-service" aria-selected="true">Services</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if tab == 'system-alarm' %}{{ 'active' }}{% endif %}" id="custom-content-below-alarm-tab" data-toggle="pill" href="#custom-content-below-alarm" role="tab" aria-controls="custom-content-below-alarm" aria-selected="true">Alarm</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="custom-content-below-tabContent">
+        <div class="tab-pane fade {% if tabServices == '1' %}{% if tab == 'system-service' %}{{ 'show active' }}{% endif %}{% elif tabServices == '0' %}{{ 'show active' }}{% endif %}" id="custom-content-below-system-service" role="tabpanel" aria-labelledby="custom-content-below-system-service-tab">
+            <br>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <a href="/setting/feature?tab=system-service" role="button">
+                            <button type="button" class="btn btn-default">
+                                <i class="fas fa-sync" title="Refresh"></i>&nbsp;
+                                Refresh
+                            </button>
+                        </a>
+                    </div>
+                    <div class="col-md-12">
+                        <br />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-4">
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-service">
+                            <input type="hidden" name="action" value="start-all-system-service">
+                            <button type="submit" class="btn btn-lg btn-primary btn-block">
+                                <i class="nav-icon fas fa-play"></i>&nbsp;&nbsp;Start All System Services
+                            </button>
+                        </form>
+                        <hr />
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-service">
+                            <input type="hidden" name="action" value="start-all-node-service">
+                            <button type="submit" class="btn btn-lg btn-primary btn-block">
+                                <i class="nav-icon fas fa-play"></i>&nbsp;&nbsp;Start All Node Services
+                            </button>
+                        </form>
+                        <hr />
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-service">
+                            <input type="hidden" name="action" value="start-all-sensor-service">
+                            <button type="submit" class="btn btn-lg btn-primary btn-block">
+                                <i class="nav-icon fas fa-play"></i>&nbsp;&nbsp;Start All Sensor Services
+                            </button>
+                        </form>
+                        <hr />
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-service">
+                            <input type="hidden" name="action" value="start-all-actuator-service">
+                            <button type="submit" class="btn btn-lg btn-primary btn-block">
+                                <i class="nav-icon fas fa-play"></i>&nbsp;&nbsp;Start All Actuator Services
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-service">
+                            <input type="hidden" name="action" value="restart-all-system-service">
+                            <button type="submit" class="btn btn-lg btn-warning btn-block">
+                                <i class="nav-icon fas fa-sync-alt"></i>&nbsp;&nbsp;Restart All System Services
+                            </button>
+                        </form>
+                        <hr />
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-service">
+                            <input type="hidden" name="action" value="restart-all-node-service">
+                            <button type="submit" class="btn btn-lg btn-warning btn-block">
+                                <i class="nav-icon fas fa-sync-alt"></i>&nbsp;&nbsp;Restart All Node Services
+                            </button>
+                        </form>
+                        <hr />
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-service">
+                            <input type="hidden" name="action" value="restart-all-sensor-service">
+                            <button type="submit" class="btn btn-lg btn-warning btn-block">
+                                <i class="nav-icon fas fa-sync-alt"></i>&nbsp;&nbsp;Restart All Sensor Services
+                            </button>
+                        </form>
+                        <hr />
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-service">
+                            <input type="hidden" name="action" value="restart-all-actuator-service">
+                            <button type="submit" class="btn btn-lg btn-warning btn-block">
+                                <i class="nav-icon fas fa-sync-alt"></i>&nbsp;&nbsp;Restart All Actuator Services
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-service">
+                            <input type="hidden" name="action" value="stop-all-system-service">
+                            <button type="submit" class="btn btn-lg btn-danger btn-block">
+                                <i class="nav-icon fas fa-stop"></i>&nbsp;&nbsp;Stop All System Services
+                            </button>
+                        </form>
+                        <hr />
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-service">
+                            <input type="hidden" name="action" value="stop-all-node-service">
+                            <button type="submit" class="btn btn-lg btn-danger btn-block">
+                                <i class="nav-icon fas fa-stop"></i>&nbsp;&nbsp;Stop All Node Services
+                            </button>
+                        </form>
+                        <hr />
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-service">
+                            <input type="hidden" name="action" value="stop-all-sensor-service">
+                            <button type="submit" class="btn btn-lg btn-danger btn-block">
+                                <i class="nav-icon fas fa-stop"></i>&nbsp;&nbsp;Stop All Sensor Services
+                            </button>
+                        </form>
+                        <hr />
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-service">
+                            <input type="hidden" name="action" value="stop-all-actuator-service">
+                            <button type="submit" class="btn btn-lg btn-danger btn-block">
+                                <i class="nav-icon fas fa-stop"></i>&nbsp;&nbsp;Stop All Actuator Services
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade {% if tab == 'system-alarm' %}{{ 'show active' }}{% endif %}" id="custom-content-below-alarm" role="tabpanel" aria-labelledby="custom-content-below-alarm">
+            <br>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <a href="/setting/feature?tab=system-alarm" role="button">
+                            <button type="button" class="btn btn-default">
+                                <i class="fas fa-sync" title="Refresh"></i>&nbsp;
+                                Refresh
+                            </button>
+                        </a>
+                    </div>
+                    <div class="col-md-12">
+                        <br />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-6">
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-alarm">
+                            <input type="hidden" name="action" value="reset-alarm-sensor-only">
+                            <button type="submit" class="btn btn-lg btn-primary btn-block" title="Reset Sensor Alarm">
+                                <i class="nav-icon fas fa-bell"></i>&nbsp;
+                                Reset Alarm Sensor Only
+                            </button>
+                        </form>
+                        <br>
+                        <form method="POST" action="/setting/feature">
+                            <input type="hidden" name="tab" value="system-alarm">
+                            <input type="hidden" name="action" value="reset-alarm-sensor-with-restart">
+                            <button type="submit" class="btn btn-lg btn-primary btn-block" title="Reset Sensor Alarm">
+                                <i class="nav-icon fas fa-bell"></i>&nbsp;
+                                Reset Alarm Sensor with Restart Service
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

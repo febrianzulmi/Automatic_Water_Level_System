@@ -1,0 +1,35 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-dark">
+			<div class="card-header">
+				<h3 class="card-title">SNMP Check</h3>
+			</div>
+			<div class="card-body">
+				<form class="form-horizontal" method="POST" action="/check/snmp">
+					<div class="form-group row">
+						<div class="col-sm-4">
+							<select name="sensor" class="form-control" required>
+								<option value="">--- Choose Sensor List ---</option>
+								{% for i in range(sensorList|length) %}
+								<option value="{{ sensorList[i]['id'] }}" {% if sensorSelected==sensorList[i]['id']|string
+									%}{{ 'selected' }}{% endif %}>{{
+									sensorList[i]['name_group'] }} - {{
+									sensorList[i]['name'] }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<button type="submit" class="btn btn-primary float-right">Run</button>
+					</div>
+				</form>
+				<hr>
+				<b>Result</b> <br>
+				{% for i in range(result|length) %}
+				{{ result[i] }}
+				<br>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

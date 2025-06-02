@@ -1,0 +1,643 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-info card-tabs">
+			<div class="card-header p-0 pt-1">
+				<ul class="nav nav-tabs" id="custom-content-header-tab" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link active" id="custom-content-header-home-tab" data-toggle="pill"
+							href="#custom-content-header-home" role="tab" aria-controls="custom-content-header-home"
+							aria-selected="true">Networking</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="custom-content-header-profile-tab" data-toggle="pill"
+							href="#custom-content-header-profile" role="tab"
+							aria-controls="custom-content-header-profile" aria-selected="false">Wireless</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="custom-content-header-dhcp-tab" data-toggle="pill"
+							href="#custom-content-header-dhcp" role="tab" aria-controls="custom-content-header-dhcp"
+							aria-selected="false">DHCP</a>
+					</li>
+				</ul>
+			</div>
+			<div class="card-body">
+				<div class="tab-content" id="custom-content-header-tab">
+					<div class="tab-pane fade show active" id="custom-content-header-home" role="tabpanel"
+						aria-labelledby="custom-content-header-home-tab">
+						<ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link active" id="custom-content-below-home-tab" data-toggle="pill"
+									href="#custom-content-below-home" role="tab"
+									aria-controls="custom-content-below-home" aria-selected="true">Summary</a>
+							</li>
+							{% for i in range(length) %}
+							<li class="nav-item">
+								<a class="nav-link" id="custom-content-below-profile{{ i }}-tab" data-toggle="pill"
+									href="#custom-content-below-profile{{ i }}" role="tab"
+									aria-controls="custom-content-below-profile{{ i }}" aria-selected="false">{{ data[i]
+									}}</a>
+							</li>
+							{% endfor %}
+						</ul>
+						<div class="tab-content" id="custom-content-below-tabContent">
+							<div class="tab-pane fade show active" id="custom-content-below-home" role="tabpanel"
+								aria-labelledby="custom-content-below-home-tab">
+								<br>
+								<b>Current Settings</b>
+								<div class="row">
+									{% for i in range(length) %}
+									<div class="col-md-6">
+										<div class="card card-info">
+											<div class="card-header">
+												<span class="info-box-icon">
+													<h3 class="card-title">
+														<i
+															class="fas {% if 'eth' in data[i] %}{{'fa-ethernet'}}{%else%}{{'fa-wifi'}}{%endif%}"></i>&nbsp;&nbsp;{{
+														data[i]
+														}}
+													</h3>
+												</span>
+											</div>
+											<div class="card-body">
+												<dl class="row">
+													<dt class="col-sm-4">
+														State
+													</dt>
+													<dd class="col-sm-8">
+														{{
+														states[i]
+														}}</dd>
+													<dt class="col-sm-4">
+														MAC
+														Address
+													</dt>
+													<dd class="col-sm-8">
+														{{
+														macs[i]
+														}}</dd>
+													<dt class="col-sm-4">
+														Connection
+													</dt>
+													<dd class="col-sm-8">
+														{% if
+														cons[i]
+														== 0
+														%}{{
+														'Static'
+														}}{%
+														else
+														%}{{
+														'DHCP'
+														}}{%
+														endif %}
+													</dd>
+													<dt class="col-sm-4">
+														IP
+														Address
+													</dt>
+													<dd class="col-sm-8">
+														{{ ip[i]
+														}}</dd>
+												</dl>
+												<p class="unstyled" align="justify">
+													{% for x in
+													range(configs[i]|length)
+													%}
+													{{ configs[i][x]
+													}}
+													{% endfor %}</p>
+											</div>
+										</div>
+									</div>
+									{% endfor %}
+								</div>
+							</div>
+							{% for i in range(length) %}
+							<div class="tab-pane fade" id="custom-content-below-profile{{ i }}" role="tabpanel"
+								aria-labelledby="custom-content-below-profile{{ i }}-tab">
+								<br>
+								<form class="form-horizontal" method="POST" action="/network/{{ data[i] }}/post">
+									<div class="form-group row">
+										<label class="col-sm-2 col-form-label">Connection</label>
+										<div class="col-sm-1 col-form-label">
+											<div class="custom-control custom-radio">
+												<input class="custom-control-input" onchange="change_function{{ i }}()"
+													type="radio" id="static{{ i }}"
+													name="connection_{{ dbs[i]['name'] }}" value="0" {% if
+													dbs[i]['conn']==0: %}{{ 'checked' }}{% else: %}{{ '' }}{% endif %}>
+												<label for="static{{ i }}" class="custom-control-label">Static</label>
+											</div>
+										</div>
+										<div class="col-sm-1  col-form-label">
+											<div class="custom-control custom-radio">
+												<input class="custom-control-input" onchange="change_function{{ i }}()"
+													type="radio" id="dhcp{{ i }}" name="connection_{{ dbs[i]['name'] }}"
+													value="1" {% if dbs[i]['conn']==1: %}{{ 'checked' }}{% else: %}{{ ''
+													}}{% endif %}>
+												<label for="dhcp{{ i }}" class="custom-control-label">DHCP</label>
+											</div>
+										</div>
+									</div>
+									<script>
+										function change_function{{ i }} (){
+											var a = document.querySelector('input[name="connection_{{ dbs[i]["name"] }}"]:checked').value;
+											if (a === '0') {
+												var s = '"alias": "ip"'
+												var string = '';
+												string += '<div class="form-group row">';
+												string += '<label class="col-sm-2 col-form-label">IP Address</label>';
+												string += '<div class="col-sm-4">';
+												string += '<input type="text" class="form-control" name="ip_{{ dbs[i]["name"] }}" value="{{ dbs[i]["addr"] }}" data-inputmask="\'alias\': \'ip\'" data-mask></div></div>';
+												string += '<div class="form-group row">';
+												string += '<label class="col-sm-2 col-form-label">Subnet Mask</label>';
+												string += '<div class="col-sm-4">';
+												string += '<input type="text" class="form-control" name="subnet_{{ dbs[i]["name"] }}" value="{{ dbs[i]["sb"] }}" data-inputmask="\'alias\': \'ip\'" data-mask></div></div>';
+												string += '<div class="form-group row">';
+												string += '<label class="col-sm-2 col-form-label">Gateway</label>';
+												string += '<div class="col-sm-4">';
+												string += '<input type="text" class="form-control" name="gateway_{{ dbs[i]["name"] }}" value="{{ dbs[i]["gw"] }}" data-inputmask="\'alias\': \'ip\'" data-mask></div></div>';
+												string += '<div class="form-group row">';
+												string += '<label class="col-sm-2 col-form-label">DNS</label>';
+												string += '<div class="col-sm-4">';
+												string += '<input type="text" class="form-control" name="dns_{{ dbs[i]["name"] }}" value="{{ dbs[i]["dns"] }}" data-inputmask=' + s + ' data-mask></div></div>';
+												document.getElementById("output_{{ dbs[i]['name'] }}").innerHTML = string;
+											} else {
+												document.getElementById("output_{{ dbs[i]['name'] }}").innerHTML = '';
+											}
+										}
+									</script>
+									<div id="output_{{ dbs[i]['name'] }}">
+										{% if dbs[i]['conn'] == 0 %}
+										<div class="form-group row">
+											<label class="col-sm-2 col-form-label">IP
+												Address</label>
+											<div class="col-sm-4">
+												<input type="text" class="form-control" name="ip_{{ dbs[i]['name'] }}"
+													value="{{ dbs[i]['addr'] }}" data-inputmask="'alias': 'ip'"
+													data-mask>
+											</div>
+										</div>
+										<div class="form-group row">
+											<label class="col-sm-2 col-form-label">Subnet
+												Mask</label>
+											<div class="col-sm-4">
+												<input type="text" class="form-control"
+													name="subnet_{{ dbs[i]['name'] }}" value="{{ dbs[i]['sb'] }}"
+													data-inputmask="'alias': 'ip'" data-mask>
+											</div>
+										</div>
+										<div class="form-group row">
+											<label class="col-sm-2 col-form-label">Gateway</label>
+											<div class="col-sm-4">
+												<input type="text" class="form-control"
+													name="gateway_{{ dbs[i]['name'] }}" value="{{ dbs[i]['gw'] }}"
+													data-inputmask="'alias': 'ip'" data-mask>
+											</div>
+										</div>
+										<div class="form-group row">
+											<label class="col-sm-2 col-form-label">DNS</label>
+											<div class="col-sm-4">
+												<input type="text" class="form-control" name="dns_{{ dbs[i]['name'] }}"
+													value="{{ dbs[i]['dns'] }}" data-inputmask='"alias": "ip"'
+													data-mask>
+											</div>
+										</div>
+										{% endif %}
+									</div>
+									<h8 style="color:red">*Note : Please reboot
+										device with click icon &nbsp;<i class="nav-icon fas fa-power-off"></i>
+										&nbsp;to take effect</h8>
+									<button type="submit" class="btn btn-info float-right">Submit</button>
+								</form>
+							</div>
+							{% endfor %}
+						</div>
+					</div>
+
+					<div class="tab-pane fade" id="custom-content-header-profile" role="tabpanel"
+						aria-labelledby="custom-content-header-profile-tab">
+						<ul class="nav nav-tabs" id="custom-content-wireless-tab" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link active" id="custom-content-wireless-summary-tab" data-toggle="pill"
+									href="#custom-content-wireless-summary" role="tab"
+									aria-controls="custom-content-wireless-summary" aria-selected="true">Summary</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="custom-content-wireless-station-tab" data-toggle="pill"
+									href="#custom-content-wireless-station" role="tab"
+									aria-controls="custom-content-wireless-station" aria-selected="true">Station</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="custom-content-wireless-hotspot-tab" data-toggle="pill"
+									href="#custom-content-wireless-hotspot" role="tab"
+									aria-controls="custom-content-wireless-hotspot" aria-selected="true">Hotspot</a>
+							</li>
+						</ul>
+						<div class="tab-content" id="custom-content-wireless-tabContent">
+							<div class="tab-pane fade show active" id="custom-content-wireless-summary" role="tabpanel"
+								aria-labelledby="custom-content-wireless-summary-tab">
+								<br><b>Current Settings</b>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="card card-info">
+											<div class="card-header">
+												<h3 class="card-title">
+													Wireless Station
+												</h3>
+											</div>
+											<div class="card-body">
+												<h6>
+													{% if now_wifis
+													== '-' %}
+													{% if station['ssid']
+													== '' %}No
+													Configuration
+													Wireless Station
+													Detected
+													{% else %}SSID
+													{{ station['ssid'] }}
+													not Found
+													{%endif%}
+													{% else %}
+													Connected to <b>
+														{{
+														now_wifis
+														}}</b>
+													{% endif %}</h6>
+												<dl class="row">
+													<dt class="col-sm-4">
+														Interface
+													</dt>
+													<dd class="col-sm-8">
+														{% if
+														station['interface']
+														== ''
+														%}{{ '-'
+														}}{%
+														else
+														%}{{
+														station['interface']
+														}}{%
+														endif %}
+													</dd>
+													<dt class="col-sm-4">
+														SSID
+														Configuration
+													</dt>
+													<dd class="col-sm-8">
+														{% if
+														station['ssid']
+														== ''
+														%}{{ '-'
+														}}{%
+														else
+														%}{{
+														station['ssid']
+														}}{%
+														endif %}
+													</dd>
+												</dl>
+												<h8 style="color:red">
+													*Note : Reboot
+													when current
+													wireless
+													connection
+													different with
+													SSID
+													configuration
+												</h8>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="card card-info">
+											<div class="card-header">
+												<h3 class="card-title">
+													Wireless Hotspot
+												</h3>
+											</div>
+											<div class="card-body">
+												<h6>Hotspot <b>{% if
+														hotspot["state"]
+														== 1
+														%}{{
+														'Active'
+														}}{%
+														else
+														%}{{
+														'Inactive'
+														}}{%
+														endif
+														%}</b>
+												</h6>
+												<dl class="row">
+													<dt class="col-sm-4">
+														Interface
+													</dt>
+													<dd class="col-sm-8">
+														{{
+														hotspot['interface']
+														}}</dd>
+													<dt class="col-sm-4">
+														SSID
+													</dt>
+													<dd class="col-sm-8">
+														{{
+														hotspot['ssid']
+														}}</dd>
+													<dt class="col-sm-4">
+														Password
+													</dt>
+													<dd class="col-sm-8">
+														{{
+														hotspot['password']
+														}}</dd>
+												</dl>
+												<h8 style="color:red">
+													*Note : Hotspot
+													running when
+													wireless station
+													not connected to
+													any SSID</h8>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="tab-pane fade" id="custom-content-wireless-station" role="tabpanel"
+								aria-labelledby="custom-content-wireless-station-tab">
+								<br>
+								<form method="POST" action="/setting/network">
+									<div class="form-group row">
+										<label class="col-sm-2 col-form-label">Interface</label>
+										<div class="col-sm-2">
+											<select name="wireless" class="form-control">
+												{% for i in
+												range(data_wifi|length)
+												%}
+												<option value="{{ data_wifi[i] }}" {% if now==data_wifi[i]
+													%}{{ 'selected' }}{% endif %}>{{
+													data_wifi[i] }}
+												</option>
+												{% endfor %}
+											</select>
+										</div>
+										<button type="submit" class="btn btn-info float-right">Scan</button>&nbsp;&nbsp;
+										<a href="/network/reset/config"><button type="button"
+												class="btn btn-info float-right">Reset
+												Configuration</button></a>
+									</div>
+								</form>
+								<b>Scan Result</b>
+								<div class="row">
+									{% for i in range(wifis|length) %}
+									<div class="col-md-6">
+										<div class="card card-info">
+											<div class="card-header">
+												<h3 class="card-title">
+													{{
+													wifis[i]['Name']
+													}}</h3>
+											</div>
+											<div class="card-body">
+												<dl class="row">
+													<dt class="col-sm-4">
+														State
+													</dt>
+													<dd class="col-sm-8">
+														{% if
+														wifis[i]['Name']|string
+														==
+														now_wifis|string
+														%}
+														<i class="right fas fa-check-circle"></i>&nbsp;<i
+															class="right fas fa-exchange-alt"></i>
+														{% else
+														%}
+														{{ 'Not
+														Configured'
+														}}
+														{%endif%}
+													</dd>
+													<dt class="col-sm-4">
+														Channel
+													</dt>
+													<dd class="col-sm-8">
+														{{
+														wifis[i]['Channel']
+														}}</dd>
+													<dt class="col-sm-4">
+														Quality
+													</dt>
+													<dd class="col-sm-8">
+														{{
+														wifis[i]['Quality']
+														}} %
+													</dd>
+													<dt class="col-sm-4">
+														RSSI
+													</dt>
+													<dd class="col-sm-8">
+														{{
+														wifis[i]['Signal
+														Level']
+														}}</dd>
+													<dt class="col-sm-4">
+														Security
+													</dt>
+													<dd class="col-sm-8">
+														{{
+														wifis[i]['Encryption']
+														}}</dd>
+													{% if
+													wifis[i]['Name']|string
+													!=
+													now_wifis|string
+													%}
+													<div class="col-md-12">
+														<form method="POST" action="/network/{{ now }}/connect">
+															<div class="input-group input-group-sm">
+																<input type="password" class="form-control"
+																	name="password">
+																<input type="hidden" class="form-control" name="ssid"
+																	value="{{ wifis[i]['Name'] }}">
+																<span class="input-group-append">
+																	<button type="submit"
+																		class="btn btn-info btn-flat">Connect</button>
+																</span>
+															</div>
+														</form>
+													</div>
+													{%endif%}
+												</dl>
+											</div>
+										</div>
+									</div>
+									{% endfor %}
+									<h8 style="color:red">*Note : Please reboot
+										device with click icon &nbsp;<i class="nav-icon fas fa-power-off"></i>
+										&nbsp;to take effect after connect the
+										SSID</h8>
+
+								</div>
+							</div>
+							<div class="tab-pane fade" id="custom-content-wireless-hotspot" role="tabpanel"
+								aria-labelledby="custom-content-wireless-hotspot-tab">
+								<br>
+								<form method="POST" action="/network/hotspot">
+									<div class="form-group row">
+										<label class="col-sm-2 col-form-label">Enable
+											Hotspot</label>
+										<div class="col-sm-4">
+											<input type="checkbox" name="enable" {% if hotspot['state']==1 %}{{'checked'}}{%
+												endif %} data-bootstrap-switch data-off-color="danger"
+												data-on-color="success">
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-2 col-form-label">Interface</label>
+										<div class="col-sm-2">
+											<select name="interface" class="form-control" required>
+												{% for i in
+												range(data_wifi|length)
+												%}
+												<option value="{{ data_wifi[i] }}" {% if hotspot[1]==data_wifi[i]
+													%}{{ 'selected' }}{% endif %}>{{
+													data_wifi[i] }}
+												</option>
+												{% endfor %}
+											</select>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-2 col-form-label">Hotspot
+											Name</label>
+										<div class="col-sm-4">
+											<input type="text" class="form-control" name="ssid" value="{{ hotspot['ssid'] }}"
+												required>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-2 col-form-label">Hotspot
+											Password</label>
+										<div class="col-sm-4">
+											<input type="password" class="form-control" name="passw"
+												value="{{ hotspot['password'] }}" required>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-2 col-form-label">Hotspot
+											Channel</label>
+										<div class="col-sm-2">
+											<select name="channel" class="form-control">
+												{% for i in range(10) %}
+												<option value="{{ i+1 }}" {% if hotspot[5]==i+1 %}{{'selected'}}{% endif
+													%}>{{ i+1
+													}}</option>
+												{% endfor %}
+											</select>
+										</div>
+									</div>
+									<button type="submit" class="btn btn-info float-right">Submit</button>
+								</form>
+							</div>
+						</div>
+					</div>
+
+					<div class="tab-pane fade" id="custom-content-header-dhcp" role="tabpanel"
+						aria-labelledby="custom-content-header-dhcp-tab">
+						<form class="form-horizontal" method="POST" action="/network/dhcp/post">
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">Interface</label>
+								<div class="col-sm-2">
+									<select name="interface" class="form-control" required>
+										{% for i in range(length) %}
+										<option value="{{ data[i] }}" {% if dhcp_data[0]==data[i] %}{{ 'selected' }}{%
+											endif %}>{{
+											data[i] }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">Start
+									Address</label>
+								<div class="col-sm-4">
+									<input type="text" class="form-control" name="start" value="{{ dhcp_data[1] }}"
+										data-inputmask="'alias': 'ip'" data-mask required>
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">End
+									Address</label>
+								<div class="col-sm-4">
+									<input type="text" class="form-control" name="end" value="{{ dhcp_data[2] }}"
+										data-inputmask="'alias': 'ip'" data-mask required>
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">Subnet
+									Mask</label>
+								<div class="col-sm-4">
+									<input type="text" class="form-control" name="subnet" value="{{ dhcp_data[3] }}"
+										data-inputmask="'alias': 'ip'" data-mask required>
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">Gateway</label>
+								<div class="col-sm-4">
+									<input type="text" class="form-control" name="gateway" value="{{ dhcp_data[4] }}"
+										data-inputmask="'alias': 'ip'" data-mask>
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">DNS 1</label>
+								<div class="col-sm-4">
+									<input type="text" class="form-control" name="dns1" value="{{ dhcp_data[5] }}"
+										data-inputmask="'alias': 'ip'" data-mask>
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">DNS 2</label>
+								<div class="col-sm-4">
+									<input type="text" class="form-control" name="dns2" value="{{ dhcp_data[6] }}"
+										data-inputmask="'alias': 'ip'" data-mask>
+								</div>
+							</div>
+							<button type="submit" class="btn btn-info float-right">Submit</button>
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block mask %}
+<script>
+	$(function () {
+		$('[data-mask]').inputmask()
+	})
+</script>
+{% endblock %}
+
+{% block switch %}
+<script>
+	$(function () {
+		//Colorpicker
+		$('.my-colorpicker1').colorpicker()
+		//color picker with addon
+		$('.my-colorpicker2').colorpicker()
+
+		$('.my-colorpicker2').on('colorpickerChange', function (event) {
+			$('.my-colorpicker2 .fa-square').css('color', event.color.toString());
+		});
+		$("input[data-bootstrap-switch]").each(function () {
+			$(this).bootstrapSwitch('state', $(this).prop('checked'));
+		});
+	})
+</script>
+{% endblock %}

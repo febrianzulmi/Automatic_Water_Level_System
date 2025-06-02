@@ -1,0 +1,81 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-info">
+			<div class="card-header">
+				<h3 class="card-title">NTP Setting</h3>
+				<div class="card-tools">
+          <a href="/ntp/restart"><i class="nav-icon fas fa-sync-alt btn-tool" title="Restart NTP"></i></a> 
+				</div>
+			</div>
+			<form class="form-horizontal" method="POST" action="/ntp/post">
+				<div class="card-body">
+				  <div class="form-group row">
+						<label class="col-sm-1 col-form-label">Server</label>
+						<div class="col-sm-1">
+							<div class="custom-control custom-radio">
+								<input class="custom-control-input" onchange="change_function()" type="radio" id="default" name="server" value="0" {% if server == 0: %}{{ 'checked' }}{% else: %}{{ '' }}{% endif %}>
+								<label for="default" class="custom-control-label">Default</label>
+							</div>
+						</div>
+						<div class="col-sm-1">
+							<div class="custom-control custom-radio">
+								<input class="custom-control-input" onchange="change_function()" type="radio" id="specific" name="server" value="1" {% if server == 1: %}{{ 'checked' }}{% else: %}{{ '' }}{% endif %}>
+								<label for="specific" class="custom-control-label">Specific</label>
+							</div>
+						</div>
+					</div>
+					<script>
+                    function change_function(){
+                        var a = document.querySelector('input[name="server"]:checked').value;
+                        console.log(a);
+                        if (a === '1'){
+                        var string = '';
+                        string += '<div class="form-group row">';
+                        string += '<label class="col-sm-2 col-form-label">Server Address 1</label>';
+                        string += '<div class="col-sm-4">';
+                        string += '<input type="text" class="form-control" name="ip1" value="{{ ip1 }}" required autocomplete="off"></div></div>';
+						string += '<div class="form-group row">';
+                        string += '<label class="col-sm-2 col-form-label">Server Address 2</label>';
+                        string += '<div class="col-sm-4">';
+                        string += '<input type="text" class="form-control" name="ip2" value="{{ ip2 }}"" autocomplete="off"></div></div>';
+						string += '<div class="form-group row">';
+                        string += '<label class="col-sm-2 col-form-label">Server Address 3</label>';
+                        string += '<div class="col-sm-4">';
+                        string += '<input type="text" class="form-control" name="ip3" value="{{ ip3 }}"" autocomplete="off"></div></div>';
+                        document.getElementById("output").innerHTML = string;}else{document.getElementById("output").innerHTML = '';}
+                    }
+          </script>
+					<div id='output'>
+						 {% if server == 1 %}
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label">Server Address 1</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control" name="ip1" value="{{ ip1 }}" required autocomplete="off">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label">Server Address 2</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control" name="ip2" value="{{ ip2 }}" autocomplete="off">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label">Server Address 3</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control" name="ip3" value="{{ ip3 }}" autocomplete="off">
+							</div>
+						</div>
+						{% endif %}	
+					</div>
+					<h8 style="color:red">*Note : Please restart NTP service with click icon &nbsp;<i class="nav-icon fas fa-sync-alt"></i> &nbsp;to take effect</h8>	 
+				</div> 
+				<div class="card-footer">
+					<button type="submit" class="btn btn-info float-right">Submit</button>
+				</div>
+				  </form>
+				</div>
+		</div>
+	</div>
+</div>
+ {% endblock %}

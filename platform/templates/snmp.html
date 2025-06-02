@@ -1,0 +1,72 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+	  <div class="card card-info card-tabs">
+     <div class="card-header p-0 pt-1">
+      <ul class="nav nav-tabs" id="custom-content-header-tab" role="tablist">
+			  <li class="nav-item">
+			    <a class="nav-link {% if page == '1' %}{{ 'active' }}{% endif %}" id="custom-content-header-state-tab" data-toggle="pill" href="#custom-content-header-state" role="tab" aria-controls="custom-content-header-state" aria-selected="true">State</a>
+				</li>
+				<li class="nav-item">
+				  <a class="nav-link {% if page == '2' %}{{ 'active' }}{% endif %}" id="custom-content-header-v2-tab" data-toggle="pill" href="#custom-content-header-v2" role="tab" aria-controls="custom-content-header-v2" aria-selected="false">SNMP v2</a>
+				</li>
+				<li class="nav-item">
+				  <a class="nav-link {% if page == '3' %}{{ 'active' }}{% endif %}" id="custom-content-header-v3-tab" data-toggle="pill" href="#custom-content-header-v3" role="tab" aria-controls="custom-content-header-v3" aria-selected="false">SNMP v3</a>
+				</li>
+			</ul> 
+    </div>
+    <div class="card-body">
+      <div class="tab-content" id="custom-content-header-tab">
+         <div class="tab-pane fade {% if page == '1' %}{{ 'show active' }}{% endif %}" id="custom-content-header-state" role="tabpanel" aria-labelledby="custom-content-header-state-tab">
+		         <form class="form-horizontal" method="POST" action="/setting/snmp">
+													<div class="form-group row">
+														<div class="col-sm-1">
+															<div class="custom-control custom-radio">
+																<input class="custom-control-input" type="radio" id="on" name="snmp_state" value="1" {% if snmp_state|string == '1' %}{{ 'checked' }}{% else %}{{ '' }}{% endif %}>
+																<label for="on" class="custom-control-label">Enable</label>
+															</div>
+														</div>
+														<div class="col-sm-1">
+															<div class="custom-control custom-radio">
+																<input class="custom-control-input" type="radio" id="off" name="snmp_state" value="0" {% if snmp_state|string == '0' %}{{ 'checked' }}{% else %}{{ '' }}{% endif %}>
+																<label for="off" class="custom-control-label">Disable</label>
+															</div>
+														</div>
+												</div>
+												<input type="hidden" name="page" value="1">
+												<button type="submit" class="btn btn-info float-right">Submit</button>
+											</form>
+		       </div>
+         <div class="tab-pane fade {% if page == '2' %}{{ 'show active' }}{% endif %}" id="custom-content-header-v2" role="tabpanel" aria-labelledby="custom-content-header-v2-tab">
+		         <form class="form-horizontal" method="POST" action="/setting/snmp">
+												<div class="form-group row">
+													<label class="col-sm-1 col-form-label">Community</label>
+													<div class="col-sm-2">
+														<input type="text" class="form-control" name="snmp_community" value="{{ snmp_community }}"></div>
+														<input type="hidden" name="page" value="2">
+												</div>
+												<button type="submit" class="btn btn-info float-right">Submit</button>
+											</form>
+		       </div>
+		       <div class="tab-pane fade {% if page == '3' %}{{ 'show active' }}{% endif %}" id="custom-content-header-v3" role="tabpanel" aria-labelledby="custom-content-header-v3-tab">
+		         <form class="form-horizontal" method="POST" action="/setting/snmp">
+												<div class="form-group row">
+													<label class="col-sm-1 col-form-label">User</label>
+													<div class="col-sm-2">
+														<input type="text" class="form-control" name="snmp_user" value="{{ snmp_user }}"></div>
+												</div>
+												<div class="form-group row">
+													<label class="col-sm-1 col-form-label">Password</label>
+													<div class="col-sm-2">
+														<input type="password" class="form-control" name="snmp_password" value="{{ snmp_password }}"></div>
+												</div>
+												<input type="hidden" name="page" value="3">
+												<button type="submit" class="btn btn-info float-right">Submit</button>
+											</form>
+		       </div>            
+      </div>
+    </div>
+  </div>		
+</div>
+{% endblock %}
+

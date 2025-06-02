@@ -1,0 +1,16 @@
+[Unit]
+Description=System Connex Service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 nearon_board.py
+WorkingDirectory=/home/connex/platform
+User=root
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+

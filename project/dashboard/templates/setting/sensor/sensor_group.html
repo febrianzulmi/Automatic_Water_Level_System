@@ -1,0 +1,378 @@
+{% block sensor_group %}
+
+<div class="tab-pane fade {% if tab_sensor_management == '1' %}{% if tab == 'sensor-management-group' %}{{ 'show active' }}{% endif %}{% elif tab_sensor_management == '0' %}{{ 'show active' }}{% endif %}"
+            id="custom-content-env-sensor-management-group" role="tabpanel"
+            aria-labelledby="custom-content-env-sensor-management-group-tab">
+            <br>
+            <div class="row col-md-12">
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#modal-sensor-group-add">
+                    <i class="fas fa-plus" title="Add"></i> Add
+                </button>
+                &nbsp;&nbsp;
+                <a href="/setting/sensor?tab=sensor-management-group" role="button">
+                    <button type="button" class="btn btn-default">
+                        <i class="fas fa-sync" title="Refresh"></i> Refresh
+                    </button>
+                </a>
+            </div>
+            <div class="modal fade" id="modal-sensor-group-add" tabindex="-1" role="dialog"
+                aria-labelledby="modalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/sensor">
+                            <input type="hidden" name="tab" value="sensor-management-group">
+                            <input type="hidden" name="action" value="sensorGroupAdd">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    Add Group Sensor
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Number</label>
+                                    <div class="col-sm-8">
+                                        <input type="number" min="1" class="form-control" name="number" required
+                                               autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Name</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="name" required
+                                               autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">OID</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" value="{{ base_oid }}" disabled>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="number" class="form-control" min="1" name="oid_group" required
+                                            autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Interval</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" min="1" name="interval"
+                                               class="form-control" required autocomplete="off">
+                                    </div>
+                                    &nbsp;
+                                    <div class="col-sm-4">
+                                        <select name="unit" class="form-control" required
+                                                autocomplete="off">
+                                            <option value="1">
+                                                Seconds
+                                            </option>
+                                            <option value="2">
+                                                Minutes
+                                            </option>
+                                            <option value="3">
+                                                Hours
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Frekuensi</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" min="1" class="form-control"
+                                               name="frekuensi" required autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Enter Alarm</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" min="1" name="enterAlarm"
+                                               class="form-control" required autocomplete="off">
+                                    </div>
+                                    &nbsp;
+                                    <label class="col-sm-3 col-form-label">Seconds</label>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Exit Alarm</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" min="1" name="exitAlarm"
+                                               class="form-control" required autocomplete="off">
+                                    </div>
+                                    &nbsp;
+                                    <label class="col-sm-3 col-form-label">Seconds</label>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Error Alarm</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" min="1" name="errorAlarm"
+                                               class="form-control" required autocomplete="off">
+                                    </div>
+                                    &nbsp;
+                                    <label class="col-sm-3 col-form-label">Seconds</label>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default"
+                                    data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <table id="TABLE_2" class="table table-bordered table-hover">
+                <thead>
+                    <tr align="center">
+                        <th style="text-align: center; vertical-align: middle;" width="10%"
+                            rowspan="2">
+                            Group ID
+                        </th>
+                        <th style="text-align: center; vertical-align: middle;" rowspan="2">
+                            Name
+                        </th>
+                        <th style="text-align: center; vertical-align: middle;" rowspan="2">
+                            Interval
+                        </th>
+                        <th style="text-align: center; vertical-align: middle;" rowspan="2">
+                            Frekuensi
+                        </th>
+                        <th style="text-align: center; vertical-align: middle;" colspan="3">
+                            Tolerance
+                        </th>
+                        <th style="text-align: center; vertical-align: middle;" rowspan="2">
+                            State
+                        </th>
+                        {% if sessionData['level'] == 1 %}
+                        <th style="text-align: center; vertical-align: middle;" width="10%"
+                            rowspan="2">
+                            Action
+                        </th>
+                        {% endif %}
+                    </tr>
+                    <tr align="center">
+                        <th>Enter Alarm</th>
+                        <th>Exit Alarm</th>
+                        <th>Error Alarm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in range(sensorGroup|length) %}
+                    <tr align="center">
+                        <td>{{ sensorGroup[item]['number'] }}</td>
+                        <td>{{ sensorGroup[item]['name'] }}</td>
+                        <td>{{ sensorGroup[item]['intervals'] }}
+                            {% if sensorGroup[item]['unit'] == 1
+                            %}{{ 'Seconds' }}
+                            {% elif sensorGroup[item]['unit'] == 2
+                            %}{{ 'Minutes' }}
+                            {% else %}{{ 'Hours'
+                            }}{% endif %}
+                        </td>
+                        <td width="10%">{{ sensorGroup[item]['frekuensi']
+                            }}</td>
+                        <td width="10%">{{ sensorGroup[item]['enterAlarm']
+                            }} Seconds</td>
+                        <td width="10%">{{ sensorGroup[item]['exitAlarm']
+                            }} Seconds</td>
+                        <td width="10%">{{ sensorGroup[item]['errorAlarm']
+                            }} Seconds</td>
+                        {% if sensorGroup[item]['state'] == "0" %}
+                        <td width="10%" style="color: red; font-weight: bold;">Disable</td>
+                        {%else%}
+                        <td width="10%" style="color: green; font-weight: bold;">Enable</td>
+                        {%endif%}
+                        {% if sessionData['level'] == 1 %}
+                        <td>
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-edit-group{{ sensorGroup[item]['id'] }}" role="button"><i
+                                    class="nav-icon fas fa-edit"></i></a>
+                            &nbsp;
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-delete-group{{ sensorGroup[item]['id'] }}" role="button"><i
+                                    class="nav-icon fas fa-trash"></i></a>
+                        </td>
+                        {%endif%}
+                    </tr>
+        
+                    <div class="modal fade" id="modal-edit-group{{ sensorGroup[item]['id'] }}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST"
+                                    action="/setting/sensor">
+                                    <input type="hidden" name="tab" value="sensor-management-group">
+                                    <input type="hidden" name="action" value="sensorGroupUpdate">
+                                    <input type="hidden" name="id" value="{{ sensorGroup[item]['id'] }}">
+                                    <input type="hidden" name="last_number" value="{{ sensorGroup[item]['number'] }}">
+                                    <input type="hidden" name="last_name" value="{{ sensorGroup[item]['name'] }}">
+                                    <input type="hidden" name="last_oid" value="{{ sensorGroup[item]['oid'] }}">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Update Group Sensor
+                                            <b>{{ sensorGroup[item]['name'] }}</b>
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Number</label>
+                                            <div class="col-sm-8">
+                                                <input type="number" min="1" class="form-control" name="number" value="{{ sensorGroup[item]['number'] }}" required
+                                                       autocomplete="off">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Name</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="name"
+                                                       value="{{ sensorGroup[item]['name'] }}" required
+                                                       autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">OID</label>
+                                            <div class="col-sm-4">
+                                                <input type="text" class="form-control" value="{{ base_oid }}" disabled>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="number" class="form-control" min="1" name="oid_group" value="{{ sensorGroup[item]['oid'] }}" required
+                                                    autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Interval</label>
+                                            <div class="col-sm-4">
+                                                <input type="number" min="1" name="interval" class="form-control" value="{{ sensorGroup[item]['intervals'] }}">
+                                            </div>
+                                            &nbsp;
+                                            <div class="col-sm-4">
+                                                <select name="unit" class="form-control" required
+                                                        autocomplete="off">
+                                                    <option value="1" {% if sensorGroup[item]['unit']==1
+                                                            %}{{ 'selected' }}{% endif %}>
+                                                        Seconds
+                                                    </option>
+                                                    <option value="2" {% if sensorGroup[item]['unit']==2
+                                                            %}{{ 'selected' }}{% endif %}>
+                                                        Minutes
+                                                    </option>
+                                                    <option value="3" {% if sensorGroup[item]['unit']==3
+                                                            %}{{ 'selected' }}{% endif %}>
+                                                        Hours
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Frekuensi</label>
+                                            <div class="col-sm-4">
+                                                <input type="number" min="1" class="form-control"
+                                                       name="frekuensi" value="{{ sensorGroup[item]['frekuensi'] }}"
+                                                       required autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Enter Alarm</label>
+                                            <div class="col-sm-4">
+                                                <input type="number" min="1" class="form-control"
+                                                       name="enterAlarm" value="{{ sensorGroup[item]['enterAlarm'] }}" required autocomplete="off">
+                                            </div>
+                                            &nbsp;
+                                            <label class="col-sm-4 col-form-label">Seconds</label>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Exit Alarm</label>
+                                            <div class="col-sm-4">
+                                                <input type="number" min="1" class="form-control"
+                                                       name="exitAlarm" value="{{ sensorGroup[item]['exitAlarm'] }}" required autocomplete="off">
+                                            </div>
+                                            &nbsp;
+                                            <label class="col-sm-4 col-form-label">Seconds</label>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Error Alarm</label>
+                                            <div class="col-sm-4">
+                                                <input type="number" min="1" class="form-control"
+                                                       name="errorAlarm" value="{{ sensorGroup[item]['errorAlarm'] }}" required autocomplete="off">
+                                            </div>
+                                            &nbsp;
+                                            <label class="col-sm-4 col-form-label">Seconds</label>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3">State</label>
+                                            <div class="col-sm-4">
+                                                <div class="form-group clearfix">
+                                                    <div class="icheck-primary d-inline">
+                                                        <input type="radio" id="stateSensorYes{{ sensorGroup[item]['id'] }}" name="stateSensor" value="1" {% if sensorGroup[item]['state']=="1" %}{{ 'checked' }}{% endif %}>
+                                                        <label for="stateSensorYes{{ sensorGroup[item]['id'] }}">Yes</label>
+                                                    </div>
+                                                    &nbsp;
+                                                    <div class="icheck-primary d-inline">
+                                                        <input type="radio" id="stateSensorNo{{ sensorGroup[item]['id'] }}" name="stateSensor" value="0" {% if sensorGroup[item]['state']=="0" %}{{ 'checked' }}{% endif %}>
+                                                        <label for="stateSensorNo{{ sensorGroup[item]['id'] }}">No</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" class="form-control" name="service_id" value="{{ sensorGroup[item]['service_id'] }}">
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modal-delete-group{{ sensorGroup[item]['id'] }}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST"
+                                    action="/setting/sensor">                        
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Confirmation Delete
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="tab" value="sensor-management-group">
+                                        <input type="hidden" name="action" value="sensorGroupDelete">
+                                        <input type="hidden" name="id" value="{{ sensorGroup[item]['id'] }}">
+                                        <input type="hidden" name="name" value="{{ sensorGroup[item]['name'] }}">
+                                        <input type="hidden" name="serviceId" value="{{ sensorGroup[item]['service_id'] }}">
+                                        <input type="hidden" name="number" value="{{ sensorGroup[item]['number'] }}">
+        
+                                        <p>
+                                            Are you sure
+                                            to delete
+                                            Group Sensor
+                                            <b>
+                                                {{ sensorGroup[item]['name']}}
+                                            </b>?
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">No</button>
+                                         <button type="submit" class="btn btn-primary">Yes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+{% endblock %}

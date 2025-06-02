@@ -1,0 +1,1161 @@
+{% block environment %}
+<div class="tab-pane fade {% if 'environment' in tab %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-environment"
+    role="tabpanel" aria-labelledby="custom-tabs-one-environment-tab">
+
+    {% set tabServices = '0' %}
+    {% if 'general' in tab %}
+    {% set tabServices = '1' %}
+    {% endif %}
+
+    <ul class="nav nav-tabs" id="custom-content-env-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link {% if tab == 'environment-general' %}{{ 'active' }}{% endif %}"
+                id="custom-content-env-environment-general-tab" data-toggle="pill"
+                href="#custom-content-env-environment-general" role="tab"
+                aria-controls="custom-content-env-environment-general" aria-selected="false">General</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if tab == 'environment-device' %}{{ 'active' }}{% endif %}"
+                id="custom-content-env-environment-device-tab" data-toggle="pill"
+                href="#custom-content-env-environment-device" role="tab"
+                aria-controls="custom-content-env-environment-device" aria-selected="false">Device</a>
+        </li>
+        <!-- <li class="nav-item">
+            <a class="nav-link {% if tab == 'environment-master' %}{{ 'active' }}{% endif %}"
+                id="custom-content-env-environment-master-tab" data-toggle="pill"
+                href="#custom-content-env-environment-master" role="tab"
+                aria-controls="custom-content-env-environment-master" aria-selected="false">Master Data</a>
+        </li> -->
+    </ul>
+
+    <div class="tab-content" id="custom-content-env-tabContent">
+        <!-- General Tab Content -->
+        <div class="tab-pane fade {% if tab == 'environment-general' %}show active{% endif %}"
+            id="custom-content-env-environment-general" role="tabpanel"
+            aria-labelledby="custom-content-env-environment-general-tab">
+            <br>
+            Soon
+        </div>
+
+        <!-- Device Tab Content -->
+        <div class="tab-pane fade {% if tab == 'environment-device' %}show active{% endif %}"
+            id="custom-content-env-environment-device" role="tabpanel"
+            aria-labelledby="custom-content-env-environment-device-tab">
+            <br>
+            <br>
+            <!-- Add Button to Trigger the Modal -->
+            <div class="row col-md-12">
+                {% if sessionData['level'] == 1 %}
+
+                {% if extensionDeviceData|length >= 10 %}
+                <button class="btn btn-secondary" disabled>
+                    <i class="fas fa-plus"></i> Add (Maximum Reached)
+                </button>
+                </p>
+                {% else %}
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#modal-extension-device-add">
+                    <i class="fas fa-plus" title="Add"></i> Add
+                </button>
+                {% endif %}
+                &nbsp;&nbsp;
+                <a href="/setting/extension?tab=environment-device" role="button">
+                    <button type="button" class="btn btn-default">
+                        <i class="fas fa-sync" title="Refresh"></i> Refresh
+                    </button>
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Modal for Adding Extension Device -->
+            <div class="modal fade" id="modal-extension-device-add" tabindex="-1" role="dialog"
+                aria-labelledby="modalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/extension">
+                            <input type="hidden" name="tab" value="environment-device">
+                            <input type="hidden" name="action" value="environmentDeviceExtensionAdd">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel">Add Extension Device</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Device Number</label>
+                                    <div class="col-sm-2">
+                                        <input type="number" name="environmentExtensionDeviceNumber"
+                                            class="form-control" min="1" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Name</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="environmentExtensionDeviceName"
+                                            required autocomplete="off">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Method</label>
+                                    <div class="col-sm-9">
+                                        <select id="methodDropdown" name="method" class="form-control methodDropdown" required>
+                                            <option value="">--- Choose Method ---</option>
+                                            <option value="0">Network</option>
+                                            <option value="1">Modbus</option>
+                                        </select>
+                                    </div>
+                                </div>
+                    
+                                <div id="ipField" class="form-group row d-none ipField">
+                                    <label class="col-sm-3 col-form-label">IP Address</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="ip_address" value="" placeholder="Enter IP Address" autocomplete="off">
+                                    </div>
+                                </div>
+                    
+                                <div id="modbusField" class="form-group row d-none modbusField">
+                                    <label class="col-sm-3 col-form-label">Modbus ID</label>
+                                    <div class="col-sm-9">
+                                        <input type="number" class="form-control" name="modbus_id" value="" placeholder="Enter Modbus ID" min="1" autocomplete="off">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row ">
+                                    <label class="col-sm-3 col-form-label">Port 1</label>
+                                    <div class="col-sm-3">
+                                        <select name="environmentExtensionPort1" class="form-control" required
+                                            autocomplete="off">
+                                            <option value="0">
+                                                Disable
+                                            </option>
+                                            <option value="1">
+                                                SHT20
+                                            </option>
+                                            <option value="2">
+                                                Smoke
+                                            </option>
+                                            <option value="3">
+                                                Door
+                                            </option>
+                                            <option value="4">
+                                                Water Leak
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-1"></div>
+                                    <label class="col-sm-2 col-form-label">Port 2</label>
+                                    <div class="col-sm-3">
+                                        <select name="environmentExtensionPort2" class="form-control" required
+                                            autocomplete="off">
+                                            <option value="0">
+                                                Disable
+                                            </option>
+                                            <option value="1">
+                                                SHT20
+                                            </option>
+                                            <option value="2">
+                                                Smoke
+                                            </option>
+                                            <option value="3">
+                                                Door
+                                            </option>
+                                            <option value="4">
+                                                Water Leak
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Port 3</label>
+                                    <div class="col-sm-3">
+                                        <select name="environmentExtensionPort3" class="form-control" required
+                                            autocomplete="off">
+                                            <option value="0">
+                                                Disable
+                                            </option>
+                                            <option value="1">
+                                                SHT20
+                                            </option>
+                                            <option value="2">
+                                                Smoke
+                                            </option>
+                                            <option value="3">
+                                                Door
+                                            </option>
+                                            <option value="4">
+                                                Water Leak
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-1"></div>
+                                    <label class="col-sm-2 col-form-label">Port 4</label>
+                                    <div class="col-sm-3">
+                                        <select name="environmentExtensionPort4" class="form-control" required
+                                            autocomplete="off">
+                                            <option value="0">
+                                                Disable
+                                            </option>
+                                            <option value="1">
+                                                SHT20
+                                            </option>
+                                            <option value="2">
+                                                Smoke
+                                            </option>
+                                            <option value="3">
+                                                Door
+                                            </option>
+                                            <option value="4">
+                                                Water Leak
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Port 5</label>
+                                    <div class="col-sm-3">
+                                        <select name="environmentExtensionPort5" class="form-control" required
+                                            autocomplete="off">
+                                            <option value="0">
+                                                Disable
+                                            </option>
+                                            <option value="1">
+                                                SHT20
+                                            </option>
+                                            <option value="2">
+                                                Smoke
+                                            </option>
+                                            <option value="3">
+                                                Door
+                                            </option>
+                                            <option value="4">
+                                                Water Leak
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-1"></div>
+                                    <label class="col-sm-2 col-form-label">Port 6</label>
+                                    <div class="col-sm-3">
+                                        <select name="environmentExtensionPort6" class="form-control" required
+                                            autocomplete="off">
+                                            <option value="0">
+                                                Disable
+                                            </option>
+                                            <option value="1">
+                                                SHT20
+                                            </option>
+                                            <option value="2">
+                                                Smoke
+                                            </option>
+                                            <option value="3">
+                                                Door
+                                            </option>
+                                            <option value="4">
+                                                Water Leak
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Port 7</label>
+                                    <div class="col-sm-3">
+                                        <select name="environmentExtensionPort7" class="form-control" required
+                                            autocomplete="off">
+                                            <option value="0">
+                                                Disable
+                                            </option>
+                                            <option value="1">
+                                                SHT20
+                                            </option>
+                                            <option value="2">
+                                                Smoke
+                                            </option>
+                                            <option value="3">
+                                                Door
+                                            </option>
+                                            <option value="4">
+                                                Water Leak
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-1"></div>
+                                    <label class="col-sm-2 col-form-label">Port 8</label>
+                                    <div class="col-sm-3">
+                                        <select name="environmentExtensionPort8" class="form-control" required>
+                                            <option value="0">
+                                                Disable
+                                            </option>
+                                            <option value="1">
+                                                SHT20
+                                            </option>
+                                            <option value="2">
+                                                Smoke
+                                            </option>
+                                            <option value="3">
+                                                Door
+                                            </option>
+                                            <option value="4">
+                                                Water Leak
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">State</label>
+                                    <div class="col-sm-3">
+                                        <select name="environmentExtensionDeviceState" class="form-control" required>
+                                            <option value="">--- Choose State ---</option>
+                                            <option value="0">Disable</option>
+                                            <option value="1">Enable</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table for Extension Devices -->
+            <table id="TABLE_1" class="table table-bordered table-hover">
+                <thead>
+                    <tr align="center">
+                        <th style="vertical-align: middle;" width="5%" rowspan="2">No</th>
+                        <th style="vertical-align: middle;" rowspan="2">Name</th>
+                        <th style="vertical-align: middle;" rowspan="2">Method</th>
+                        <th style="vertical-align: middle;" rowspan="2">Modbus ID / IP Address</th>
+                        <th colspan="5">Port</th>
+                        <th style="vertical-align: middle;" rowspan="2" width="7%">State</th>
+                        <th style="vertical-align: middle;" rowspan="2" width="7%">Action</th>
+                    </tr>
+                    <tr align="center">
+                        <th>Disable</th>
+                        <th>SHT20</th>
+                        <th>Smoke</th>
+                        <th>Door</th>
+                        <th>Water Leak</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(extensionDeviceData|length) %}
+                    <tr align="center">
+                        <td>{{ extensionDeviceData[i]['number'] }}</td>
+                        <td>{{ extensionDeviceData[i]['name'] }}</td>
+                        <td>{% if extensionDeviceData[i]['method'] == "0" %} IP Address {% else %} Modbus ID {% endif %}</td>
+                        <td>{% if extensionDeviceData[i]['method'] == "0" %} {{ extensionDeviceData[i]['ip'] }} {% else %} {{ extensionDeviceData[i]['modbus_id'] }} {% endif %}</td>
+                        <td>{{ calculate_port[i]['port_counts']['disable'] }}</td>
+                        <td>{{ calculate_port[i]['port_counts']['sht20'] }}</td>
+                        <td>{{ calculate_port[i]['port_counts']['smoke'] }}</td>
+                        <td>{{ calculate_port[i]['port_counts']['door'] }}</td>
+                        <td>{{ calculate_port[i]['port_counts']['water_leak'] }}</td>
+                        <td>
+                            {% if extensionDeviceData[i]['state'] == 0 %}
+                            <span style="color: darkred; font-weight: bold;">Disable</span>
+                            {% elif extensionDeviceData[i]['state'] == 1 %}
+                            <span style="color: green; font-weight: bold;">Enable</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-edit-extensionDeviceData{{extensionDeviceData[i]['id']}}"
+                                role="button">
+                                <i class="nav-icon fas fa-edit"></i>
+                            </a>
+                            &nbsp;
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-delete-extensionDeviceData{{extensionDeviceData[i]['id']}}"
+                                role="button">
+                                <i class="nav-icon fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <div class="modal fade" id="modal-edit-extensionDeviceData{{extensionDeviceData[i]['id']}}">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/extension">
+                                    <input type="hidden" name="tab" value="environment-device">
+                                    <input type="hidden" name="action" value="environmentDeviceExtensionEdit">
+                                    <input type="hidden" name="id" value="{{ extensionDeviceData[i]['id'] }}">
+                                    <input type="hidden" name="last_port1" value="{{ extensionDeviceData[i]['port1'] }}">
+                                    <input type="hidden" name="last_port2" value="{{ extensionDeviceData[i]['port2'] }}">
+                                    <input type="hidden" name="last_port3" value="{{ extensionDeviceData[i]['port3'] }}">
+                                    <input type="hidden" name="last_port4" value="{{ extensionDeviceData[i]['port4'] }}">
+                                    <input type="hidden" name="last_port5" value="{{ extensionDeviceData[i]['port5'] }}">
+                                    <input type="hidden" name="last_port6" value="{{ extensionDeviceData[i]['port6'] }}">
+                                    <input type="hidden" name="last_port7" value="{{ extensionDeviceData[i]['port7'] }}">
+                                    <input type="hidden" name="last_port8" value="{{ extensionDeviceData[i]['port8'] }}">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Update Extension Device
+                                            <b>{{ extensionDeviceData[i]['name'] }}</b>
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" class="form-control" name="lastNumber"
+                                            value="{{ extensionDeviceData[i]['number'] }}">
+                                        <input type="hidden" class="form-control" name="lastName"
+                                            value="{{ extensionDeviceData[i]['name'] }}">
+                                        <input type="hidden" class="form-control" name="lastIp"
+                                            value="{{ extensionDeviceData[i]['ip'] }}">
+                                        <input type="hidden" class="form-control" name="lastModbus"
+                                            value="{{ extensionDeviceData[i]['modbus_id'] }}">
+
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Device Number</label>
+                                            <div class="col-sm-2">
+                                                <input type="number" name="environmentExtensionDeviceNumber"
+                                                    class="form-control" value="{{ extensionDeviceData[i]['number'] }}"
+                                                    min="1" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Name</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control"
+                                                    name="environmentExtensionDeviceName"
+                                                    value="{{ extensionDeviceData[i]['name'] }}" required
+                                                    autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <!-- <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">IP Address</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control"
+                                                    name="environmentExtensionDeviceIp"
+                                                    value="{{ extensionDeviceData[i]['ip'] }}" required
+                                                    autocomplete="off">
+                                            </div>
+                                        </div> -->
+
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Method</label>
+                                            <div class="col-sm-9">
+                                                <select id="methodDropdown" name="method" class="form-control methodDropdown" required>
+                                                    <option value="">--- Choose Method ---</option>
+                                                    <option value="0" {% if extensionDeviceData[i]['method']== "0" %}selected{% endif %}>Network</option>
+                                                    <option value="1" {% if extensionDeviceData[i]['method']== "1" %}selected{% endif %}>Modbus</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                            
+                                        <div id="ipField" class="form-group row d-none ipField">
+                                            <label class="col-sm-3 col-form-label">IP Address</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="ip_address" value="{{ extensionDeviceData[i]['ip'] }}" autocomplete="off">
+                                            </div>
+                                        </div>
+                            
+                                        <div id="modbusField" class="form-group row d-none modbusField">
+                                            <label class="col-sm-3 col-form-label">Modbus ID</label>
+                                            <div class="col-sm-9">
+                                                <input type="number" class="form-control" name="modbus_id" value="{{ extensionDeviceData[i]['modbus_id'] }}" min="1" autocomplete="off">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row ">
+                                            <label class="col-sm-3 col-form-label">Port 1</label>
+                                            <div class="col-sm-3">
+                                                <select name="environmentExtensionPort1" class="form-control" required
+                                                    autocomplete="off">
+                                                    <option value="0" {% if extensionDeviceData[i]['port1']==0
+                                                        %}selected{% endif %}>
+                                                        Disable
+                                                    </option>
+                                                    <option value="1" {% if extensionDeviceData[i]['port1']==1
+                                                        %}selected{% endif %}>
+                                                        SHT20
+                                                    </option>
+                                                    <option value="2" {% if extensionDeviceData[i]['port1']==2
+                                                        %}selected{% endif %}>
+                                                        Smoke
+                                                    </option>
+                                                    <option value="3" {% if extensionDeviceData[i]['port1']==3
+                                                        %}selected{% endif %}>
+                                                        Door
+                                                    </option>
+                                                    <option value="4" {% if extensionDeviceData[i]['port1']==4
+                                                        %}selected{% endif %}>
+                                                        Water Leak
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-1"></div>
+                                            <label class="col-sm-2 col-form-label">Port 2</label>
+                                            <div class="col-sm-3">
+                                                <select name="environmentExtensionPort2" class="form-control" required
+                                                    autocomplete="off">
+                                                    <option value="0" {% if extensionDeviceData[i]['port2']==0
+                                                        %}selected{% endif %}>
+                                                        Disable
+                                                    </option>
+                                                    <option value="1" {% if extensionDeviceData[i]['port2']==1
+                                                        %}selected{% endif %}>
+                                                        SHT20
+                                                    </option>
+                                                    <option value="2" {% if extensionDeviceData[i]['port2']==2
+                                                        %}selected{% endif %}>
+                                                        Smoke
+                                                    </option>
+                                                    <option value="3" {% if extensionDeviceData[i]['port2']==3
+                                                        %}selected{% endif %}>
+                                                        Door
+                                                    </option>
+                                                    <option value="4" {% if extensionDeviceData[i]['port2']==4
+                                                        %}selected{% endif %}>
+                                                        Water Leak
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Port 3</label>
+                                            <div class="col-sm-3">
+                                                <select name="environmentExtensionPort3" class="form-control" required
+                                                    autocomplete="off">
+                                                    <option value="0" {% if extensionDeviceData[i]['port3']==0
+                                                        %}selected{% endif %}>
+                                                        Disable
+                                                    </option>
+                                                    <option value="1" {% if extensionDeviceData[i]['port3']==1
+                                                        %}selected{% endif %}>
+                                                        SHT20
+                                                    </option>
+                                                    <option value="2" {% if extensionDeviceData[i]['port3']==2
+                                                        %}selected{% endif %}>
+                                                        Smoke
+                                                    </option>
+                                                    <option value="3" {% if extensionDeviceData[i]['port3']==3
+                                                        %}selected{% endif %}>
+                                                        Door
+                                                    </option>
+                                                    <option value="4" {% if extensionDeviceData[i]['port3']==4
+                                                        %}selected{% endif %}>
+                                                        Water Leak
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-1"></div>
+                                            <label class="col-sm-2 col-form-label">Port 4</label>
+                                            <div class="col-sm-3">
+                                                <select name="environmentExtensionPort4" class="form-control" required
+                                                    autocomplete="off">
+                                                    <option value="0" {% if extensionDeviceData[i]['port4']==0
+                                                        %}selected{% endif %}>
+                                                        Disable
+                                                    </option>
+                                                    <option value="1" {% if extensionDeviceData[i]['port4']==1
+                                                        %}selected{% endif %}>
+                                                        SHT20
+                                                    </option>
+                                                    <option value="2" {% if extensionDeviceData[i]['port4']==2
+                                                        %}selected{% endif %}>
+                                                        Smoke
+                                                    </option>
+                                                    <option value="3" {% if extensionDeviceData[i]['port4']==3
+                                                        %}selected{% endif %}>
+                                                        Door
+                                                    </option>
+                                                    <option value="4" {% if extensionDeviceData[i]['port4']==4
+                                                        %}selected{% endif %}>
+                                                        Water Leak
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Port 5</label>
+                                            <div class="col-sm-3">
+                                                <select name="environmentExtensionPort5" class="form-control" required
+                                                    autocomplete="off">
+                                                    <option value="0" {% if extensionDeviceData[i]['port5']==0
+                                                        %}selected{% endif %}>
+                                                        Disable
+                                                    </option>
+                                                    <option value="1" {% if extensionDeviceData[i]['port5']==1
+                                                        %}selected{% endif %}>
+                                                        SHT20
+                                                    </option>
+                                                    <option value="2" {% if extensionDeviceData[i]['port5']==2
+                                                        %}selected{% endif %}>
+                                                        Smoke
+                                                    </option>
+                                                    <option value="3" {% if extensionDeviceData[i]['port5']==3
+                                                        %}selected{% endif %}>
+                                                        Door
+                                                    </option>
+                                                    <option value="4" {% if extensionDeviceData[i]['port5']==4
+                                                        %}selected{% endif %}>
+                                                        Water Leak
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-1"></div>
+                                            <label class="col-sm-2 col-form-label">Port 6</label>
+                                            <div class="col-sm-3">
+                                                <select name="environmentExtensionPort6" class="form-control" required
+                                                    autocomplete="off">
+                                                    <option value="0" {% if extensionDeviceData[i]['port6']==0
+                                                        %}selected{% endif %}>
+                                                        Disable
+                                                    </option>
+                                                    <option value="1" {% if extensionDeviceData[i]['port6']==1
+                                                        %}selected{% endif %}>
+                                                        SHT20
+                                                    </option>
+                                                    <option value="2" {% if extensionDeviceData[i]['port6']==2
+                                                        %}selected{% endif %}>
+                                                        Smoke
+                                                    </option>
+                                                    <option value="3" {% if extensionDeviceData[i]['port6']==3
+                                                        %}selected{% endif %}>
+                                                        Door
+                                                    </option>
+                                                    <option value="4" {% if extensionDeviceData[i]['port6']==4
+                                                        %}selected{% endif %}>
+                                                        Water Leak
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Port 7</label>
+                                            <div class="col-sm-3">
+                                                <select name="environmentExtensionPort7" class="form-control" required
+                                                    autocomplete="off">
+                                                    <option value="0" {% if extensionDeviceData[i]['port7']==0
+                                                        %}selected{% endif %}>
+                                                        Disable
+                                                    </option>
+                                                    <option value="1" {% if extensionDeviceData[i]['port7']==1
+                                                        %}selected{% endif %}>
+                                                        SHT20
+                                                    </option>
+                                                    <option value="2" {% if extensionDeviceData[i]['port7']==2
+                                                        %}selected{% endif %}>
+                                                        Smoke
+                                                    </option>
+                                                    <option value="3" {% if extensionDeviceData[i]['port7']==3
+                                                        %}selected{% endif %}>
+                                                        Door
+                                                    </option>
+                                                    <option value="4" {% if extensionDeviceData[i]['port7']==4
+                                                        %}selected{% endif %}>
+                                                        Water Leak
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-1"></div>
+                                            <label class="col-sm-2 col-form-label">Port 8</label>
+                                            <div class="col-sm-3">
+                                                <select name="environmentExtensionPort8" class="form-control" required
+                                                    autocomplete="off">
+                                                    <option value="0" {% if extensionDeviceData[i]['port8']==0
+                                                        %}selected{% endif %}>
+                                                        Disable
+                                                    </option>
+                                                    <option value="1" {% if extensionDeviceData[i]['port8']==1
+                                                        %}selected{% endif %}>
+                                                        SHT20
+                                                    </option>
+                                                    <option value="2" {% if extensionDeviceData[i]['port8']==2
+                                                        %}selected{% endif %}>
+                                                        Smoke
+                                                    </option>
+                                                    <option value="3" {% if extensionDeviceData[i]['port8']==3
+                                                        %}selected{% endif %}>
+                                                        Door
+                                                    </option>
+                                                    <option value="4" {% if extensionDeviceData[i]['port8']==4
+                                                        %}selected{% endif %}>
+                                                        Water Leak
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">State</label>
+                                            <div class="col-sm-3">
+                                                <select name="environmentExtensionDeviceState" class="form-control"
+                                                    required>
+                                                    <option value="0" {% if extensionDeviceData[i]['state']==0
+                                                        %}selected{% endif %}>Disable</option>
+                                                    <option value="1" {% if extensionDeviceData[i]['state']==1
+                                                        %}selected{% endif %}>Enable</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Update
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modal-delete-extensionDeviceData{{extensionDeviceData[i]['id']}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/extension">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Confirmation Delete
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="tab" value="environment-device">
+                                        <input type="hidden" name="action" value="environmentDeviceExtensionDelete">
+                                        <input type="hidden" name="id" value="{{ extensionDeviceData[i]['id'] }}">
+                                        <input type="hidden" name="name" value="{{ extensionDeviceData[i]['name'] }}">
+                                        <input type="hidden" name="number" value="{{ extensionDeviceData[i]['number'] }}">
+                                        <input type="hidden" name="last_port1" value="{{ extensionDeviceData[i]['port1'] }}">
+                                        <input type="hidden" name="last_port2" value="{{ extensionDeviceData[i]['port2'] }}">
+                                        <input type="hidden" name="last_port3" value="{{ extensionDeviceData[i]['port3'] }}">
+                                        <input type="hidden" name="last_port4" value="{{ extensionDeviceData[i]['port4'] }}">
+                                        <input type="hidden" name="last_port5" value="{{ extensionDeviceData[i]['port5'] }}">
+                                        <input type="hidden" name="last_port6" value="{{ extensionDeviceData[i]['port6'] }}">
+                                        <input type="hidden" name="last_port7" value="{{ extensionDeviceData[i]['port7'] }}">
+                                        <input type="hidden" name="last_port8" value="{{ extensionDeviceData[i]['port8'] }}">
+                                        <p>
+                                            Are you sure to delete Extension Device
+                                            <b>
+                                                {{ extensionDeviceData[i]['name'] }}
+                                            </b>?
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            No
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Yes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Master Data Tab Content -->
+        <div class="tab-pane fade {% if tab == 'environment-master' %}show active{% endif %}"
+            id="custom-content-env-environment-master" role="tabpanel"
+            aria-labelledby="custom-content-env-environment-master-tab">
+            <br>
+            <!-- Add Button to Trigger the Modal -->
+            <div class="row col-md-12">
+                {% if sessionData['level'] == 1 %}
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#modal-extension-master-sensor-add">
+                    <i class="fas fa-plus" title="Add"></i> Add Sensor
+                </button>
+                &nbsp;&nbsp;
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#modal-extension-master-parameter-add">
+                    <i class="fas fa-plus" title="Add"></i> Add Parameter
+                </button>
+                &nbsp;&nbsp;
+                <a href="/setting/extension?tab=environment-master" role="button">
+                    <button type="button" class="btn btn-default">
+                        <i class="fas fa-sync" title="Refresh"></i> Refresh
+                    </button>
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="modal fade" id="modal-extension-master-sensor-add" tabindex="-1" role="dialog"
+                aria-labelledby="modalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/extension">
+                            <input type="hidden" name="tab" value="environment-master">
+                            <input type="hidden" name="action" value="environmentMasterSensorAdd">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel">Add Master Sensor</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Name</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="environmentMasterSensorName"
+                                            required autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Sensor ID</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="environmentMasterSensorId"
+                                            required autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modal-extension-master-parameter-add" tabindex="-1" role="dialog"
+                aria-labelledby="modalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/extension">
+                            <input type="hidden" name="tab" value="environment-master">
+                            <input type="hidden" name="action" value="environmentMasterParameterAdd">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel">Add Master Parameter</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Name</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="environmentMasterParameterName"
+                                            required autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Parameter Code</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="environmentMasterParameterCode"
+                                            required autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table for Master Sensor -->
+            <br>
+            <h5 class="modal-title">
+                Master Data Sensor
+            </h5>
+            <table id="TABLE_1" class="table table-bordered table-hover">
+                <thead>
+                    <tr align="center">
+                        <th width="5%">No</th>
+                        <th>Name</th>
+                        <th>Sensor ID</th>
+                        <th width="7%">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(extensionMasterSensorData|length) %}
+                    <tr align="center">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ extensionMasterSensorData[i]['name'] }}</td>
+                        <td>{{ extensionMasterSensorData[i]['sensorId'] }}</td>
+                        <td>
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-edit-extensionMasterSensorData{{extensionMasterSensorData[i]['id']}}"
+                                role="button">
+                                <i class="nav-icon fas fa-edit"></i>
+                            </a>
+                            &nbsp;
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-delete-extensionMasterSensorData{{extensionMasterSensorData[i]['id']}}"
+                                role="button">
+                                <i class="nav-icon fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <div class="modal fade"
+                        id="modal-edit-extensionMasterSensorData{{extensionMasterSensorData[i]['id']}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/extension">
+                                    <input type="hidden" name="tab" value="environment-master">
+                                    <input type="hidden" name="action" value="environmentMasterSensorEdit">
+                                    <input type="hidden" name="id" value="{{ extensionMasterSensorData[i]['id'] }}">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Update Master Sensor
+                                            <b>{{ extensionMasterSensorData[i]['name'] }}</b>
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Name</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control"
+                                                    name="environmentMasterSensorName"
+                                                    value="{{ extensionMasterSensorData[i]['name'] }}" required
+                                                    autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Sensor ID</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="environmentMasterSensorId"
+                                                    value="{{ extensionMasterSensorData[i]['sensorId'] }}" required
+                                                    autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Update
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade"
+                        id="modal-delete-extensionMasterSensorData{{extensionMasterSensorData[i]['id']}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/extension">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Confirmation Delete
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="tab" value="environment-master">
+                                        <input type="hidden" name="action" value="environmentMasterSensorDelete">
+                                        <input type="hidden" name="id" value="{{ extensionMasterSensorData[i]['id'] }}">
+                                        <input type="hidden" name="name"
+                                            value="{{ extensionMasterSensorData[i]['name'] }}">
+                                        <p>
+                                            Are you sure to delete Master Sensor
+                                            <b>
+                                                {{ extensionMasterSensorData[i]['name'] }}
+                                            </b>?
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            No
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Yes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <br>
+            <hr>
+            <!-- Table for Master Parameter -->
+            <h5 class="modal-title">
+                Master Data Parameter
+            </h5>
+            <table id="TABLE_1" class="table table-bordered table-hover">
+                <thead>
+                    <tr align="center">
+                        <th width="5%">No</th>
+                        <th>Name</th>
+                        <th>Parameter Code</th>
+                        <th width="7%">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(extensionMasterParameterData|length) %}
+                    <tr align="center">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ extensionMasterParameterData[i]['name'] }}</td>
+                        <td>{{ extensionMasterParameterData[i]['parameterCode'] }}</td>
+                        <td>
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-edit-extensionMasterParameterData{{extensionMasterParameterData[i]['id']}}"
+                                role="button">
+                                <i class="nav-icon fas fa-edit"></i>
+                            </a>
+                            &nbsp;
+                            <a href="" data-toggle="modal"
+                                data-target="#modal-delete-extensionMasterParameterData{{extensionMasterParameterData[i]['id']}}"
+                                role="button">
+                                <i class="nav-icon fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <div class="modal fade"
+                        id="modal-edit-extensionMasterParameterData{{extensionMasterParameterData[i]['id']}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/extension">
+                                    <input type="hidden" name="tab" value="environment-master">
+                                    <input type="hidden" name="action" value="environmentMasterParameterEdit">
+                                    <input type="hidden" name="id" value="{{ extensionMasterParameterData[i]['id'] }}">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Update Master Parameter
+                                            <b>{{ extensionMasterParameterData[i]['name'] }}</b>
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Name</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control"
+                                                    name="environmentMasterParameterName"
+                                                    value="{{ extensionMasterParameterData[i]['name'] }}" required
+                                                    autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Parameter Code</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control"
+                                                    name="environmentMasterParameterCode"
+                                                    value="{{ extensionMasterParameterData[i]['parameterCode'] }}"
+                                                    required autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Update
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade"
+                        id="modal-delete-extensionMasterParameterData{{extensionMasterParameterData[i]['id']}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form class="form-horizontal" method="POST" action="/setting/extension">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Confirmation Delete
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="tab" value="environment-master">
+                                        <input type="hidden" name="action" value="environmentMasterParameterDelete">
+                                        <input type="hidden" name="id"
+                                            value="{{ extensionMasterParameterData[i]['id'] }}">
+                                        <input type="hidden" name="name"
+                                            value="{{ extensionMasterParameterData[i]['name'] }}">
+                                        <p>
+                                            Are you sure to delete Master Parameter
+                                            <b>
+                                                {{ extensionMasterParameterData[i]['name'] }}
+                                            </b>?
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            No
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Yes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".modal").forEach(modal => {
+        modal.addEventListener("shown.bs.modal", function () {
+            const dropdown = this.querySelector(".methodDropdown");
+            if (dropdown) {
+                updateFieldsBasedOnMethod(dropdown);
+            }
+        });
+
+        const dropdown = modal.querySelector(".methodDropdown");
+        if (dropdown) {
+            updateFieldsBasedOnMethod(dropdown);
+        }
+    });
+
+    document.addEventListener("change", function (event) {
+        if (event.target && event.target.matches(".methodDropdown")) {
+            updateFieldsBasedOnMethod(event.target);
+        }
+    });
+
+    function updateFieldsBasedOnMethod(dropdown) {
+        const selectedMethod = dropdown.value;
+        const modal = dropdown.closest(".modal");
+        const ipField = modal.querySelector(".ipField");
+        const modbusField = modal.querySelector(".modbusField");
+
+        if (selectedMethod === "0") {
+            ipField.classList.remove("d-none");
+            modbusField.classList.add("d-none");
+            modbusField.querySelector("input").value = "";
+        } else if (selectedMethod === "1") {
+            modbusField.classList.remove("d-none");
+            ipField.classList.add("d-none");
+            ipField.querySelector("input").value = "";
+        } else {
+            ipField.classList.add("d-none");
+            modbusField.classList.add("d-none");
+            ipField.querySelector("input").value = "";
+            modbusField.querySelector("input").value = "";
+        }
+    }
+});
+
+</script>
+{% endblock %}

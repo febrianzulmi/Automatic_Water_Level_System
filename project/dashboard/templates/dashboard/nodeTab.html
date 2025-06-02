@@ -1,0 +1,62 @@
+{% block nodeTab %}
+<!-- <div class="tab-pane fade" id="node" role="tabpanel" aria-labelledby="node-tab">
+						<h7 class="mt-4 mb-2">
+							<b>Summary Node Service</b>
+						</h7>
+						<table id="REALTIMETABLE_1"
+							class="table table-sm table-bordered table-striped table-hover">
+							<thead>
+								<tr align="center">
+									<th width="20%">Name</th>
+									<th width="10%">Service</th>
+									<th>Log</th>
+									<th width="15%">Log Time</th>
+								</tr>
+							</thead>
+							<tbody align="center"></tbody>
+						</table>
+					</div> -->
+<div class="tab-pane fade {% if tab == 'node' %}{{ 'show active' }}{% endif %}" id="node" role="tabpanel"
+    aria-labelledby="node-tab">
+    <div id="nodeService"></div>
+    <!-- <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <a href="?tab=node" role="button">
+                    <button type="button" class="btn btn-default">
+                        <i class="fas fa-sync" title="Refresh"></i>&nbsp;
+                        Refresh
+                    </button>
+                </a>
+            </div>
+            <div class="col-md-12">
+                <br />
+            </div>
+        </div>
+    </div>
+    <h7 class="mt-4 mb-2">
+        <b>Summary Node Service</b>
+    </h7>
+    <table id="TABLE_1" class="table table-sm table-bordered table-striped table-hover">
+        <thead>
+            <tr align="center">
+                <th width="20%">Name</th>
+                <th width="10%">Service</th>
+                <th>Log</th>
+                <th width="15%">Log Time</th>
+            </tr>
+        </thead>
+        <tbody align="center">
+            {% for x in range(resultData['service']['node']|length)
+            %}
+            <tr>
+                <td>{{ resultData['service']['node'][x]['displayName'] }}</td>
+                <td>{{ resultData['service']['node'][x]['statusOfService'] }}</td>
+                <td>{{ resultData['service']['node'][x]['serviceState'] }}</td>
+                <td>{{ resultData['service']['node'][x]['lastUpdate'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table> -->
+</div>
+{% endblock %}

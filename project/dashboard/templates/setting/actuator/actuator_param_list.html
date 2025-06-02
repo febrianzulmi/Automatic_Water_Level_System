@@ -1,0 +1,268 @@
+{% block paramActuatorList %}
+<div class="tab-pane fade {% if tab == 'paramActuatorList' %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-paramActuatorList" role="tabpanel" aria-labelledby="custom-tabs-one-paramActuatorList-tab">
+    <br>
+    <div class="modal fade" id="modal-paramActuatorList-add">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <form class="form-horizontal" method="POST" action="/setting/actuator">
+                    <input type="hidden" name="tab" value="paramActuatorList">
+                    <input type="hidden" name="action" value="paramActuatorListAdd">
+                    <input type="hidden" name="actuatorNow3" value="{{ actuatorNow3 }}">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Add Parameter Actuator List
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">
+                                Actuator List
+                            </label>
+                            <div class="col-sm-8">
+                                <select name="actuator_list_id" class="form-control">
+                                    {% for itemActuatorList in range (actuatorList|length) %}
+                                    <option value="{{ actuatorList[itemActuatorList]['id'] }}">
+                                        {{ actuatorList[itemActuatorList]['name'] }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">
+                                Name
+                            </label>
+                            <div class="col-sm-8">
+                                <input type="text" name="name" class="form-control" required autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">
+                                Parameter
+                            </label>
+                            <div class="col-sm-8">
+                                <input type="text" name="parameter" class="form-control" required autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">
+                                Value
+                            </label>
+                            <div class="col-sm-8">
+                                <input type="text" name="value" class="form-control" required autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            Add
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row col-md-12">
+        {% if sessionData['level'] == 1 %}
+        <a href="" data-toggle="modal" data-target="#modal-paramActuatorList-add" role="button">
+            <button type="button" class="btn btn-primary">
+                <i class="fas fa-plus" title="Add"></i></i> Add
+            </button>
+        </a>
+        &nbsp;&nbsp;
+        {% endif %}
+        <a href="/setting/actuator?tab=paramActuatorList" role="button">
+            <button type="button" class="btn btn-default">
+                <i class="fas fa-sync" title="Refresh"></i> Refresh
+            </button>
+        </a>
+        &nbsp;
+    </div>
+    <br />
+    <form class="form-horizontal" method="POST" action="/setting/actuator">
+        <div class="form-group row">
+            <input type="hidden" name="tab" value="paramActuatorList">
+            <input type="hidden" name="action" value="paramActuatorListFilter">
+            <div class="col-sm-4">
+                <select name="actuatorNow3" class="form-control">
+                    <option value="All">--- All Actuator Group ---</option>
+                    {% for item in range(actuatorData|length) %}
+                    <option value="{{ actuatorData[item]['id']}}" {% if
+                        actuatorData[item]['id']|string==actuatorNow3|string %}{{ "selected" }}{% endif %}>
+                        {{ actuatorData[item]['name']}}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter" title="Filter"></i>
+            </button>
+        </div>
+    </form>
+    <table id="TABLE_3" class="table table-bordered table-hover">
+        <thead>
+            <tr align="center">
+                <th>Actuator List</th>
+                <th>Name</th>
+                <th>Parameter</th>
+                <th>Value</th>
+                {% if sessionData['level'] == 1 %}
+                <th width="5%">Action</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for itemActuatorParam in range(actuatorParamList|length) %}
+            <tr align="center">
+                <td>
+                    {{ actuatorParamList[itemActuatorParam]['name'] }}
+                </td>
+                <td>
+                    {{ actuatorParamList[itemActuatorParam]['name_parameter'] }}
+                </td>
+                <td>
+                    {{ actuatorParamList[itemActuatorParam]['parameter'] }}
+                </td>
+                <td>
+                    {{ actuatorParamList[itemActuatorParam]['value'] }}
+                </td>
+                {% if sessionData['level'] == 1 %}
+                <td>
+                    <a href="" data-toggle="modal" data-target="#modal-edit-actuatorParamList{{ actuatorParamList[itemActuatorParam]['id'] }}" role="button">
+                        <i class="nav-icon fas fa-edit"></i>
+                    </a>
+                    &nbsp;
+                    <a href="" data-toggle="modal" data-target="#modal-delete-actuatorParamList{{ actuatorParamList[itemActuatorParam]['id'] }}" role="button">
+                        <i class="nav-icon fas fa-trash"></i>
+                    </a>
+                </td>
+                {%endif%}
+            </tr>
+            <div class="modal fade" id="modal-edit-actuatorParamList{{ actuatorParamList[itemActuatorParam]['id'] }}">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/actuator">
+                            <input type="hidden" name="tab" value="paramActuatorList">
+                            <input type="hidden" name="action" value="paramActuatorListUpdate">
+                            <input type="hidden" name="actuatorNow3" value="{{ actuatorNow3 }}">
+                            <input type="hidden" name="id" value="{{ actuatorParamList[itemActuatorParam]['id'] }}">
+                            <input type="hidden" name="last_actuator_list_id" value="{{ actuatorParamList[itemActuatorParam]['actuator_list_id'] }}">
+                            <input type="hidden" name="last_parameter" value="{{ actuatorParamList[itemActuatorParam]['parameter'] }}">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    Update Parameter 
+                                    <b>
+                                        {{ actuatorParamList[itemActuatorParam]['name_parameter'] }}
+                                    </b>
+                                    of Actuator List <b>{{ actuatorParamList[itemActuatorParam]['name'] }} </b>
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">
+                                        Actuator List
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <select name="actuator_list_id" class="form-control">
+                                            {% for itemActuators in range (actuatorList|length) %}
+                                            <option value="{{ actuatorList[itemActuators]['id'] }}" {% if actuatorParamList[itemActuatorParam]['actuator_list_id']|string==actuatorList[itemActuators]['id']|string %}{{ 'selected' }}{% endif %}>
+                                                {{ actuatorList[itemActuators]['name'] }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">
+                                        Name
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <input type="text" name="name" class="form-control" value="{{ actuatorParamList[itemActuatorParam]['name_parameter'] }}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">
+                                        Parameter
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <input type="text" name="parameter" class="form-control" value="{{ actuatorParamList[itemActuatorParam]['parameter'] }}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">
+                                        Value
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <input type="text" name="value" class="form-control" value="{{ actuatorParamList[itemActuatorParam]['value'] }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Update
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="modal-delete-actuatorParamList{{ actuatorParamList[itemActuatorParam]['id'] }}">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST"
+                              action="/setting/actuator">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    Confirmation Delete
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="tab" value="paramActuatorList">
+                                <input type="hidden" name="action" value="paramActuatorListDelete">
+                                <input type="hidden" name="actuatorNow3" value="{{ actuatorNow3 }}">
+                                <input type="hidden" name="id" value="{{ actuatorParamList[itemActuatorParam]['id'] }}">
+                                <input type="hidden" name="name" value="{{ actuatorParamList[itemActuatorParam]['name_parameter'] }}">
+                                <p>
+                                    Are you sure to delete Parameter
+                                    <b>
+                                        {{ actuatorParamList[itemActuatorParam]['name_parameter'] }}
+                                    </b>
+                                    of Actuator List
+                                    <b>
+                                        {{ actuatorParamList[itemActuatorParam]['name'] }}
+                                    </b> ?
+                                </p>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                    No
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Yes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends "base.html" %} {% block content %}
+{% if status == 1 %}
+<div class="row">
+	<div class="col-md-12">
+		{% if flag == 0 %}
+		<a href="/setting/project">
+			<button type="button" class="col-md-12 btn btn-danger">No Project Installed</button>
+		</a>
+		{% else %}
+		<script>
+			var ip = location.hostname;
+			var loc = "http://" + ip + ":{{ port }}";
+			document.write('<a href="' + loc + '" target="_blank">'); 
+		</script>
+		<button type="button" class="col-md-12 btn btn-info">Go To {{name}} Dashboard</button>
+		</a>
+		{% endif %}
+		<br><br>
+	</div>
+</div>
+{% endif %}
+<script type="text/javascript">
+	function info() {
+		$.ajax({
+			type: "GET",
+			url: "/api/get/info",
+			success: function (data) {
+				const data2 = JSON.parse(data);
+				var celcius = "o";
+				//     document.getElementById('dev_temp').innerHTML = data2.dev_temp + celcius.sup() +"C";
+				//     document.getElementById('dev_humid').innerHTML = data2.dev_humid + " %";
+				var temp = data2.temp + celcius.sup() + "C";
+				document.getElementById('storage').innerHTML = data2.storage;
+				document.getElementById('cpu').innerHTML = data2.cpu + " | " + temp;
+				document.getElementById('memory').innerHTML = data2.memory;
+				document.getElementById('uptime').innerHTML = data2.uptime;
+				document.getElementById('last').innerHTML = data2.last;
+				document.getElementById('fan').innerHTML = data2.fan + " %";
+			}
+		});
+	}
+	setInterval(info, 1000);
+</script>
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="card card-info card-tabs">
+			<div class="card-header p-0 pt-1">
+				<ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link active" id="custom-tabs-one-info-tab"
+							data-toggle="pill" href="#custom-tabs-one-info" role="tab"
+							aria-controls="custom-tabs-one-info"
+							aria-selected="false">System</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="custom-tabs-one-network-tab" data-toggle="pill"
+							href="#custom-tabs-one-network" role="tab"
+							aria-controls="custom-tabs-one-network"
+							aria-selected="false">Network</a>
+					</li>
+				</ul>
+			</div>
+			<div class="card-body">
+				<div class="tab-content" id="custom-tabs-one-tabContent">
+					<div class="tab-pane fade show active" id="custom-tabs-one-info" role="tabpanel"
+						aria-labelledby="custom-tabs-one-info-tab">
+						<div class="row justify-content-center">
+							<div class="col-md-3 col-sm-6 col-12">
+								<div class="info-box bg-gradient-info">
+									<span class="info-box-icon"><i
+											class="far fa-hdd"></i></span>
+									<div class="info-box-content">
+										<span
+											class="info-box-text">Storage</span>
+										<span class="info-box-number">
+											<div id="storage"></div>
+										</span>
+									</div>
+								</div>
+							</div>
+							<!-- <div class="col-md-2 col-sm-6 col-12">
+								<div class="info-box bg-gradient-info">
+									<span class="info-box-icon"><i
+											class="fas fa-temperature-low"></i></span>
+									<div class="info-box-content">
+										<span class="info-box-text">Device
+											Temperature</span>
+										<span class="info-box-number">
+											<div id="dev_temp"></div>
+										</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-2 col-sm-6 col-12">
+								<div class="info-box bg-gradient-info">
+									<span class="info-box-icon"><i
+											class="fas fa-tint"></i></span>
+									<div class="info-box-content">
+										<span class="info-box-text">Device
+											Humidity</span>
+										<span class="info-box-number">
+											<div id="dev_humid"></div>
+										</span>
+									</div>
+								</div>
+							</div> -->
+							<div class="col-md-3 col-sm-6 col-12">
+								<div class="info-box bg-gradient-info">
+									<span class="info-box-icon"><i
+											class="fas fa-fan"></i></span>
+									<div class="info-box-content">
+										<span class="info-box-text">Fan
+											Speed</span>
+										<span class="info-box-number">
+											<div id="fan"></div>
+										</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3 col-sm-6 col-12">
+								<div class="info-box bg-gradient-info">
+									<span class="info-box-icon"><i
+											class="fas fa-microchip"></i></span>
+									<div class="info-box-content">
+										<span class="info-box-text">CPU</span>
+										<span class="info-box-number">
+											<div id="cpu"></div>
+										</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3 col-sm-6 col-12">
+								<div class="info-box bg-gradient-info">
+									<span class="info-box-icon"><i
+											class="fas fa-memory"></i></span>
+									<div class="info-box-content">
+										<span class="info-box-text">Memory
+											Usage</span>
+										<span class="info-box-number">
+											<div id="memory"></div>
+										</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4 col-sm-6 col-12">
+								<div class="info-box bg-gradient-info">
+									<span class="info-box-icon"><i
+											class="fas fa-stopwatch"></i></span>
+									<div class="info-box-content">
+										<span
+											class="info-box-text">Uptime</span>
+										<span class="info-box-number">
+											<div id="uptime"></div>
+										</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4 col-sm-6 col-12">
+								<div class="info-box bg-gradient-info">
+									<span class="info-box-icon"><i
+											class="fas fa-clock"></i></span>
+									<div class="info-box-content">
+										<span class="info-box-text">Last
+											Boot</span>
+										<span class="info-box-number">
+											<div id="last"></div>
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="custom-tabs-one-network" role="tabpanel"
+						aria-labelledby="custom-tabs-one-network-tab">
+						<b>Current Settings</b>
+						<div class="row">
+							{% for i in range(length) %}
+							<div class="col-md-6">
+								<div class="card card-info">
+									<div class="card-header">
+										<span class="info-box-icon">
+											<h3 class="card-title"><i
+													class="fas {% if "
+													eth" in data[i]
+													%}{{'fa-ethernet'}}{%else%}{{'fa-wifi'}}{%endif%}">
+												</i>&nbsp;&nbsp;{{
+												data[i] }}</h3>
+										</span>
+									</div>
+									<div class="card-body">
+										<dl class="row">
+											<dt class="col-sm-4">State</dt>
+											<dd class="col-sm-8">{{
+												states[i] }}</dd>
+											<dt class="col-sm-4">MAC Address
+											</dt>
+											<dd class="col-sm-8">{{ macs[i]
+												}}</dd>
+											<dt class="col-sm-4">Connection
+											</dt>
+											<dd class="col-sm-8">{% if
+												cons[i] == 0 %}{{
+												'Static' }}{% else %}{{
+												'DHCP' }}{% endif %}
+											</dd>
+											<dt class="col-sm-4">IP Address
+											</dt>
+											<dd class="col-sm-8">{{ ip[i] }}
+											</dd>
+										</dl>
+									</div>
+								</div>
+							</div>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

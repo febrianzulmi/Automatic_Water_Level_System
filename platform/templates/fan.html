@@ -1,0 +1,83 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-12">
+	  <div class="card card-info card-tabs">
+     <div class="card-header p-0 pt-1">
+      <ul class="nav nav-tabs" id="custom-content-header-tab" role="tablist">
+			  <li class="nav-item">
+			    <a class="nav-link {% if page == '1' %}{{ 'active' }}{% endif %}" id="custom-content-header-fan-tab" data-toggle="pill" href="#custom-content-header-fan" role="tab" aria-controls="custom-content-header-fan" aria-selected="true">Fan Speed</a>
+				</li>
+				<li class="nav-item">
+				  <a class="nav-link {% if page == '2' %}{{ 'active' }}{% endif %}" id="custom-content-header-temp-tab" data-toggle="pill" href="#custom-content-header-temp" role="tab" aria-controls="custom-content-header-temp" aria-selected="false">Temperature Range</a>
+				</li>
+			</ul> 
+    </div>
+    <div class="card-body">
+      <div class="tab-content" id="custom-content-header-tab">
+         <div class="tab-pane fade {% if page == '1' %}{{ 'show active' }}{% endif %}" id="custom-content-header-fan" role="tabpanel" aria-labelledby="custom-content-header-fan-tab">
+		         <form class="form-horizontal" method="POST" action="/setting/fan">
+												<input type="hidden" name="page" value="1">
+												<div class="form-group row">
+													<label class="col-sm-2 col-form-label">Minimum Fan Speed</label>
+													<div class="col-sm-2">
+														<input type="text" class="form-control" name="min_fan" value="{{ min_fan }}" required autocomplete="off">
+													</div>
+												</div>
+												<div class="form-group row">
+													<label class="col-sm-2 col-form-label">Maximum Fan Speed</label>
+													<div class="col-sm-2">
+														<input type="text" class="form-control" name="max_fan" value="{{ max_fan }}" required autocomplete="off">
+													</div>
+												</div>
+												<button type="submit" class="btn btn-info float-right">Submit</button>
+											</form>
+		       </div>
+         <div class="tab-pane fade {% if page == '2' %}{{ 'show active' }}{% endif %}" id="custom-content-header-temp" role="tabpanel" aria-labelledby="custom-content-header-temp-tab">
+		         <form class="form-horizontal" method="POST" action="/setting/fan">
+							  <input type="hidden" name="page" value="2">
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Minimum Temperature Range</label>
+									<div class="col-sm-2">
+										<input type="text" class="form-control" name="min_temp" value="{{ min_temp }}" required autocomplete="off">
+									</div>
+								</div>
+								<div class="form-group row">
+								  <label class="col-sm-2 col-form-label">Maximum Temperature Range</label>
+									<div class="col-sm-2">
+										<input type="text" class="form-control" name="max_temp" value="{{ max_temp }}" required autocomplete="off">
+									</div>
+								</div>					
+								<button type="submit" class="btn btn-info float-right">Submit</button>
+							</form>
+		       </div> 
+          		               
+      </div>
+    </div>
+  </div>		
+</div>
+{% endblock %}
+{% block lightbox %}
+<script>
+  $(function () {
+    $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+      event.preventDefault();
+      $(this).ekkoLightbox({
+        alwaysShowClose: true
+      });
+    });
+
+    $('.filter-container').filterizr({gutterPixels: 3});
+    $('.btn[data-filter]').on('click', function() {
+      $('.btn[data-filter]').removeClass('active');
+      $(this).addClass('active');
+    });
+  })
+</script>
+{% endblock %}
+{% block script %}
+<script>
+$(function () {
+  bsCustomFileInput.init();
+});
+</script>
+ {% endblock %}

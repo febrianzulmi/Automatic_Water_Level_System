@@ -1,0 +1,48 @@
+{% block sensor_port_config %}
+<div class="tab-pane fade {% if 'sensor-port-config' in tab %}{{ 'show active' }}{% endif %}"
+    id="custom-tabs-one-sensor-port-config" role="tabpanel" aria-labelledby="custom-tabs-one-sensor-port-config-tab">
+
+    <form class="form-horizontal" method="POST" action="/setting/sensor">
+        {% for i in range(1, 7) %}
+        <input type="hidden" name="tab" value="sensor-port-config">
+        <input type="hidden" name="action" value="settingPortConfig">
+        <input type="hidden" name="lastP{{ i }}" value="{{ sensorPortConfig[i - 1]['type'] }}">
+        
+        <div class="form-group row">
+            <label class="col-sm-12 col-form-label">
+                <h6>Port {{ i }}</h5>
+            </label>
+            <label class="col-sm-2 col-form-label">Type</label>
+            <div class="col-sm-2">
+                <select name="typePort{{ i }}" class="form-control" required autocomplete="off">
+                    <option value="0" {% if sensorPortConfig[i - 1]['type']=="0" %}selected{% endif %}>Disable</option>
+                    <option value="1" {% if sensorPortConfig[i - 1]['type']=="1" %}selected{% endif %}>SHT20</option>
+                    <option value="2" {% if sensorPortConfig[i - 1]['type']=="2" %}selected{% endif %}>Smoke</option>
+                    <option value="3" {% if sensorPortConfig[i - 1]['type']=="3" %}selected{% endif %}>Door</option>
+                </select>
+            </div>
+            <div class="col-sm-1"></div>
+            <label class="col-sm-2 col-form-label">Modbus ID</label>
+            <div class="col-sm-1">
+                <input type="number" class="form-control" name="modbusIdP{{ i }}"
+                    value="{{ sensorPortConfig[i - 1]['modbus_id'] }}" required autocomplete="off" min="1">
+            </div>
+            <label class="col-sm-2 col-form-label">Digital Pin</label>
+            <div class="col-sm-1">
+                <input type="number" class="form-control" name="digitalPinP{{ i }}"
+                    value="{{ sensorPortConfig[i - 1]['digital_pin'] }}" required autocomplete="off" min="1">
+            </div>
+        </div>
+        {% endfor %}
+
+        <hr>
+        <a href="/setting/sensor?tab=sensor-port-config" role="button">
+            <button type="button" class="btn btn-default">Refresh</button>
+        </a>
+        <button type="submit" class="btn btn-primary float-right">Submit</button>
+    </form>
+            
+           
+
+</div>
+{% endblock %}

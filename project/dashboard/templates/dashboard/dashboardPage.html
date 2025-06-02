@@ -1,0 +1,400 @@
+{% extends "base.html" %} {% block content %}
+<script type="text/javascript">
+    function summaryDashboardInfo() {
+        $.ajax({
+            type: "GET",
+            url: "/api/dashboard/information",
+            success: function (data) {
+                function calculateOverallStatus(services) {
+                    if (services.some(service => service.state !== 'active')) return "red-silang";
+                    if (services.some(service => (service.log || "").toLowerCase().includes("failed") || (service.log || "").toLowerCase().includes("error"))) return "orange-warning";
+                    if (services.some(service => service.autorun === 'disabled')) return "yellow-warning";
+                    return "green-checklist";
+                }
+
+                function calculateOverallSystemStatus(nodeStatus, sensorStatus, actuatorStatus) {
+                    if (
+                        nodeStatus === "red-silang" ||
+                        sensorStatus === "red-silang" ||
+                        actuatorStatus === "red-silang"
+                    ) {
+                        return "red-silang"; // Error
+                    }
+                    if (
+                        nodeStatus === "yellow-warning" ||
+                        sensorStatus === "yellow-warning" ||
+                        actuatorStatus === "yellow-warning" ||
+                        nodeStatus === "orange-warning" ||
+                        sensorStatus === "orange-warning" ||
+                        actuatorStatus === "orange-warning"
+                    ) {
+                        return "yellow-warning"; // Warning
+                    }
+                    return "green-checklist"; // OK
+                }
+
+                function generateInfoBox(serviceName, status) {
+                    return `
+                        <div class="info-box ${
+                            status === "red-silang" ? "bg-gradient-danger" :
+                            status === "orange-warning" ? "bg-gradient-orange" :
+                            status === "yellow-warning" ? "bg-gradient-warning" : "bg-gradient-success"
+                        }">
+                            <span class="info-box-icon">
+                                <i class="fas ${
+                                    status === "red-silang" ? "fa-times-circle" :
+                                    status === "orange-warning" ? "fa-exclamation-triangle" :
+                                    status === "yellow-warning" ? "fa-exclamation" : "fa-check-circle"
+                                }"></i>
+                            </span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">${serviceName}</span>
+                                <span class="info-box-number"><h5><b>${
+                                    status === "red-silang" ? "Stop" :
+                                    status === "orange-warning" ? "Error" :
+                                    status === "yellow-warning" ? "Warning" : "OK"
+                                }</b></h5></span>
+                            </div>
+                        </div>`;
+                }
+
+
+                for (let x in data) {
+                    if (x == "sensorService" || x == "nodeService" || x == "actuatorService") {
+                        var serviceInfo = '<div class="row">';
+                        for (let i = 0; i < data[x].length; i++) {
+                            if (data[x][i]['autorun'] == 'enabled') {
+                                autorunColor = 'style="color: green";'
+                                if (data[x][i]['state'] == 'active') {
+                                    stateColor = 'style="color: green";'
+                                    log = data[x][i]['log'];
+                                    logTime = data[x][i]['logTime'];
+                                } else {
+                                    stateColor = 'style="color: red";'
+                                    log = "-"
+                                    logTime = "-"
+                                }
+                            } else {
+                                autorunColor = 'style="color: orange";'
+                                if (data[x][i]['state'] == 'active') {
+                                    stateColor = 'style="color: green";'
+                                    log = data[x][i]['log'];
+                                    logTime = data[x][i]['logTime'];
+                                } else {
+                                    stateColor = 'style="color: red";'
+                                    log = "-"
+                                    logTime = "-"
+                                }
+                            }
+
+                            if (data[x][i]['state'] != 'active') {
+                                cardColor = '<div class="card card-danger">';
+                            } else if (data[x][i]['autorun'] === 'disabled') {
+                                cardColor = '<div class="card card-orange">';
+                            } else if (data[x][i]['autorun'] === 'enabled') {
+                                if (x == 'sensorService' || x == "actuatorService") {
+                                    logCheck = log.toLowerCase();
+                                    if (logCheck.includes("failed") || logCheck.includes("error")) {
+                                        cardColor = '<div class="card card-orange">';
+                                    } else {
+                                        cardColor = '<div class="card card-green">';
+                                    }
+                                } else {
+                                    cardColor = '<div class="card card-dark">';
+                                }
+                            }
+                            else {
+                                cardColor = '<div class="card card-dark">';
+                            }
+
+                            serviceInfo += '<div class="col-6">';
+                            serviceInfo += cardColor;
+                            serviceInfo += '<div class="card-header">';
+                            serviceInfo += '<b>' + data[x][i]['name'] + '</b>';
+                            serviceInfo += '</div>';
+                            serviceInfo += '<div class="card-body"><dl class="row">';
+                            serviceInfo += '<dt class="col-sm-2">State</dt>';
+                            serviceInfo += '<dd class="col-sm-10"' + stateColor + '>' + data[x][i]['state'] + '</dd>';
+                            serviceInfo += '<dt class="col-sm-2">Autorun</dt>';
+                            serviceInfo += '<dd class="col-sm-10"' + autorunColor + '>' + data[x][i]['autorun'] + '</dd>';
+                            serviceInfo += '<dt class="col-sm-2">Log</dt>';
+                            serviceInfo += '<dd class="col-sm-10">' + log + '</dd>';
+                            serviceInfo += '<dt class="col-sm-2">Timestamp</dt>';
+                            serviceInfo += '<dd class="col-sm-10">' + logTime + '</dd>';
+                            serviceInfo += '</dl></div></div></div>';
+                        }
+                        serviceInfo += '</div>';
+                        document.getElementById(x).innerHTML = serviceInfo;
+
+                        if (x === "actuatorService") {
+                            let overallStatus = calculateOverallStatus(data[x]);
+                            document.getElementById("actuatorServiceStatus").innerHTML = generateInfoBox("Actuator Service", overallStatus)
+                        }
+
+                        else if (x === "sensorService") {
+                            let overallStatus = calculateOverallStatus(data[x]);
+                            document.getElementById("sensorServiceStatus").innerHTML = generateInfoBox("Sensor Service", overallStatus)
+                        }
+
+                        else if (x === "nodeService") {
+                            let overallStatus = calculateOverallStatus(data[x]);
+                            document.getElementById("nodeServiceStatus").innerHTML = generateInfoBox("Node Service", overallStatus)
+                        }
+                        
+                        let nodeStatus = calculateOverallStatus(data["nodeService"]);
+                        let sensorStatus = calculateOverallStatus(data["sensorService"]);
+                        let actuatorStatus = calculateOverallStatus(data["actuatorService"]);
+
+                        let overallSystemStatus = calculateOverallSystemStatus(
+                            nodeStatus,
+                            sensorStatus,
+                            actuatorStatus
+                        );
+
+                        document.getElementById("overallSystemStatus").innerHTML = `
+                            <div class="info-box ${
+                                overallSystemStatus === "red-silang" ? "bg-gradient-danger" :
+                                overallSystemStatus === "yellow-warning" ? "bg-gradient-warning" : "bg-gradient-success"
+                            }">
+                                <span class="info-box-icon">
+                                    <i class="fas ${
+                                        overallSystemStatus === "red-silang" ? "fa-times-circle" :
+                                        overallSystemStatus === "yellow-warning" ? "fa-exclamation" : "fa-check-circle"
+                                    }"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Overall System</span>
+                                    <span class="info-box-number"><h5><b>${
+                                        overallSystemStatus === "red-silang" ? "Error" :
+                                        overallSystemStatus === "yellow-warning" ? "Warning" : "OK"
+                                    }</b></h5></span>
+                                </div>
+                            </div>`;
+                    }
+
+
+                    else if (x == "sensorData") {
+                        var sensorInfo = '';
+                        for (let y = 0; y < data[x].length; y++) {
+                            if (data[x][y]['serviceState'] != 'active') {
+                                buttonColor = 'btn-danger';
+                            } else if (data[x][y]['serviceAutorun'] === 'disabled') {
+                                buttonColor = 'btn-orange';
+                            } else if (data[x][y]['serviceAutorun'] === 'enabled') {
+                                logCheck = data[x][y]['serviceLog'].toLowerCase();
+                                if (logCheck.includes('error') || logCheck.includes('failed')) {
+                                    buttonColor = 'btn-orange';
+                                } else {
+                                    buttonColor = 'btn-success';
+                                }
+                            } else {
+                                buttonColor = 'btn-dark';
+                            }
+                            sensorInfo += `<button type="button" class="btn btn-block ` + buttonColor + `"><b> ${data[x][y]['groupName']} </b></button><br>`;
+                            sensorInfo += '<div class="row">';
+                            for (let i = 0; i < data[x][y]['sensorList'].length; i++) {
+                                sensorInfo += '<div class="col-3">';
+                                if (data[x][y]['serviceState'] == 'active') {
+                                    if (data[x][y]['sensorList'][i]['condition'] == 'Alarm Inactive') {
+                                        sensorInfo += '<div class="card card-secondary">';
+                                    } else if (data[x][y]['sensorList'][i]['condition'] == 'Normal') {
+                                        sensorInfo += '<div class="card card-green">';
+                                    } else if (data[x][y]['sensorList'][i]['condition'] == 'Alarm Max' || data[x][y]['sensorList'][i]['condition'] == 'Alarm Min') {
+                                        sensorInfo += '<div class="card card-orange">';
+                                    } else if (data[x][y]['sensorList'][i]['condition'] == 'Alarm Error') {
+                                        sensorInfo += '<div class="card card-danger">';
+                                    } else {
+                                        if (data[x][y]['sensorList'][i]['condition'].includes('Tolerance')) {
+                                            sensorInfo += '<div class="card card-yellow">';
+                                        } else {
+                                            sensorInfo += '<div class="card card-dark">';
+                                        }
+                                    }
+                                } else {
+                                    sensorInfo += '<div class="card card-danger">';
+                                }
+                                sensorInfo += '<div class="card-header">';
+                                sensorInfo += '<b>' + data[x][y]['sensorList'][i]['name'] + '</b>';
+                                sensorInfo += '</div>';
+                                sensorInfo += '<div class="card-body"><dl class="row">';
+                                sensorInfo += '<dt class="col-sm-5">OID</dt>';
+                                sensorInfo += '<dd class="col-sm-7">' + data[x][y]['sensorList'][i]['oid'] + '</dd>';
+                                sensorInfo += '<dt class="col-sm-5">Value</dt>';
+                                sensorInfo += '<dd class="col-sm-7">' + data[x][y]['sensorList'][i]['value'] + '</dd>';
+                                sensorInfo += '<dt class="col-sm-5">Condition</dt>';
+                                sensorInfo += '<dd class="col-sm-7">' + data[x][y]['sensorList'][i]['condition'] + '</dd>';
+                                sensorInfo += '<dt class="col-sm-5">Timestamp</dt>';
+                                if (data[x][y]['sensorList'][i]['diffTime'] < 60) {
+                                    sensorInfo += '<dd class="col-sm-7" style="color: green">' + data[x][y]['sensorList'][i]['valueAt'] + '</dd>';
+                                } else if (data[x][y]['sensorList'][i]['diffTime'] > 60 && data[x][y]['sensorList'][i]['diffTime'] < 300) {
+                                    sensorInfo += '<dd class="col-sm-7" style="color: orange">' + data[x][y]['sensorList'][i]['valueAt'] + '</dd>';
+                                } else {
+                                    sensorInfo += '<dd class="col-sm-7" style="color: red">' + data[x][y]['sensorList'][i]['valueAt'] + '</dd>';
+                                }
+                                sensorInfo += '</dl></div></div></div>';
+                            }
+                            sensorInfo += '</div><hr>';
+                        }
+                        document.getElementById("sensorInfo").innerHTML = sensorInfo;
+                    }
+                    else if (x == "actuatorData") {
+                        var actuatorInfo = '';
+                        for (let y = 0; y < data[x].length; y++) {
+                            actuatorInfo += '<div class="row">';
+                            actuatorInfo += '<div class="col-4">';
+                            // if (data[x][y]['serviceState'] == 'active') {
+                            //     actuatorInfo += '<div class="card card-green">';
+                            // } else {
+                            //     actuatorInfo += '<div class="card card-danger">';
+                            // }
+                            if (data[x][y]['serviceState'] == 'active') {
+                                logCheck = data[x][y]['serviceLog'].toLowerCase();
+                                if (logCheck.includes('error') || logCheck.includes('failed')) {
+                                    actuatorInfo += '<div class="card card-orange">';
+                                } else {
+                                    if (data[x][y]['serviceAutorun'] === 'disabled'){
+                                        actuatorInfo += '<div class="card card-orange">';
+                                    } else {
+                                        actuatorInfo += '<div class="card card-green">';
+                                    }                                 
+                                }
+                            } else {
+                                actuatorInfo += '<div class="card card-danger">';
+                            }
+                            actuatorInfo += '<div class="card-header">';
+                            actuatorInfo += '<b>' + data[x][y]['name'] + '</b>';
+                            actuatorInfo += '</div>';
+                            actuatorInfo += '<div class="card-body"><dl class="row">';
+                            actuatorInfo += '<dt class="col-sm-6">Server Value</dt>';
+                            actuatorInfo += '<dd class="col-sm-6">' + data[x][y]['server_value'] + '</dd>';
+                            actuatorInfo += '<dt class="col-sm-6">Server Timestamp</dt>';
+                            actuatorInfo += '<dd class="col-sm-6">' + data[x][y]['server_time'] + '</dd>';
+                            actuatorInfo += '<dt class="col-sm-6">Last Server Value</dt>';
+                            actuatorInfo += '<dd class="col-sm-6">' + data[x][y]['last_server_value'] + '</dd>';
+                            actuatorInfo += '<dt class="col-sm-6">Last Server Timestamp</dt>';
+                            actuatorInfo += '<dd class="col-sm-6">' + data[x][y]['last_server_time'] + '</dd>';
+                            actuatorInfo += '<dt class="col-sm-6">Last Action Type</dt>';
+                            actuatorInfo += '<dd class="col-sm-6">' + data[x][y]['last_action_type'] + '</dd>';
+                            actuatorInfo += '<dt class="col-sm-6">Last Action Value</dt>';
+                            actuatorInfo += '<dd class="col-sm-6">' + data[x][y]['last_action_value'] + '</dd>';
+                            actuatorInfo += '<dt class="col-sm-6">Last Action Timestamp</dt>';
+                            actuatorInfo += '<dd class="col-sm-6">' + data[x][y]['last_action_time'] + '</dd>';
+                            actuatorInfo += '</dl></div></div></div></div';
+                        }
+                        document.getElementById("actuatorInfo").innerHTML = actuatorInfo;
+                    }
+                    else if (x == "sensorSummary") {
+                        document.getElementById('totalSensors').innerHTML = data[x]['totalSensor'];
+                        document.getElementById('totalAlarmTolerance').innerHTML = data[x]['totalAlarmTolerance'];
+                        document.getElementById('totalAlarmInactive').innerHTML = data[x]['totalAlarmInactive'];
+                        document.getElementById('totalAlarmMin').innerHTML = data[x]['totalAlarmMin'];
+                        document.getElementById('totalAlarmMax').innerHTML = data[x]['totalAlarmMax'];
+                        document.getElementById('totalAlarmError').innerHTML = data[x]['totalAlarmError'];
+                        document.getElementById('totalAlarmNormal').innerHTML = data[x]['totalAlarmNormal'];
+                    }
+                    else if (x == "actuatorSummary") {
+                        document.getElementById('totalActuators').innerHTML = data[x]['totalActuator'];
+                    }
+                    else if (x == "deviceSummary") {
+                        document.getElementById('deviceName').innerHTML = data[x]['name'];
+                        document.getElementById('deviceUid').innerHTML = data[x]['uid'];
+                    }
+                }
+            }
+        });
+
+    }
+    setInterval(summaryDashboardInfo, 2000);
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <script>
+            var ip = location.hostname;
+            var loc = "http://" + ip;
+            document.write('<a href="' + loc + '" target="_blank">'); 
+        </script>
+        <button type="button" class="col-md-12 btn btn-dark">
+            Go To Connex Dashboard
+        </button>
+        </a>
+        <br><br>
+    </div>
+</div>
+<style>
+    .bg-gradient-orange {
+        background: linear-gradient(to right, #ff851b, #ffa500); /* Oranye */
+        color: #fff; /* Warna teks putih */
+    }
+
+    .btn-orange {
+        background-color: #ff851b;
+        color: black;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-orange:hover {
+        background-color: #FF6600;
+        color: black;
+    }
+</style>
+<!-- Main Menu -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-dark card-tabs">
+            <div class="card-header p-0 pt-1">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link {% if tab == 'home' %}{{ 'active' }}{% endif %}" id="home-tab"
+                            data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Device
+                            Info</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if tab == 'node' %}{{ 'active' }}{% endif %}" id="node-tab"
+                            data-toggle="tab" href="#node" role="tab" aria-controls="node"
+                            aria-selected="false">Node</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if tab == 'sensor' %}{{ 'active' }}{% endif %}" id="sensor-tab"
+                            data-toggle="tab" href="#sensor" role="tab" aria-controls="sensor"
+                            aria-selected="false">Sensor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if tab == 'actuator' %}{{ 'active' }}{% endif %}" id="actuator-tab"
+                            data-toggle="tab" href="#actuator" role="tab" aria-controls="actuator"
+                            aria-selected="false">Actuator</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Display Group -->
+            <div class="card-body">
+                <div class="tab-content" id="myTabContent">
+                    {% include "dashboard/homeTab.html" %}
+                    {% include "dashboard/nodeTab.html" %}
+                    {% include "dashboard/sensorTab.html" %}
+                    {% include "dashboard/actuatorTab.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $('.count').each(function () {
+        $(this).prop('Counter', 0).animate({
+            Counter: $(this).text()
+        }, {
+            duration: 1000,
+            easing: 'swing',
+            step: function (now) {
+                $(this).text(Math.ceil(now));
+            }
+        });
+    });
+</script>
+{% endblock %}

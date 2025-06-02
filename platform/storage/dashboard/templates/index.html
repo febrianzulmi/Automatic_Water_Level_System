@@ -1,0 +1,250 @@
+{% extends "base.html" %} {% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<script>
+			var ip = location.hostname;
+			var loc = "http://"+ip;
+			document.write('<a href="' + loc + '" target="_blank">');
+		</script>
+		<button type="button" class="col-md-12 btn btn-dark">Go To Connex Dashboard</button>
+		<br><br>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card card-dark card-tabs">
+		  <div class="card-header p-0 pt-1">
+				<ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+				  <li class="nav-item">
+						<a class="nav-link active" id="custom-tabs-one-device-tab" data-toggle="pill" href="#custom-tabs-one-device" role="tab" aria-controls="custom-tabs-one-device" aria-selected="false">Device Info</a>
+					</li>
+				 {% if project_gateway == 1 %}
+					<li class="nav-item">
+						<a class="nav-link" id="custom-tabs-one-gateway-tab" data-toggle="pill" href="#custom-tabs-one-gateway" role="tab" aria-controls="custom-tabs-one-gateway" aria-selected="false">Gateway</a>
+					</li>
+					{% endif %}
+				 {% if project_node == 1 %}
+					<li class="nav-item">
+						<a class="nav-link" id="custom-tabs-one-node-tab" data-toggle="pill" href="#custom-tabs-one-node" role="tab" aria-controls="custom-tabs-one-node" aria-selected="false">Node</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="custom-tabs-one-sensor-tab" data-toggle="pill" href="#custom-tabs-one-sensor" role="tab" aria-controls="custom-tabs-one-sensor" aria-selected="false">Sensor</a>
+					</li>
+					{% endif %}
+
+			  </ul>
+			</div>
+			<div class="card-body">
+			  <div class="tab-content" id="custom-tabs-one-tabContent">
+					<div class="tab-pane fade show active" id="custom-tabs-one-device" role="tabpanel" aria-labelledby="custom-tabs-one-device-tab">
+					  <dl class="row">
+		          <dt class="col-sm-2">Project Name</dt><dd class="col-sm-4">{{ project_name }}</dd>
+		          <dt class="col-sm-2">API Key</dt><dd class="col-sm-4">{% if key == '' %}<font style="color:red">{{ 'Undefined' }}</font>{% else %}{{ key }}{% endif %}</dd>
+		          <dt class="col-sm-2">Device UID</dt><dd class="col-sm-4">{% if node_id == '' %}<font style="color:red">{{ 'Undefined' }}</font>{% else %}{{ node_id }}{% endif %}</dd>
+		          <dt class="col-sm-2">Token</dt><dd class="col-sm-4">{% if token == '' %}<font style="color:red"><i class="fas fa-times"></i></font>{% else %}<i class="fas fa-check"></i>{% endif %}</dd>
+              <dt class="col-sm-2">Device Name</dt><dd class="col-sm-4">{% if name == '' %}<font style="color:red">{{ 'Undefined' }}</font>{% else %}{{ name }}{% endif %}</dd>
+		          <dt class="col-sm-2">Protocol</dt>
+		          <dd class="col-sm-4">
+		          {% if project_protocol == 1 %}{{ 'HTTP' }}{% endif %}
+              {% if project_protocol == 2 %}{{ 'MQTT' }}{% endif %}
+              {% if project_protocol == 3 %}{{ 'SNMP' }}{% endif %}
+              {% if project_protocol == 0 %}<font style="color:red">{{ 'Undefined' }}</font>{% endif %}
+
+              </dd>
+		          <dt class="col-sm-2">Device Type</dt>
+		          <dd class="col-sm-10">
+		          {% if project_gateway == 1 and project_node == 0 %}{{ 'Gateway' }}{% endif %}
+              {% if project_gateway == 0 and project_node == 1 %}{{ 'Node' }}{% endif %}
+              {% if project_gateway == 1 and project_node == 1 %}{{ 'Gateway and Node' }}{% endif %}
+              {% if project_gateway == 0 and project_node == 0 %}<font style="color:red">{{ 'Unknown' }}</font>{% endif %}
+              </dd>
+       </dl>
+       <div class="row">
+					<div class="col-md-3 col-sm-6 col-12">
+							<div class="info-box bg-gradient-primary">
+								<span class="info-box-icon"><i class="far fa-bookmark"></i></span>
+								<div class="info-box-content">
+									<span class="info-box-text">Sensors</span>
+									<span class="info-box-number"><h5 class="count">{{ sensors|length }}</h5>
+									</span>
+								</div>
+							</div>
+					</div>
+				    <div class="col-md-3 col-sm-6 col-12">
+				        <div class="info-box bg-gradient-lightblue">
+				          <span class="info-box-icon"><i class="fas fa-fan"></i></span>
+				          <div class="info-box-content">
+				            <span class="info-box-text">Actuators</span>
+				            <span class="info-box-number"><h5 class="count">{{ actuators|length }}</h5></span>
+				          </div>
+				        </div>
+				    </div>
+				    <div class="col-md-3 col-sm-6 col-12">
+				        <div class="info-box bg-gradient-navy">
+				          <span class="info-box-icon"><i class="fas fa-database"></i></span>
+				          <div class="info-box-content">
+				            <span class="info-box-text">Monitoring Data</span>
+				            <span class="info-box-number"><h5 class="count">{{ send_node|length }}</h5></span>
+				          </div>
+				        </div>
+				    </div>
+				    <div class="col-md-3 col-sm-6 col-12">
+				        <div class="info-box bg-gradient-warning">
+				          <span class="info-box-icon"><i class="fab fa-buffer"></i></span>
+				          <div class="info-box-content">
+				            <span class="info-box-text">Buffer Data</span>
+				            <span class="info-box-number"><h5 class="count">{{ buffer_node|length }}</h5></span>
+				          </div>
+				        </div>
+				    </div>
+				  </div>
+			  </div>
+					<div class="tab-pane fade" id="custom-tabs-one-node" role="tabpanel" aria-labelledby="custom-tabs-one-node-tab">
+					   <h7 class="mt-4 mb-2"><b>Summary Node Service</b></h7>
+		        <table id="TABLE_1" class="table table-sm table-bordered table-striped table-hover">
+								<thead>
+									<tr align="center">
+										<th>Name</th>
+										<th>Service</th>
+										<th>State</th>
+										<th width="30%">Last Update</th>
+									</tr>
+								</thead>
+								<tbody>
+								  {% for i in range(sensors|length) %}
+									<tr align="center">
+										<td>{{ sensors[i][1] }}</td>
+										<td>{{ sensors[i][3] }}</td>
+										<td>{{ last_data[i][0] }}</td>
+										<td>{{ last_data[i][1] }}</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+					</div>
+					<div class="tab-pane fade" id="custom-tabs-one-sensor" role="tabpanel" aria-labelledby="custom-tabs-one-sensor-tab">
+					   <h7 class="mt-4 mb-2"><b>Summary Sensors Service</b></h7>
+		      <table id="TABLE_1" class="table table-sm table-bordered table-striped table-hover">
+								<thead>
+									<tr align="center">
+										<th>Name</th>
+										<th>Service</th>
+										<th>State</th>
+										<th width="30%">Last Update</th>
+									</tr>
+								</thead>
+								<tbody>
+								  {% for i in range(sensors|length) %}
+									<tr align="center">
+										<td>{{ sensors[i][1] }}</td>
+										<td>{{ sensors[i][3] }}</td>
+										<td>{{ last_data[i][0] }}</td>
+										<td>{{ last_data[i][1] }}</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+		     <hr>
+		     <h7 class="mt-4 mb-2"><b>Summary Sensors</b></h7>
+		     <table id="TABLE_2" class="table table-sm table-bordered table-striped table-hover">
+								<thead>
+									<tr align="center">
+										<th>Group Sensor</th>
+										<th>Name</th>
+										<th>Last Value</th>
+										<th width="30%">Timestamp</th>
+									</tr>
+								</thead>
+								<tbody>
+								  {% for i in range(sensors|length) %}
+									<tr align="center">
+										<td>{{ sensors[i][1] }}</td>
+										<td>{{ sensors[i][3] }}</td>
+										<td>{{ last_data[i][1] }}</td>
+										<td>{{ last_data[i][2] }}</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+			  </div>
+					<div class="tab-pane fade" id="custom-tabs-one-gateway" role="tabpanel" aria-labelledby="custom-tabs-one-gateway-tab">
+			    <div class="row">
+							<div class="col-md-3 col-sm-6 col-12">
+				        <div class="info-box bg-gradient-success">
+				          <span class="info-box-icon"><i class="far fa-bookmark"></i></span>
+				          <div class="info-box-content">
+				            <span class="info-box-text">Nodes</span>
+				            <span class="info-box-number"><h5 class="count">{{ nodes|length }}</h5></span>
+				          </div>
+				        </div>
+				      </div>
+				      <div class="col-md-3 col-sm-6 col-12">
+				        <div class="info-box bg-gradient-danger">
+				          <span class="info-box-icon"><i class="fas fa-exclamation-triangle"></i></span>
+				          <div class="info-box-content">
+				            <span class="info-box-text">API Error</span>
+				            <span class="info-box-number"><h5 class="count">{{ errors|length }}</h5></span>
+				          </div>
+				        </div>
+				      </div>
+				      <div class="col-md-3 col-sm-6 col-12">
+				        <div class="info-box bg-gradient-navy">
+				          <span class="info-box-icon"><i class="fas fa-paper-plane"></i></span>
+				          <div class="info-box-content">
+				            <span class="info-box-text">Send Data</span>
+				            <span class="info-box-number"><h5 class="count">{{ send_gateway|length }}</h5></span>
+				          </div>
+				        </div>
+				      </div>
+				      <div class="col-md-3 col-sm-6 col-12">
+				        <div class="info-box bg-gradient-warning">
+				          <span class="info-box-icon"><i class="fab fa-buffer"></i></span>
+				          <div class="info-box-content">
+				            <span class="info-box-text">Buffer Data</span>
+				            <span class="info-box-number"><h5 class="count">{{ buffer_gateway|length }}</h5></span>
+				          </div>
+				        </div>
+				      </div>
+		        </div>
+		        <hr>
+		        <h7 class="mt-4 mb-2"><b>Summary Nodes</b></h7>
+		        <table id="TABLE_2" class="table table-sm table-bordered table-striped table-hover">
+								<thead>
+									<tr align="center">
+										<th width="10%">Node ID</th>
+										<th>Total Send</th>
+										<th>Total Buffer</th>
+									</tr>
+								</thead>
+								<tbody>
+								  {% for i in range(node_data|length) %}
+									<tr align="center">
+										<td>{{ node_data[i][0] }}</td>
+										<td>{{ node_data[i][1] }}</td>
+										<td>{{ node_data[i][2] }}</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+			    </div>
+			  </div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+  $('.count').each(function () {
+    $(this).prop('Counter', 0).animate({
+      Counter: $(this).text()
+    }, {
+      duration: 1000,
+      easing: 'swing',
+      step: function (now) {
+        $(this).text(Math.ceil(now));
+      }
+    });
+  });
+</script>
+{% endblock %}
