@@ -8,11 +8,14 @@ sys.path.append(f"{path}/library")
 from SynapsisLibrary import packData, times
 sys.path.append(f"{path}/project/database")
 from query_project_db import SystemServiceDB, SensorGroupDB
-from sensorLibrary import RemoteIRExt
+from sensorLibrary import PowerExt
 sys.path.append(f"{path}/project/function")
 from logFunction import logFunction
 from sensorFunction import SensorFunction
 from serviceProjectFunction import ServiceProjectFunction
+sys.path.append(f"{path}/project/function/sensor")
+from collectDataSensorFunction import CollectDataSensorFunction
+from calibrationSensorFunction import CalibrateSensorFunction
 from dbFunction import dbFunction
 
 sensor_variable = {}
@@ -23,9 +26,9 @@ group_id = SensorGroupDB.selectIsNumber(group_number)[0]["id"]
 
 datetimes = times.getDatetime()
 print("Start : ", datetimes)
-sensor_setting = SensorFunction.CollectDataSensorFunction.getSensorSetting(group_id)
+sensor_setting = CollectDataSensorFunction.getSensorSetting(group_id)
 feature_setting = dbFunction.getFeatureSetting()
-data_sensor = SensorFunction.CollectDataSensorFunction.byGroupState(group_id)
+data_sensor = CollectDataSensorFunction.byGroupState(group_id)
 alarm_data = SensorFunction.alarmSensorFunction.initiateAlarmSensor(data_sensor, sensor_setting, feature_setting)
 
 sensor_variable["flag"] = 0
@@ -34,17 +37,17 @@ sensor_variable["logger"] = logFunction.setupLogger(sensor_variable["serviceName
 
 
 def readSensor():
-    remoteIRExt = RemoteIRExt(group_id, data_sensor)
-    sensor_result = remoteIRExt.main()
+    powerExt = PowerExt(group_id, data_sensor)
+    sensor_result = powerExt.main()
     return sensor_result
 
 
 def main():
     global group_id, data_sensor, alarm_data, sensor_setting, feature_setting, sensor_variable
 
-    sensor_setting = SensorFunction.CollectDataSensorFunction.getSensorSetting(group_id)
+    sensor_setting = CollectDataSensorFunction.getSensorSetting(group_id)
     feature_setting = dbFunction.getFeatureSetting()
-    data_sensor = SensorFunction.CollectDataSensorFunction.byGroupState(group_id)
+    data_sensor = CollectDataSensorFunction.byGroupState(group_id)
     if sensor_variable["totalSensor"] != data_sensor["numSensor"]:
         alarm_data = SensorFunction.alarmSensorFunction.initiateAlarmSensor(data_sensor, sensor_setting, feature_setting)
         sensor_variable["totalSensor"] = data_sensor["numSensor"]
@@ -58,7 +61,7 @@ def main():
     sensor_variable["logger"].debug(f"Interval & Frequency Sampling : {str(sensor_setting['frekuensi'])}x in {str(sensor_setting['interval'])} Seconds ({sensor_variable['flag']}x)")
     
     sensor_result = readSensor()
-    calibration_value = SensorFunction.CalibrateSensorFunction.calculateCalibration(data_sensor, sensor_result["value"])
+    calibration_value = CalibrateSensorFunction.calculateCalibration(data_sensor, sensor_result["value"])
     alarm_data, summary_sensor = SensorFunction.alarmSensorFunction.checkAlarm(data_sensor, calibration_value, sensor_result, alarm_data, "Serial", timestamp)
     sensor_pack = packData.sensorPack(data_sensor["sensorId"], calibration_value, data_sensor["numSensor"])
     sensor_variable["logger"].debug(f"Sensor Data : {sensor_pack}")

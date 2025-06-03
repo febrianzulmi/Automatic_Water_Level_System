@@ -269,9 +269,9 @@ class notificationFunction():
         for x in act_detail:
             actuator_name = x["name"]
         
-        if str(value) == "1": value = "ON"
-        elif str(value) == "0": value = "OFF"
-        else: value = F"N/A ({value})"
+        # if str(value) == "1": value = "Action"
+        # elif str(value) == "0": value = "OFF"
+        # else: value = F"N/A ({value})"
         
         if str(state) == "0": state = "First Boot"
         elif str(state) == "1": state = "Server Remote"

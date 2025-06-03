@@ -6,7 +6,7 @@ from systemFunction import systemFunction
 
 
 device = boardFunction.initDevice()
-error, fan = 0, 0   
+error, fan = 0, 1
 globalVariable = {"device": device, "error": error, "fan": fan}
 
 def main():

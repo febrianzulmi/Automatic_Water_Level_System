@@ -30,9 +30,10 @@ class ActuatorFunction():
             global_variable["logger"].debug(f"  o Result Action : {status_actuator['state'][x]}")
             global_variable["logger"].debug(f"  o Result Message : {status_actuator['message'][x]}")
             if status_actuator["state"][x] == True:
+                control = "1x Action"
                 ActuatorListDB.updateAction(actuator_run["value"][x], 0, timestamp, actuator_data[x]["id"])
                 LogActuatorDB.insert(actuator_data[x]["id"], actuator_run["value"][x], 0, timestamp)
-                #     notificationFunction.generateNotificationActuator(actuator_list_id, 0, actuator_value, timestamp, control)
+                notificationFunction.generateNotificationActuator(actuator_data[x]["id"], 0, actuator_run["value"][x], timestamp, control)
         return status_actuator
     
     
@@ -56,29 +57,15 @@ class ActuatorFunction():
                     global_variable["logger"].debug(f"  o Result Action : {status_actuator['state'][x]}")
                     global_variable["logger"].debug(f"  o Result Message : {status_actuator['message'][x]}")    
                     if status_actuator["state"][x] == True:
+                        control = "1x Action"
                         ActuatorListDB.updateAction(actuator_run["value"][x], 0, timestamp, actuator_data[x]["id"])
                         ActuatorListDB.updateLastServer(actuator_run["value"][x], timestamp, actuator_data[x]["id"])
                         LogActuatorDB.insert(actuator_data[x]["id"], actuator_run["value"][x], 0, timestamp)
+                        notificationFunction.generateNotificationActuator(actuator_data[x]["id"], 1, actuator_run["value"][x], timestamp, control)
         else:
             status_actuator = {"state": [], "value": [], "summary": "No Triggered Actuator by Server Remote", "message": [], "": 0}
         return status_actuator 
     
-    
-    # def checkServerValueFunction(actuator_list_id, actuator_custom_id, server_value, server_time, last_server_value, last_server_time, timestamp, actionActuator):
-    #     print("Server Value : " + str(server_value) + " - " + str(server_time))
-    #     print("Last Server Value : "  + str(last_server_value) + " - " + str(last_server_time))
-    #     if str(server_value) != str(last_server_value):
-    #         status_actuator = actionActuator(actuator_custom_id, server_value)
-    #         if "Action Success" in status_actuator:
-    #             ActuatorListDB.updateAction(server_value, 1, timestamp, actuator_list_id)
-    #             ActuatorListDB.updateLastServer(server_value, timestamp, actuator_list_id)
-    #             LogActuatorDB.insert(actuator_list_id, server_value, 1, timestamp)
-    #             control = status_actuator.replace("Action Success | ", "")
-    #             notificationFunction.generateNotificationActuator(actuator_list_id, 1, server_value, timestamp, control)
-    #     else:
-    #         status_actuator = "No Action"
-    #     print("Check Server Value : " + status_actuator)
-    #     return status_actuator
         
     def checkScheduleFunction(actuator_data, timestamp, actionActuator, global_variable):
         nows = times.now()
@@ -131,68 +118,16 @@ class ActuatorFunction():
                     global_variable["logger"].debug(f"  o Result Action : {status_actuator['state'][x]}")
                     global_variable["logger"].debug(f"  o Result Message : {status_actuator['message'][x]}")
                     if status_actuator["state"][x] == True:
+                        control = "1x Action"
                         ActuatorScheduleDB.updateState(1, actuator_run["schedule"][x]["id"])
                         ActuatorListDB.updateAction(value, 2, timestamp, actuator_data[x]["id"])
                         LogActuatorDB.insert(actuator_data[x]["id"], value, 2, timestamp)
+                        notificationFunction.generateNotificationActuator(actuator_data[x]["id"], 2, actuator_run["value"][x], timestamp, control)
         else:
             status_actuator = {"state": [], "value": [], "summary": "No Triggered Actuator by Schedule", "message": [], "": 0}
         return status_actuator         
-                
-        
-    def checkScheduleFunction2(actuator_list_id, custom, timestamp, actionActuator):
-        nows = times.now()
-        now_time = nows.strftime("%H:%M")
-        now_day = nows.strftime("%A")
-        schedule = ActuatorScheduleDB.selectByActuatorId(actuator_list_id)
-        if len(schedule) > 0:
-            print("Schedule : " + now_day + " - " + now_time)
-            sch, debug = 0, ''
-            for i in range(len(schedule)):
-                log = 0
-                id_sch = schedule[i]['id']
-                day = schedule[i]['day']
-                time = schedule[i]['time']
-                time = datetime.datetime.strptime(str(time), "%H:%M:%S")
-                time = time.strftime("%H:%M")
-                value = schedule[i]['value']
-                state = schedule[i]['state']
-                if now_time == time and now_day == day:
-                    if state == 0 or state == None:
-                        status = actionActuator(custom, value)
-                        if 'Action Success' in status:
-                            ActuatorScheduleDB.updateState(1, id_sch)
-                            ActuatorListDB.updateAction(value, 2, timestamp, actuator_list_id)
-                            LogActuatorDB.insert(actuator_list_id, value, 2, timestamp)
-                            control = status.replace("Action Success | ", "")
-                            notificationFunction.generateNotificationActuator(actuator_list_id, 2, value, timestamp, control)
-                            log = 1
-                        else:
-                            log = 2
-                    else:
-                        log = 3
-                    sch = 1
-                else:
-                    ActuatorScheduleDB.updateState(0, id_sch)
-                    log = 0
-                if log == 1:
-                    log = 'On Schedule - Success Action'
-                elif log == 2:
-                    log = 'On Schedule - Failed Action'
-                elif log == 3:
-                    log = 'On Schedule - Already Action'
-                elif log == 0:
-                    log = 'Off Schedule'
-                debugs = day + ' - ' + str(time) + " - " + str(value) + " - " + log
-                print(str(i+1) + ") " + debugs)
-            if sch == 1:
-                debug = day + ' - ' + str(time) + " - " + str(value) + " - " + log
-                return debug
-            else:
-                return 'Off Schedule'
-        else:
-            print("Schedule : -")
-            return 'No Schedule'
-    
+  
+   
     def getParameterListActuator(number):
         parameterData = ActuatorParameterListDB.selectByActuatorGroupNumberFull(number)
         if len(parameterData) > 0:
@@ -207,6 +142,7 @@ class ActuatorFunction():
         else :
             result = {}
         return result
+    
     
     def getParameterGroupActuator(number):
         parameterData = ActuatorParameterGroupDB.selectByActuatorGroupNumberFull(number)

@@ -43,6 +43,7 @@ class http():
                for x in dataCookie:
                    if "token" in  x: token = x.replace('token=','')
                    elif "Expires" in x: expire = x.replace(' Expires=','')
+                   elif "expires" in x: expire = x.replace(' expires=','')
             else:
                token, expire = 'N/A', 'N/A'
         except Exception as e:

@@ -1,4 +1,4 @@
-group_id = 7
+group_number = 7
 path = "/home/connex"
 
 import argparse
@@ -10,7 +10,7 @@ sys.path.append(f"{path}/project/database")
 from query_project_db import SensorGroupDB
 sys.path.append(f"{path}/project/function")
 from sensorFunction import SensorFunction
-from sensorLibrary import RemoteIRExt
+from sensorLibrary import PowerExt
 
 group_id = SensorGroupDB.selectIsNumber(group_id)[0]["id"]
 
@@ -24,8 +24,8 @@ data_sensor = SensorFunction.CollectDataSensorFunction.byGroupState(group_id)
 
 
 def readSensor():
-    remoteIr = RemoteIRExt(group_id, data_sensor)
-    sensor_result = remoteIr.main()
+    powerExt = PowerExt(group_id, data_sensor)
+    sensor_result = powerExt.main()
     return sensor_result
 
 

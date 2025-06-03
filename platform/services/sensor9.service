@@ -3,8 +3,8 @@ Description=Custom Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 actuator2.py
-WorkingDirectory=/home/connex/project/actuator
+ExecStart=/usr/bin/python3 sensor9.py
+WorkingDirectory=/home/connex/project/sensor
 Restart=always
 RestartSec=3s
 User=root

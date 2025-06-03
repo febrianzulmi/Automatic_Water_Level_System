@@ -1,4 +1,4 @@
-group_id = 1
+group_number = 1
 path = "/home/connex"
 
 import argparse
@@ -10,9 +10,9 @@ sys.path.append(f"{path}/project/database")
 from query_project_db import SensorGroupDB
 sys.path.append(f"{path}/project/function")
 from sensorFunction import SensorFunction
-from sensorLibrary import Room
+from sensorLibrary import SensorRTU
 
-group_id = SensorGroupDB.selectIsNumber(group_id)[0]["id"]
+group_id = SensorGroupDB.selectIsNumber(group_number)[0]["id"]
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--Type", help = "Show Output")
@@ -24,8 +24,8 @@ data_sensor = SensorFunction.CollectDataSensorFunction.byGroupState(group_id)
 
 
 def readSensor():
-    room = Room(group_id, data_sensor)
-    sensor_result = room.main()
+    rtu = SensorRTU(group_id, data_sensor)
+    sensor_result = rtu.main()
     return sensor_result
 
 

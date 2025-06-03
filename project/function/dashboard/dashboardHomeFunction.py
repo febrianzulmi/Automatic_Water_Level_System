@@ -29,7 +29,7 @@ class dashboardHome():
             x = 0
             while x < len(serviceData):
                 if ("sensor" not in serviceData[x]["name"] and "dashboard" not in serviceData[x]["name"] and "actuator" not in serviceData[x]["name"] and 
-                    "outback_api" not in serviceData[x]["name"] and "display" not in serviceData[x]["name"]):
+                    "outback_api" not in serviceData[x]["name"]):
                     serviceInfo = dashboardHome.serviceProcess(x, serviceData)
                     if serviceInfo:
                         nodeService.append(serviceInfo)
@@ -131,19 +131,19 @@ class dashboardHome():
                 actuatorData['serviceLog'] = serviceLog 
                 actuatorData['serviceLogTime'] = str(serviceLogTime)
                 actuatorData['name'] = actuatorList[x]['name']
-                if str(actuatorList[x]['server_value']) == '1': actuatorList[x]['server_value'] = 'Action'
-                elif str(actuatorList[x]['server_value']) == '0': actuatorList[x]['server_value'] = 'No Action'
+                # if str(actuatorList[x]['server_value']) == '1': actuatorList[x]['server_value'] = 'Action'
+                # elif str(actuatorList[x]['server_value']) == '0': actuatorList[x]['server_value'] = 'No Action'
 
-                if str(actuatorList[x]['last_server_value']) == '1': actuatorList[x]['last_server_value'] = 'Action'
-                elif str(actuatorList[x]['last_server_value']) == '0': actuatorList[x]['last_server_value'] = 'No Action'
+                # if str(actuatorList[x]['last_server_value']) == '1': actuatorList[x]['last_server_value'] = 'Action'
+                # elif str(actuatorList[x]['last_server_value']) == '0': actuatorList[x]['last_server_value'] = 'No Action'
 
-                if str(actuatorList[x]['last_action_value']) == '1': actuatorList[x]['last_action_value'] = 'Action'
-                elif str(actuatorList[x]['last_action_value']) == '0': actuatorList[x]['last_action_value'] = 'No Action'
+                # if str(actuatorList[x]['last_action_value']) == '1': actuatorList[x]['last_action_value'] = 'Action'
+                # elif str(actuatorList[x]['last_action_value']) == '0': actuatorList[x]['last_action_value'] = 'No Action'
 
-                if str(actuatorList[x]['last_action']) == '0': actuatorList[x]['last_action'] = 'Boot Sync'
-                elif str(actuatorList[x]['last_action']) == '1': actuatorList[x]['last_action'] = 'Server'
+                if str(actuatorList[x]['last_action']) == '0': actuatorList[x]['last_action'] = 'First Boot'
+                elif str(actuatorList[x]['last_action']) == '1': actuatorList[x]['last_action'] = 'Server Remote'
                 elif str(actuatorList[x]['last_action']) == '2': actuatorList[x]['last_action'] = 'Schedule'
-                elif str(actuatorList[x]['last_action']) == '3': actuatorList[x]['last_action'] = 'Local'
+                elif str(actuatorList[x]['last_action']) == '3': actuatorList[x]['last_action'] = 'Local Remote'
                 else: actuatorList[x]['last_action'] = 'N/A'
 
                 

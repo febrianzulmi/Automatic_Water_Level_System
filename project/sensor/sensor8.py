@@ -8,7 +8,7 @@ sys.path.append(f"{path}/library")
 from SynapsisLibrary import packData, times
 sys.path.append(f"{path}/project/database")
 from query_project_db import SystemServiceDB, SensorGroupDB
-from sensorLibrary import Network
+from sensorLibrary import RemoteIRExt
 sys.path.append(f"{path}/project/function")
 from logFunction import logFunction
 from sensorFunction import SensorFunction
@@ -30,15 +30,12 @@ alarm_data = SensorFunction.alarmSensorFunction.initiateAlarmSensor(data_sensor,
 
 sensor_variable["flag"] = 0
 sensor_variable["totalSensor"] = data_sensor["numSensor"]
-sensor_variable['first'] = 0
 sensor_variable["logger"] = logFunction.setupLogger(sensor_variable["serviceName"], stream=True) 
-sensor_variable["lastTime"], sensor_variable["lastValue"] = {}, {}
 
 
 def readSensor():
-    global sensor_variable  
-    network = Network(group_id, data_sensor, sensor_variable)
-    sensor_result, sensor_variable = network.main()
+    remoteIRExt = RemoteIRExt(group_id, data_sensor)
+    sensor_result = remoteIRExt.main()
     return sensor_result
 
 
@@ -54,11 +51,6 @@ def main():
     alarm_data["totalNormal"], alarm_data["totalMin"], alarm_data["totalMax"], alarm_data["totalSensorError"] = 0, 0, 0, 0
     alarm_data["totalNormalTolerance"], alarm_data["totalMinTolerance"], alarm_data["totalMaxTolerance"], alarm_data["totalErrorTolerance"] = 0, 0, 0, 0
     alarm_data["totalTolerance"], alarm_data["totalSensorInactive"], alarm_data["totalAlarmInactive"] = 0, 0, 0
-    if sensor_variable['first'] == 0:
-        sensor_variable['first'] = 1
-        for x in range(data_sensor['numSensor']):
-            sensor_variable['lastTime'][data_sensor['sensorId'][x]] = 0
-            sensor_variable['lastValue'][data_sensor['sensorId'][x]] = 0
 
     sensor_variable["flag"] += 1
     timestamp = times.getDatetime()

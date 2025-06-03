@@ -1,4 +1,4 @@
-group_id = 4
+group_number = 4
 path = "/home/connex"
 
 import argparse
@@ -10,7 +10,7 @@ sys.path.append(f"{path}/project/database")
 from query_project_db import SensorGroupDB
 sys.path.append(f"{path}/project/function")
 from sensorFunction import SensorFunction
-from sensorLibrary import Environment
+from sensorLibrary import EnvironmentExt
 
 group_id = SensorGroupDB.selectIsNumber(group_id)[0]["id"]
 
@@ -24,8 +24,8 @@ data_sensor = SensorFunction.CollectDataSensorFunction.byGroupState(group_id)
 
 
 def readSensor():
-    environment = Environment(group_id, data_sensor)
-    sensor_result = environment.main()
+    environmentExt = EnvironmentExt(group_id, data_sensor)
+    sensor_result = environmentExt.main()
     return sensor_result
 
 

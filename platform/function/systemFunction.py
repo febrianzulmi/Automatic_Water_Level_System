@@ -21,7 +21,7 @@ class systemFunction():
         usage['cpu'] = str(usage['cpu']) + " %"
         systemTime = boardFunction.readUptime()
         if globalVariable['fan'] == 1: # --> Control FAN By DHT
-            result = boardFunction.readDHT11(globalVariable['device']['dht']) 
+            result = boardFunction.readDHT11(globalVariable['device']['dht'])
             if result['status'] == True:
                 fanSpeed = boardFunction.controlFanSpeed(globalVariable['device']['fan'], result['temperature'])  
                 info.updateByName("temp", result['temperature'])

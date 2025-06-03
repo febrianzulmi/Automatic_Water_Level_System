@@ -14,21 +14,21 @@ class boardFunction():
     def initDevice():
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
-        GPIO.setup(16, GPIO.OUT)
-        fan = GPIO.PWM(16,50)
+        GPIO.setup(18, GPIO.OUT)
+        fan = GPIO.PWM(18,50)
         fan.start(0)
         for proc in psutil.process_iter():
             if proc.name() == 'libgpiod_pulsein' or proc.name() == 'libgpiod_pulsei':
                 proc.kill()
         try:
-            dht = adafruit_dht.DHT11(board.D24)
+            dht = adafruit_dht.DHT11(board.D24, use_pulseio=True)
         except:
             dht= None
         device = {'fan': fan, 'dht': dht}
         return device
     
     def readDHT11(dhtDevice):
-        if dhtDevice == None:
+        if dhtDevice != None:
             try:
                 temperature = dhtDevice.temperature
                 humidity = dhtDevice.humidity

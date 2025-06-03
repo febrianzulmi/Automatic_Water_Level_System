@@ -1,4 +1,4 @@
-group_id = 5
+group_number = 5
 path = "/home/connex"
 
 import argparse
@@ -10,8 +10,7 @@ sys.path.append(f"{path}/project/database")
 from query_project_db import SensorGroupDB
 sys.path.append(f"{path}/project/function")
 from sensorFunction import SensorFunction
-from sensorLibrary import Power
-
+from sensorLibrary import Environment
 
 group_id = SensorGroupDB.selectIsNumber(group_id)[0]["id"]
 
@@ -22,12 +21,11 @@ tipe = None
 if args.Type != None:
    tipe = args.Type
 data_sensor = SensorFunction.CollectDataSensorFunction.byGroupState(group_id)
-sensor_variable = {"calibratePort1": 0, "calibratePort2": 0, "calibratePort3": 0, "calibratePort4": 0, "acsPort1": None, "acsPort2": None, "acsPort3": None, "acsPort4": None}
 
 
 def readSensor():
-    power = Power(group_id, data_sensor)
-    sensor_result = power.main(sensor_variable)
+    environment = Environment(group_id, data_sensor)
+    sensor_result = environment.main()
     return sensor_result
 
 
@@ -39,10 +37,10 @@ def main():
 
     group = SensorGroupDB.selectOne(group_id)
     if len(group) > 0:
-        for i in group:
-            print(f"Group Sensor : {i['name']} (ID {str(i['id'])})")
+       for i in group:
+           print(f"Group Sensor : {i['name']} (ID {str(i['id'])})")
     else:
-        print("Group Sensor : -")
+       print("Group Sensor : -")
 
     if data_sensor["numSensor"] > 0:
         sensor_result = readSensor()

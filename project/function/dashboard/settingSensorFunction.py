@@ -72,6 +72,7 @@ class settingSensor():
                     if last_number != number:
                         SensorFunction.serviceSensor.renameSensorFile(last_number, number, service_id)
                         SystemServiceDB.deleteByName(F"sensor{last_number}")
+                        ServiceProjectFunction.actionService("stop", "disable", F"sensor{last_number}")
                     if str(stateSensor) == "1":
                         service = ServiceProjectFunction.actionService("start", "enable", F"sensor{number}")
                     elif str(stateSensor) == "0":
@@ -82,35 +83,6 @@ class settingSensor():
             except Exception as e:
                 result = {"state": "0", "message": f"Failed Update Sensor Group {name}. There was an issue - {e}"}
             return json.dumps(result)
-                    
-            #     if stateSensor == "1":
-            #         service = ServiceProjectFunction.actionService("start", "enable", F"sensor{number}")
-            #         state = SensorGroupDB.update(number, oid, name, interval, unit, frekuensi, service_id, id, enterAlarm, exitAlarm, errorAlarm, stateSensor)
-            #         if state == "1" and service["action_status"] == 1 and service["autorun_status"] == 1:
-            #             if last_number != number:
-            #                 SensorFunction.serviceSensor.renameSensorFile(last_number, number, service_id)
-            #                 SystemServiceDB.deleteByName(F"sensor{last_number}")
-            #             result = {'state':"1", 'message':F'Update Successful! Your Sensor Group have been successfully updated. - ({service["message"]})'}
-            #             return json.dumps(result)
-            #         else:
-            #             result = {'state':'0', 'message':F'Update Failed! Sorry, there was an issue - ({service["message"]})'}
-            #             return json.dumps(result)
-            #     else:
-            #         service = ServiceProjectFunction.actionService("stop", "disable", F"sensor{number}")
-            #         state = SensorGroupDB.update(number, oid, name, interval, unit, frekuensi, service_id, id, enterAlarm, exitAlarm, errorAlarm, stateSensor)
-            #         if state == "1" and service["action_status"] == 1 and service["autorun_status"] == 1:
-            #             if last_number != number:
-            #                 SensorFunction.serviceSensor.renameSensorFile(last_number, number, service_id)
-            #                 SystemServiceDB.deleteByName(F"sensor{last_number}")
-            #             result = {'state':"1", 'message':F'Update Successful! Your Sensor Group have been successfully updated. - ({service["message"]})'}
-            #             return json.dumps(result)
-            #         else:
-            #             result = {'state':'0', 'message':F'Update Failed! Sorry, there was an issue - ({service["message"]})'}
-            #             return json.dumps(result)
-                
-            # except Exception as e:
-            #     result = {'state':'0', 'message':'Update Failed! Sorry, there was an issue - ' + str(e)}
-            #     return json.dumps(result)
         
         def delete(id, number, nameSensorGroup, serviceId, port):
             try:

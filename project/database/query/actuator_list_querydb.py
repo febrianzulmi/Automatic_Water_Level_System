@@ -21,7 +21,7 @@ host, database, username, password = openDB()
 class ActuatorListDB():
     def select():
         connection = sql.connect(host, database, username, password)
-        query = "SELECT * FROM actuatorListDB"
+        query = "SELECT * FROM actuatorListDB ORDER by created_at ASC"
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
     
@@ -42,6 +42,14 @@ class ActuatorListDB():
     def selectById(id):
         connection = sql.connect(host, database, username, password)
         query = "SELECT * FROM actuatorListDB where id = %s"
+        value = (id,)
+        fetchall = sql.selectWithInput(connection, query, value)
+        return fetchall
+    
+    def selectByIdFull(id):
+        connection = sql.connect(host, database, username, password)
+        query = """SELECT actuatorGroupDB.name as actuator_group_name, actuatorGroupDB.number as actuator_group_number, actuatorListDB.* FROM actuatorListDB join 
+                actuatorGroupDB on actuatorListDB.actuator_group_id=actuatorGroupDB.id where actuatorListDB.id=%s"""
         value = (id,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall

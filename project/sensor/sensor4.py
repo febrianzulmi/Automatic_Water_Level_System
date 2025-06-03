@@ -8,21 +8,22 @@ sys.path.append(f"{path}/library")
 from SynapsisLibrary import packData, times
 sys.path.append(f"{path}/project/database")
 from query_project_db import SystemServiceDB, SensorGroupDB
-from sensorLibrary import Environment
+from sensorLibrary import EnvironmentExt
 sys.path.append(f"{path}/project/function")
-from dbFunction import dbFunction
 from logFunction import logFunction
 from sensorFunction import SensorFunction
 from serviceProjectFunction import ServiceProjectFunction
 sys.path.append(f"{path}/project/function/sensor")
 from collectDataSensorFunction import CollectDataSensorFunction
 from calibrationSensorFunction import CalibrateSensorFunction
+from dbFunction import dbFunction
 
 sensor_variable = {}
 sensor_variable["groupNumber"] = group_number
 sensor_variable["serviceName"] = f"sensor{group_number}"
 
 group_id = SensorGroupDB.selectIsNumber(group_number)[0]["id"]
+print(group_id)
 
 datetimes = times.getDatetime()
 print("Start : ", datetimes)
@@ -31,14 +32,15 @@ feature_setting = dbFunction.getFeatureSetting()
 data_sensor = CollectDataSensorFunction.byGroupState(group_id)
 alarm_data = SensorFunction.alarmSensorFunction.initiateAlarmSensor(data_sensor, sensor_setting, feature_setting)
 
+
 sensor_variable["flag"] = 0
 sensor_variable["totalSensor"] = data_sensor["numSensor"]
 sensor_variable["logger"] = logFunction.setupLogger(sensor_variable["serviceName"], stream=True) 
 
 
 def readSensor():
-    environment = Environment(group_id, data_sensor)
-    sensor_result = environment.main()
+    environmentExt = EnvironmentExt(group_id, data_sensor)
+    sensor_result = environmentExt.main()
     return sensor_result
 
 

@@ -1690,13 +1690,13 @@ def check_actuator():
     rule = str(request.url_rule)
     actuator_list_id, action = '', ''
     result = '-'
-    actuators = ActuatorDB.select()
+    actuators = ActuatorListDB.selectFull()
     if request.method == 'POST':
         actuator_list_id = request.form.get('actuator')
-        actuator_number = ActuatorDB.selectById(actuator_list_id)[0]['number']
+        actuator_group_number = request.form.get('actuator_group_number')
         action = request.form.get('action')
-        filename = f"check_actuator{actuator_number}.py"
-        result = subprocess.Popen(["python3", "/home/connex/project/actuator/" + filename, "-a", action], stdout=subprocess.PIPE)
+        filename = f"check_actuator{actuator_group_number}.py"
+        result = subprocess.Popen(["python3", f"/home/connex/project/actuator/{filename}", "-a", action, "-l", actuator_list_id], stdout=subprocess.PIPE)
         (out, err) = result.communicate()
         result = out.decode('utf-8')
         result = result.split('\n')
@@ -1754,9 +1754,10 @@ def check_snmp():
 
 @app.route('/display', methods=['GET','POST'])
 def display():
-    id, username, state, level = generalFunction.checkSession()
+    sessionData = generalFunction.checkSession() # ID, username, level
+    deviceSetting = dbFunction.getDeviceSetting()
     rule = str(request.url_rule)
-    project_name, project_port, project_gateway, project_node, project_protocol = generalFunction.getProjectSetting()
+    projectData = generalFunction.getProjectSetting() # projectNode, projectName
     result = '-'
     import time
     path = "/home/connex/project/display/"
@@ -1766,15 +1767,15 @@ def display():
        if upload_type == 'external':
           uploaded_file = request.files['file']
           filename = secure_filename(uploaded_file.filename)
-       enable = ServiceProjectFunction.checkEnableService('connex_display')
+       enable = ServiceProjectFunction.checkEnableService('nearon_display')
        if enable == 'enabled':
-          os.system('systemctl disable connex_display')
+          os.system('systemctl disable nearon_display')
           result = ['Display service detected enable, system already disable the display service.', 'Please reboot device before upload the file']
        else:
-          service = ServiceProjectFunction.checkActiveService('connex_display')
+          service = ServiceProjectFunction.checkActiveService('nearon_display')
           if service == 'active':
              result = ['Display service detected active, system already stop the display service.', 'Please reboot device before upload the file']
-             os.system('service connex_display stop')
+             os.system('service nearon_display stop')
           else:
              if upload_type == 'external':
                 uploaded_file.save(os.path.join(path + "display_new.tft"))
@@ -1795,10 +1796,10 @@ def display():
        last = time.ctime(os.path.getmtime(path + "display.tft"))
     else:
        last = "-"
-    if int(state) == 0:
+    if int(sessionData['state']) == 0:
        flash('Please Login to Access the Page')
        return redirect(url_for('login'))
-    return render_template('display.html', project_name=project_name, project_port=project_port, project_gateway=project_gateway, project_node=project_node, rule=rule, state=state, username=username, result=result, last=last, files=files, level=level)
+    return render_template('display.html', projectData=projectData, sessionData=sessionData, deviceSetting=deviceSetting, rule=rule, result=result, last=last, files=files)
 
 @app.route('/system/service', methods=['GET','POST'])
 def service_form():

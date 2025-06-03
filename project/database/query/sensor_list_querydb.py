@@ -56,13 +56,6 @@ class SensorListDB():
         return fetchall
 
 
-    # def selectByGroupFull(group_id):
-    #     connection = sql.connect(host, database, username, password)
-    #     query = "SELECT sensorListDB.*, sensorGroupDB.number, sensorGroupDB.name AS name_group, sensorGroupDB.intervals, sensorGroupDB.unit as unitInterval, sensorGroupDB.frekuensi, sensorGroupDB.service_id, sensorGroupDB.enterAlarm, sensorGroupDB.exitAlarm, sensorGroupDB.errorAlarm FROM sensorListDB join sensorGroupDB on sensorListDB.group_id=sensorGroupDB.id WHERE sensorListDB.group_id=%s"
-    #     value = (group_id,)
-    #     fetchall = sql.selectWithInput(connection, query, value)
-    #     return fetchall
-
     def selectByGroupFull(group_id):
         connection = sql.connect(host, database, username, password)
         query = """
@@ -119,6 +112,36 @@ class SensorListDB():
                 sensorListDB.oid ASC
             """
         value = (group_id, list_state, group_state)
+        fetchall = sql.selectWithInput(connection, query, value)
+        return fetchall
+
+
+    def selectByGroupNumberFull(group_id):
+        connection = sql.connect(host, database, username, password)
+        query = """
+            SELECT 
+                sensorListDB.*, 
+                sensorGroupDB.number, 
+                sensorGroupDB.name AS name_group, 
+                sensorGroupDB.intervals, 
+                sensorGroupDB.unit AS unitInterval, 
+                sensorGroupDB.frekuensi, 
+                sensorGroupDB.service_id, 
+                sensorGroupDB.enterAlarm, 
+                sensorGroupDB.exitAlarm, 
+                sensorGroupDB.errorAlarm 
+            FROM 
+                sensorListDB 
+            JOIN 
+                sensorGroupDB 
+            ON 
+                sensorListDB.group_id = sensorGroupDB.id 
+            WHERE 
+                sensorGroupDB.number = %s
+            ORDER BY 
+                sensorListDB.oid ASC
+        """
+        value = (group_id,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
 

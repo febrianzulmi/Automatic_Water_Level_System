@@ -102,7 +102,7 @@ class serviceSensor():
 
         def update_file_with_number(file_path, number):
             data = file_read(file_path)
-            data[0] = f'number = {number}\n'
+            data[0] = f'group_number = {number}\n'
             file_write(file_path, data)
 
         update_file_with_number(filename_sensor_file_path, number)

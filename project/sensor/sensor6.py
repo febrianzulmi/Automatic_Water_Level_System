@@ -8,7 +8,7 @@ sys.path.append(f"{path}/library")
 from SynapsisLibrary import packData, times
 sys.path.append(f"{path}/project/database")
 from query_project_db import SystemServiceDB, SensorGroupDB
-from sensorLibrary import PowerExt
+from sensorLibrary import Power
 sys.path.append(f"{path}/project/function")
 from logFunction import logFunction
 from sensorFunction import SensorFunction
@@ -31,14 +31,16 @@ feature_setting = dbFunction.getFeatureSetting()
 data_sensor = CollectDataSensorFunction.byGroupState(group_id)
 alarm_data = SensorFunction.alarmSensorFunction.initiateAlarmSensor(data_sensor, sensor_setting, feature_setting)
 
+
 sensor_variable["flag"] = 0
 sensor_variable["totalSensor"] = data_sensor["numSensor"]
 sensor_variable["logger"] = logFunction.setupLogger(sensor_variable["serviceName"], stream=True) 
-
+sensor_variable["calibratePort1"], sensor_variable["calibratePort2"], sensor_variable["calibratePort3"], sensor_variable["calibratePort4"]  = 0, 0, 0, 0
+sensor_variable["acsPort1"], sensor_variable["acsPort2"], sensor_variable["acsPort3"], sensor_variable["acsPort4"] = None, None, None, None
 
 def readSensor():
-    powerExt = PowerExt(group_id, data_sensor)
-    sensor_result = powerExt.main()
+    power = Power(group_id, data_sensor)
+    sensor_result = power.main(sensor_variable)
     return sensor_result
 
 
@@ -63,6 +65,7 @@ def main():
     sensor_result = readSensor()
     calibration_value = CalibrateSensorFunction.calculateCalibration(data_sensor, sensor_result["value"])
     alarm_data, summary_sensor = SensorFunction.alarmSensorFunction.checkAlarm(data_sensor, calibration_value, sensor_result, alarm_data, "Serial", timestamp)
+
     sensor_pack = packData.sensorPack(data_sensor["sensorId"], calibration_value, data_sensor["numSensor"])
     sensor_variable["logger"].debug(f"Sensor Data : {sensor_pack}")
     
@@ -80,7 +83,7 @@ def main():
     sensor_variable["logger"].debug(f"---------------------------------\n")
     sensor_variable["flag"] = 0
     time.sleep(sensor_setting["interval"])
-
+    
 
 while True:
     if __name__ == "__main__":        

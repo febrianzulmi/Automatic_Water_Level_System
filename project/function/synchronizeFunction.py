@@ -24,6 +24,7 @@ class synchronizeFunction():
         protocol_monitoring = project_data["protocol"] # 1: HTTP, 2: MQTT, 3: SNMP
         timestamp = times.getDatetime()
         thread_sync = []
+        global_variable["log"] = []
         
         if str(protocol_monitoring) == "1":
             if str(feature_setting["syncNode"]) == "1":
@@ -40,7 +41,8 @@ class synchronizeFunction():
                 log_service = "Feature Synchronize Node Option Setting Inactive"
                 color_log_service = f"\033[31m{log_service} at {timestamp}\033[00m"
                 global_variable["logger"].debug(f"{color_log_service}\n")
-                SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                global_variable["log"].append(log_service)
         
             if str(feature_setting["syncSensor"]) == "1":
                 thread_sync_sensor = generalFunction.ThreadWithReturnValues(target=synchronizeFunction.syncSensorHttp, args=(server_config["http"], timestamp, global_variable))
@@ -51,7 +53,8 @@ class synchronizeFunction():
                 log_service = "Feature Synchronize Sensor Option Setting Inactive"
                 color_log_service = f"\033[31m{log_service} at {timestamp}\033[00m"
                 global_variable["logger"].debug(f"{color_log_service}\n")
-                SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                global_variable["log"].append(log_service)
         
             if str(feature_setting["syncActuator"]) == "1":
                 thread_sync_actuator = generalFunction.ThreadWithReturnValues(target=synchronizeFunction.syncActuatorHttp, args=(server_config["http"], timestamp, global_variable))
@@ -62,7 +65,8 @@ class synchronizeFunction():
                 log_service = "Feature Synchronize Actuator Option Setting Inactive"
                 color_log_service = f"\033[31m{log_service} at {timestamp}\033[00m"
                 global_variable["logger"].debug(f"{color_log_service}\n")
-                SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                global_variable["log"].append(log_service)
         
         elif str(protocol_monitoring) == "2":
             if global_variable["updateReboot"] == 0:
@@ -104,19 +108,22 @@ class synchronizeFunction():
                     log_service = f"{result_mqtt['state']} Subscribe Topic {topic_name}"
                     color_log_service = f"\033[94m{log_service} at {timestamp}\033[00m"
                     global_variable["logger"].debug(f"{color_log_service}\n")
-                    SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                    # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                    global_variable["log"].append(log_service)
             
                 elif run_subscribe == 2:
                     log_service = f"Feature Synchronize {topic_name} Setting Inactive"
                     color_log_service = f"\033[93m{log_service} at {timestamp}\033[00m"
                     global_variable["logger"].debug(f"{color_log_service}\n")
-                    SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                    # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                    global_variable["log"].append(log_service)
             
                 elif run_subscribe == 3:
                     log_service = f"{result_mqtt['state']} Unsubscribe Topic {topic_name}"
                     color_log_service = "\033[93m{} at {}\033[00m".format(log_service, timestamp)
                     global_variable["logger"].debug(f"{color_log_service}\n")
-                    SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                    # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                    global_variable["log"].append(log_service)
             
             synchronizeFunction.runCheckReceiveMessageMQTT(device_setting, server_config["mqtt"], global_variable)
         
@@ -124,10 +131,14 @@ class synchronizeFunction():
             log_service = "Protocol Synchronize Setting N/A"
             color_log_service = f"\033[93m{log_service} at {timestamp}\033[00m"
             global_variable["logger"].debug(f"{color_log_service}\n")
-            SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            global_variable["log"].append(log_service)
             
         for num in range(len(thread_sync)) :
             thread_sync[num].join()  
+        
+        log_service = " | ".join(global_variable["log"])
+        SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
 
 
     def syncNodeHttp(device_data, server_config, timestamp, global_variable):
@@ -140,7 +151,8 @@ class synchronizeFunction():
             log_service = f"{result_http['state']} Sync Node ({device_data['uid']}) Data - Status Code {result_http['state_code']} ({result_http['log']})"     
             color_log_service = f"\033[31m{log_service} at {timestamp}\033[00m"
             global_variable["logger"].debug(f"{color_log_service}\n")
-            SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            global_variable["log"].append(log_service)
     
     
     def syncNodeRebootHttp(server_config, timestamp, global_variable):
@@ -158,7 +170,8 @@ class synchronizeFunction():
         
         global_variable["flagRebootSync"] = 1    
         global_variable["logger"].debug(f"{color_log_service}\n")
-        SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+        # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+        global_variable["log"].append(log_service)
      
         
     def syncSensorHttp(server_config, timestamp, global_variable):
@@ -171,7 +184,8 @@ class synchronizeFunction():
             log_service = f"{result_http['state']} Sync Sensor Data - Status Code {result_http['state_code']} ({result_http['log']})"
             color_log_service = f"\033[31m{log_service} at {timestamp}\033[00m"
             global_variable["logger"].debug(f"{color_log_service}\n")
-            SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            global_variable["log"].append(log_service)
 
 
     def syncActuatorHttp(server_config, timestamp, global_variable):
@@ -184,7 +198,8 @@ class synchronizeFunction():
             log_service = f"{result_http['state']} Sync Actuator Data - Status Code {result_http['state_code']} ({result_http['log']})"
             color_log_service = f"\033[31m{log_service} at {timestamp}\033[00m"
             global_variable["logger"].debug(f"{color_log_service}\n")
-            SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            global_variable["log"].append(log_service)
     
     
     def runCheckReceiveMessageMQTT(device_data, server_config, global_variable):
@@ -226,13 +241,15 @@ class synchronizeFunction():
             log_service = f"Success Sync Node ({nodeId}) Data"
             color_log_service = f"\033[94m{log_service} at {timestamp}\033[00m"
             global_variable["logger"].debug(f"{color_log_service}\n")
-            SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            global_variable["log"].append(log_service)
             
             if int(reboot_state) == 1:
                 log_service = "Device Trigger Reboot from Server"     
                 color_log_service = f"\033[94m{log_service} at {timestamp}\033[00m"
                 global_variable["logger"].debug(f"{color_log_service}\n")
-                SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+                global_variable["log"].append(log_service)
                 os.system("sudo reboot")
     
     
@@ -270,13 +287,15 @@ class synchronizeFunction():
             log_service = f"Success Sync {count_sensor} of {sensor_data['numSensor']} Sensor Data"  
             color_log_service = f"\033[94m{log_service} at {timestamp}\033[00m"
             global_variable["logger"].debug(f"{color_log_service}\n")
-            SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])    
+            # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])    
+            global_variable["log"].append(log_service)
         
         else:
             log_service = f"No Sensor Sync from Server"       
             color_log_service = f"\033[94m{log_service} at {timestamp}\033[00m"
             global_variable["logger"].debug(f"{color_log_service}\n")
-            SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            global_variable["log"].append(log_service)
     
     
     def syncActuatorData(message, timestamp, global_variable):
@@ -347,10 +366,12 @@ class synchronizeFunction():
             log_service = f"Success Sync {actuator_sync} of {len(actuator_data)} Actuator Data"  
             color_log_service = f"\033[94m{log_service} at {timestamp}\033[00m"
             global_variable["logger"].debug(f"{color_log_service}\n")
-            SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            global_variable["log"].append(log_service)
         
         else:
             log_service = f"No Actuator Sync from Server"       
             color_log_service = f"\033[94m{log_service} at {timestamp}\033[00m"
             global_variable["logger"].debug(f"{color_log_service}\n")
-            SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
+            global_variable["log"].append(log_service)

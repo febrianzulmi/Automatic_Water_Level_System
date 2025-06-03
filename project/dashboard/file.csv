@@ -1,28 +1,69 @@
 actuator_name;value;action;timestamp
-Remote AC 1;1;Boot;2025-01-21 17:13:09
-Remote AC 1;1;Boot;2025-01-21 17:07:06
-Remote AC 2;1;Local Remote;2025-01-21 17:05:55
-Remote AC 1;1;Boot;2025-01-21 17:05:26
-Remote AC 1;1;Local Remote;2025-01-21 17:00:13
-Remote AC 1;1;Boot;2025-01-21 16:54:27
-Remote AC 1;1;Local Remote;2025-01-21 16:52:03
-Remote AC 2;1;Local Remote;2025-01-21 16:46:56
-Remote AC 1;1;Local Remote;2025-01-21 16:46:38
-Test;0;Local Remote;2025-01-21 16:46:21
-6;0;Local Remote;2025-01-21 16:46:14
-Remote AC 1;0;Boot;2025-01-21 16:44:19
-Remote AC 1;0;Boot;2025-01-21 16:43:07
-Remote AC 1;0;Boot;2025-01-21 16:35:53
-Remote AC 1;0;Server Remote;2025-01-20 13:52:01
-Remote AC 1;1;Server Remote;2025-01-20 13:51:46
-Remote AC 1;0;Server Remote;2025-01-20 13:25:34
-Remote AC 1;1;Server Remote;2025-01-20 13:02:56
-Remote AC 1;0;Server Remote;2025-01-20 13:01:39
-Remote AC 1;1;Server Remote;2025-01-20 13:00:51
-Remote AC 1;0;Server Remote;2025-01-20 12:59:23
-Remote AC 1;1;Boot;2025-01-20 11:49:25
-Remote AC 1;1;Boot;2025-01-20 11:35:08
-Remote AC 1;1;Boot;2025-01-20 10:39:05
-Remote AC 1;1;Boot;2025-01-20 10:24:33
-Remote AC 1;1;Boot;2025-01-20 10:20:19
-Remote AC 1;1;Local Remote;2025-01-19 21:06:56
+Clear Latched Motor Alarm RTU 1;1;Boot;2025-06-02 20:32:12
+Clear Motor Lockouts RTU 1;1;Boot;2025-06-02 20:32:12
+Clear Port Alarm RTU 1;1;Boot;2025-06-02 20:32:12
+Clear Port Alarm RTU 1;0;Boot;2025-06-02 20:32:06
+Clear Latched Motor Alarm RTU 1;0;Boot;2025-06-02 20:31:59
+Clear Motor Lockouts RTU 1;0;Boot;2025-06-02 20:31:59
+Remote Motor Start RTU 1;1;Boot;2025-06-02 20:29:06
+Remote Motor Start RTU 1;0;Boot;2025-06-02 20:28:47
+Clear Latched Motor Alarm RTU 1;1;Boot;2025-06-02 20:28:30
+Clear Motor Lockouts RTU 1;1;Boot;2025-06-02 20:28:30
+Clear Port Alarm RTU 1;1;Boot;2025-06-02 20:28:24
+Clear Motor Lockouts RTU 1;0;Boot;2025-06-02 20:28:18
+Clear Port Alarm RTU 1;0;Boot;2025-06-02 20:28:18
+Clear Latched Motor Alarm RTU 1;0;Boot;2025-06-02 20:28:10
+Remote Motor Stop RTU 1;1;Boot;2025-06-02 20:26:16
+Supply Voltage High Alarm Setpoint RTU 1;250;Boot;2025-06-02 20:23:40
+Supply Voltage High Alarm Setpoint RTU 1;150;Boot;2025-06-02 20:19:15
+Clear Motor Lockouts RTU 1;1;Boot;2025-06-02 19:29:36
+Clear Port Alarm RTU 1;1;Boot;2025-06-02 19:29:30
+Clear Motor Lockouts RTU 1;0;Boot;2025-06-02 19:29:30
+Clear Latched Motor Alarm RTU 1;1;Boot;2025-06-02 19:29:30
+Clear Latched Motor Alarm RTU 1;0;Boot;2025-06-02 19:29:25
+Clear Port Alarm RTU 1;0;Boot;2025-06-02 19:29:25
+Supply Voltage High Alarm Setpoint RTU 1;250;Boot;2025-06-02 19:29:14
+Supply Voltage High Alarm Setpoint RTU 1;230;Boot;2025-06-02 19:17:37
+Clear Port Alarm RTU 1;1;Boot;2025-06-02 19:17:01
+Supply Voltage Low Alarm Setpoint RTU 1;150;Boot;2025-06-02 19:17:01
+Remote Motor Stop RTU 1;0;Boot;2025-06-02 19:17:01
+Clear Latched Motor Alarm RTU 1;1;Boot;2025-06-02 19:17:01
+Remote Motor Start RTU 1;1;Boot;2025-06-02 17:03:18
+Clear Motor Lockouts RTU 1;1;Boot;2025-06-02 17:03:18
+Supply Voltage Low Alarm Setpoint RTU 1;150;Boot;2025-06-02 17:03:18
+Remote Motor Stop RTU 1;0;Boot;2025-06-02 17:03:18
+Supply Voltage High Alarm Setpoint RTU 1;250;Boot;2025-06-02 17:03:18
+Clear Latched Motor Alarm RTU 1;1;Boot;2025-06-02 17:03:18
+Clear Port Alarm RTU 1;1;Boot;2025-06-02 17:03:18
+Remote Motor Start RTU 1;1;Boot;2025-06-02 16:56:13
+Remote Motor Stop RTU 1;0;Boot;2025-06-02 16:54:14
+Supply Voltage High Alarm Setpoint RTU 1;250;Boot;2025-06-02 16:54:14
+Clear Latched Motor Alarm RTU 1;1;Boot;2025-06-02 16:54:14
+Remote Motor Start RTU 1;0;Boot;2025-06-02 16:54:14
+Clear Port Alarm RTU 1;1;Boot;2025-06-02 16:54:14
+Clear Motor Lockouts RTU 1;1;Boot;2025-06-02 16:54:14
+Supply Voltage Low Alarm Setpoint RTU 1;150;Boot;2025-06-02 16:54:14
+Remote Motor Stop RTU 1;0;Boot;2025-06-02 16:40:59
+Clear Port Alarm RTU 1;1;Boot;2025-06-02 16:40:31
+Clear Port Alarm RTU 1;0;Boot;2025-06-02 16:40:25
+Clear Latched Motor Alarm RTU 1;1;Boot;2025-06-02 16:39:56
+Clear Latched Motor Alarm RTU 1;0;Boot;2025-06-02 16:39:50
+Remote Motor Start RTU 1;0;Boot;2025-06-02 16:39:39
+Remote Motor Stop RTU 1;1;Boot;2025-06-02 16:38:59
+Clear Port Alarm RTU 1;1;Boot;2025-06-02 16:38:59
+Clear Motor Lockouts RTU 1;1;Boot;2025-06-02 16:38:59
+Supply Voltage Low Alarm Setpoint RTU 1;150;Boot;2025-06-02 16:38:59
+Remote Motor Start RTU 1;1;Boot;2025-06-02 16:38:59
+Supply Voltage High Alarm Setpoint RTU 1;250;Boot;2025-06-02 16:38:59
+Clear Latched Motor Alarm RTU 1;1;Boot;2025-06-02 16:38:59
+Supply Voltage Low Alarm Setpoint RTU 1;150;Boot;2025-06-02 16:38:35
+Remote Motor Start RTU 1;1;Boot;2025-06-02 16:38:35
+Supply Voltage High Alarm Setpoint RTU 1;250;Boot;2025-06-02 16:38:35
+Clear Latched Motor Alarm RTU 1;1;Boot;2025-06-02 16:38:35
+Remote Motor Stop RTU 1;1;Boot;2025-06-02 16:38:35
+Clear Port Alarm RTU 1;1;Boot;2025-06-02 16:38:35
+Clear Motor Lockouts RTU 1;1;Boot;2025-06-02 16:38:35
+Clear Latched Motor Alarm RTU 1;1;Schedule;2025-06-02 16:33:21
+Clear Port Alarm RTU 1;1;Schedule;2025-06-02 16:33:00
+Clear Port Alarm RTU 1;1;Schedule;2025-06-02 16:31:00
+Clear Motor Lockouts RTU 1;1;Schedule;2025-06-02 16:31:00

@@ -1,4 +1,5 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+{% block content %}
 <div class="row justify-content-center">
 	<div class="col-md-12">
 		<div class="card card-dark">
@@ -9,21 +10,25 @@
 				<form class="form-horizontal" method="POST" action="/check/actuator">
 					<div class="form-group row">
 						<div class="col-sm-3">
-							<select name="actuator" class="form-control" required>
+							<select id="actuator-select" name="actuator" class="form-control" required>
 								<option value="">--- Choose Actuator ---</option>
 								{% for actuator in actuators %}
-								<option value="{{ actuator['id'] }}" {% if
-									actuator['id']|string==actuator_list_id|string %} {{ "selected" }} {% endif %}>{{
-									actuator['name'] }}
+								<option value="{{ actuator['id'] }}" data-type="{{ actuator['type_actuator'] }}"
+									data-group-number="{{ actuator['actuator_group_number'] }}" {% if
+									actuator['id']|string==actuator_list_id|string %} selected {% endif %}>
+									{{ actuator['actuator_group_name'] }} - {{ actuator['name'] }}
 								</option>
 								{% endfor %}
 							</select>
+
+							<!-- Tambahkan ini di tempat mana pun dalam <form> -->
+							<input type="hidden" name="actuator_group_number" id="group-number-hidden" value="">
 						</div>
-						<div class="col-sm-3">
-							<select name="action" class="form-control" required>
+						<div class="col-sm-3" id="action-container">
+							<select name="action" id="action-select" class="form-control" required>
 								<option value="">--- Choose Action ---</option>
-								<option value="0" {% if action|string=='0' %} {{ "selected" }} {% endif %}>OFF</option>
-								<option value="1" {% if action|string=='1' %} {{ "selected" }} {% endif %}>ON</option>
+								<option value="0" {% if action|string=='0' %} selected {% endif %}>No Action</option>
+								<option value="1" {% if action|string=='1' %} selected {% endif %}>Action</option>
 							</select>
 						</div>
 						<button type="submit" class="btn btn-primary float-right">
@@ -31,21 +36,59 @@
 						</button>
 					</div>
 				</form>
-				<b>
-					Result
-				</b>
-				<br>
+
+				<b>Result</b><br>
 				{% for i in range(result|length) %}
-				{{ result[i] }}
-				<br>
+				{{ result[i] }}<br>
 				{% endfor %}
-			</div>
-			<div class="card-footer">
-				<font style="color:red">
-					Note : Based on Group Actuator
-				</font>
+				<br>
+				<font style="color:red">Note : Based on Actuator List</font>
+				<hr>
+				<a href="/check/actuator" role="button">
+					<button type="button" class="btn btn-default">Refresh</button>
+				</a>
 			</div>
 		</div>
 	</div>
 </div>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+	const actuatorSelect = document.getElementById('actuator-select');
+	const actionContainer = document.getElementById('action-container');
+	const groupNumberHidden = document.getElementById('group-number-hidden');
+
+	function updateActionField() {
+		const selectedOption = actuatorSelect.options[actuatorSelect.selectedIndex];
+		const type = selectedOption.getAttribute('data-type');
+		const groupNumber = selectedOption.getAttribute('data-group-number');
+
+		// Set value hidden input
+		groupNumberHidden.value = groupNumber;
+
+		if (type === "1") {
+			// Ganti select dengan input number
+			actionContainer.innerHTML = `
+				<input type="number" name="action" class="form-control" id="action-number" placeholder="Enter custom value" required>
+			`;
+		} else {
+			// Kembalikan ke dropdown default
+			actionContainer.innerHTML = `
+				<select name="action" id="action-select" class="form-control" required>
+					<option value="">--- Choose Action ---</option>
+					<option value="0" {% if action|string == '0' %} selected {% endif %}>No Action</option>
+					<option value="1" {% if action|string == '1' %} selected {% endif %}>Action</option>
+				</select>
+			`;
+		}
+	}
+
+	// Jalankan saat halaman pertama kali dimuat
+	updateActionField();
+
+	// Jalankan saat actuator berubah
+	actuatorSelect.addEventListener('change', updateActionField);
+});
+
+</script>
 {% endblock %}

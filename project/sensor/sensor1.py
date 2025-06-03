@@ -8,7 +8,7 @@ sys.path.append(f"{path}/library")
 from SynapsisLibrary import packData, times
 sys.path.append(f"{path}/project/database")
 from query_project_db import SystemServiceDB, SensorGroupDB
-from sensorLibrary import Room
+from sensorLibrary import SensorRTU
 sys.path.append(f"{path}/project/function")
 from dbFunction import dbFunction
 from logFunction import logFunction
@@ -37,8 +37,8 @@ sensor_variable["logger"] = logFunction.setupLogger(sensor_variable["serviceName
 
 
 def readSensor():
-    room = Room(group_id, data_sensor)
-    sensor_result = room.main()
+    rtu = SensorRTU(group_id, data_sensor)
+    sensor_result = rtu.main()
     return sensor_result
 
 

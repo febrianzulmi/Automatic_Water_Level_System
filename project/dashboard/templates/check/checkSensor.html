@@ -26,9 +26,12 @@
                 {% for res in result %}
                 {{ res }}<br>
                 {% endfor %}
-            </div>
-            <div class="card-footer">
-                <font style="color:red">Note : Based on Group Sensor</font>
+                <br>
+				<font style="color:red">Note : Based on Group Sensor</font>
+				<hr>
+				<a href="/check/sensor" role="button">
+					<button type="button" class="btn btn-default">Refresh</button>
+				</a>
             </div>
         </div>
     </div>

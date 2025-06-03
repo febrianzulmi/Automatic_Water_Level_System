@@ -1,9 +1,8 @@
-group_id = 8
+group_number = 8
 path = "/home/connex"
 
 import argparse
 import sys
-import time
 
 sys.path.append(f"{path}/library")
 from SynapsisLibrary import times
@@ -11,7 +10,7 @@ sys.path.append(f"{path}/project/database")
 from query_project_db import SensorGroupDB
 sys.path.append(f"{path}/project/function")
 from sensorFunction import SensorFunction
-from sensorLibrary import Network
+from sensorLibrary import RemoteIRExt
 
 group_id = SensorGroupDB.selectIsNumber(group_id)[0]["id"]
 
@@ -20,34 +19,28 @@ parser.add_argument("-t", "--Type", help = "Show Output")
 args = parser.parse_args()
 tipe = None
 if args.Type != None:
-    tipe = args.Type
+   tipe = args.Type
 data_sensor = SensorFunction.CollectDataSensorFunction.byGroupState(group_id)
-sensor_variable = {'lastTime': {}, 'lastValue': {}}
 
 
 def readSensor():
-    global sensor_variable
-    network = Network(group_id, data_sensor, sensor_variable)
-    sensor_result, sensor_variable = network.main()
+    remoteIr = RemoteIRExt(group_id, data_sensor)
+    sensor_result = remoteIr.main()
     return sensor_result
 
 
 def main():
-    global group_id, data_sensor, tipe, sensor_variable
+    global group_id, data_sensor, tipe
 
     timestamp = times.getDatetime()
     print(f"Timestamp : {timestamp}")
-    
-    for x in range(data_sensor['numSensor']):
-        sensor_variable['lastTime'][data_sensor['sensorId'][x]] = 0
-        sensor_variable['lastValue'][data_sensor['sensorId'][x]] = 0
 
     group = SensorGroupDB.selectOne(group_id)
     if len(group) > 0:
-        for i in group:
-            print(f"Group Sensor : {i['name']} (ID {str(i['id'])})")
+       for i in group:
+           print(f"Group Sensor : {i['name']} (ID {str(i['id'])})")
     else:
-        print("Group Sensor : -")
+       print("Group Sensor : -")
 
     if data_sensor["numSensor"] > 0:
         sensor_result = readSensor()
