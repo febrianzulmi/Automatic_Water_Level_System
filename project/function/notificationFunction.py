@@ -25,6 +25,7 @@ class notificationFunction():
         notif_message = notification_data[num]["message"]
         type_message = notification_data[num]["notif"].lower()
         types = notification_data[num]["type"]
+        condition = notification_data[num]["conditions"]
         project_data = generalFunction.getProjectSetting()
         protocol_monitoring = project_data["protocol"] # 1: HTTP, 2: MQTT, 3: SNMP 
         if type_message == "whatsapp": type_message =  "wa"
@@ -37,7 +38,7 @@ class notificationFunction():
                 result_monitoring = httpProtocolFunction.runPostMethod(server_config["http"], "notif", notif_pack)
 
             else:
-                url_notification = notificationFunction.connexVersion(nearon_device_info, subject_message, type_message, notif_message, types)
+                url_notification = notificationFunction.connexVersion(nearon_device_info, subject_message, type_message, notif_message, types, condition)
                 result_monitoring = httpProtocolFunction.runPostMethod(server_config["http"], "notif", url_notification)
 
             if result_monitoring["state"] == "Success":
@@ -94,12 +95,25 @@ class notificationFunction():
         return notif_pack
 
 
-    def connexVersion(nearon_device_info, subject_message, type_message, notif_message, types):
+    def connexVersion(nearon_device_info, subject_message, type_message, notif_message, types, condition):
         url_notification = f"/send?node_id={str(nearon_device_info['uid'])}"
-        if types != 'Device':
-            url_notification = f"{url_notification}&level=5"
+        if type_message == "web":
+            if types == 'Actuator':
+                url_notification = f"{url_notification}&level=4"  
+            elif types == 'Device':
+                if condition == "Service Error":
+                    url_notification = f"{url_notification}&level=1"
+                else:
+                    url_notification = f"{url_notification}&level=4"
+            else:
+                if condition == "Normal":
+                    url_notification = f"{url_notification}&level=3"
+                elif condition == "Alarm Min" or condition == "Alarm Max":
+                    url_notification = f"{url_notification}&level=2"
+                else:
+                    url_notification = f"{url_notification}&level=1"
         else:
-            url_notification = f"{url_notification}&level=1"
+            url_notification = f"{url_notification}&level=5"
         url_notification = f"{url_notification}&message={str(notif_message)}&type={str(type_message)}&subject={str(subject_message)}"
         return url_notification
 

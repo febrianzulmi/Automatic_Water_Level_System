@@ -177,7 +177,7 @@ class DisplayFunction():
             result['time'] = str(times)
             result['suhu'] = info.selectByName("temp")
             result['fan'] = info.selectByName("fan")
-            if result['suhu'] != 'N/A':
+            if result['suhu'][0]["value"] != 'N/A':
                 if float(result["suhu"][0]["value"]) > 70.0:
                     result['tempIcon'] = 'suhu.pco=63488'
                 else:

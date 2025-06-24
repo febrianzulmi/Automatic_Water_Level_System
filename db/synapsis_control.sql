@@ -114,7 +114,7 @@ CREATE TABLE `fan` (
 
 LOCK TABLES `fan` WRITE;
 /*!40000 ALTER TABLE `fan` DISABLE KEYS */;
-INSERT INTO `fan` VALUES (1,'min_temp','25'),(2,'max_temp','40'),(3,'min_fan','0'),(4,'max_fan','100');
+INSERT INTO `fan` VALUES (1,'min_temp','25'),(2,'max_temp','40'),(3,'min_fan','0'),(4,'max_fan','20');
 /*!40000 ALTER TABLE `fan` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -139,7 +139,7 @@ CREATE TABLE `identity` (
 
 LOCK TABLES `identity` WRITE;
 /*!40000 ALTER TABLE `identity` DISABLE KEYS */;
-INSERT INTO `identity` VALUES (1,'hostname','nearon-bnpb'),(2,'password','Rasp8266!');
+INSERT INTO `identity` VALUES (1,'hostname','nearon-iot-slb'),(2,'password','Rasp8266!');
 /*!40000 ALTER TABLE `identity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -164,7 +164,7 @@ CREATE TABLE `info` (
 
 LOCK TABLES `info` WRITE;
 /*!40000 ALTER TABLE `info` DISABLE KEYS */;
-INSERT INTO `info` VALUES (1,'temp','0.0'),(2,'humidity','0.0'),(3,'cpu_temp','42.3'),(4,'cpu_usage','34.6 %'),(5,'memory','15% (593/3844 MB)'),(6,'storage','16% (4.6/29 GB)'),(7,'uptime','0 hour  00 minute  40 seconds'),(8,'boot_time','2025-06-03 13:48:11'),(9,'fan','100');
+INSERT INTO `info` VALUES (1,'temp','33'),(2,'humidity','66'),(3,'cpu_temp','43.8'),(4,'cpu_usage','40.0 %'),(5,'memory','7% (269/3844 MB)'),(6,'storage','39% (11.3/29 GB)'),(7,'uptime','0 hour  00 minute  30 seconds'),(8,'boot_time','2025-06-10 10:28:56'),(9,'fan','10');
 /*!40000 ALTER TABLE `info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -194,7 +194,7 @@ CREATE TABLE `interface` (
 
 LOCK TABLES `interface` WRITE;
 /*!40000 ALTER TABLE `interface` DISABLE KEYS */;
-INSERT INTO `interface` VALUES ('eth0',0,0,'dc:a6:32:1b:5d:35','192.168.1.10','255.255.255.0','',''),('wlan0',1,1,'dc:a6:32:1b:5d:36','','','','');
+INSERT INTO `interface` VALUES ('eth0',0,0,'d8:3a:dd:d1:2a:f0','192.168.1.10','255.255.255.0','',''),('wlan0',1,1,'d8:3a:dd:d1:2a:f1','','','','');
 /*!40000 ALTER TABLE `interface` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -338,7 +338,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (5,'super','pbkdf2:sha256:50000$SfPXHgAW$7f52ff8caa7fcb29598eaaea5aaaaab0b8c1ac2751becb8fd4dca8de535b9810',1,0,'2025-06-03 13:34:49',0,'2025-06-03 13:06:53','2021-08-28 13:31:42'),(6,'admin','pbkdf2:sha256:50000$kOhHyFxh$bba765d99350895bc214fa4fd68c03959d04127b8ce7e6fbf3c80b1ad4c5b00e',0,0,'2024-08-07 17:14:18',0,'2025-01-20 17:01:29','2021-08-28 13:32:15');
+INSERT INTO `user` VALUES (5,'super','pbkdf2:sha256:50000$SfPXHgAW$7f52ff8caa7fcb29598eaaea5aaaaab0b8c1ac2751becb8fd4dca8de535b9810',1,0,'2025-06-10 09:52:19',0,'2025-06-10 09:59:19','2021-08-28 13:31:42'),(6,'admin','pbkdf2:sha256:50000$kOhHyFxh$bba765d99350895bc214fa4fd68c03959d04127b8ce7e6fbf3c80b1ad4c5b00e',0,0,'2024-08-07 17:14:18',0,'2025-01-20 17:01:29','2021-08-28 13:32:15');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -366,7 +366,7 @@ CREATE TABLE `wireless` (
 
 LOCK TABLES `wireless` WRITE;
 /*!40000 ALTER TABLE `wireless` DISABLE KEYS */;
-INSERT INTO `wireless` VALUES ('hotspot','wlan0',1,'Nearon IoT - BNPB','12345678',1),('station','wlan0',1,'Synapsis.id Head Office','synaps1sjkt23@',0);
+INSERT INTO `wireless` VALUES ('hotspot','wlan0',0,'Nearon IoT - SLB','12345678',1),('station','wlan0',1,'Synapsis.id Head Office','synaps1sjkt23@',0);
 /*!40000 ALTER TABLE `wireless` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -379,4 +379,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-03 13:48:53
+-- Dump completed on 2025-06-10 13:17:50
