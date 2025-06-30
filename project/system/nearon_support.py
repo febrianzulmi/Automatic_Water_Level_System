@@ -12,8 +12,8 @@ schedule.every().day.at("00:00").do(logFunction.backupFunction.runBackup)
 
 def main():
     schedule.run_pending()
-    supportFunctionSystem.ledErrorCheck()
-    supportFunctionSystem.resetSystem()
+    # supportFunctionSystem.ledErrorCheck()
+    # supportFunctionSystem.resetSystem()
     time.sleep(5)
 
 while True:

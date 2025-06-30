@@ -46,7 +46,7 @@ class LogMonitoringDB():
 
     def selectMonitorWithoutBufferByTime(datetime1,datetime2):
         connection = sql.connect(host, database, username, password)
-        query = "SELECT * FROM logMonitoringDB WHERE state!='-' AND  AND buffer!=0 and (timestamp BETWEEN %s AND %s) ORDER by timestamp DESC"
+        query = "SELECT * FROM logMonitoringDB WHERE state!='-' AND buffer!=0 AND (timestamp BETWEEN %s AND %s) ORDER by timestamp DESC"
         value = (datetime1,datetime2)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
@@ -141,7 +141,7 @@ class LogMonitoringDB():
 
     def deleteMonitorWithoutBufferByTime(datetime1,datetime2):
         connection = sql.connect(host, database, username, password)
-        query = "DELETE FROM logMonitoringDB WHERE state!='-' and  and buffer!=0 AND (timestamp BETWEEN %s AND %s)"
+        query = "DELETE FROM logMonitoringDB WHERE state!='-' AND buffer!=0 AND (timestamp BETWEEN %s AND %s)"
         value = (datetime1,datetime2)
         action = sql.execute(connection, query, value)
         return action
