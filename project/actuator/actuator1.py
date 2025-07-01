@@ -21,7 +21,7 @@ global_variable["logger"] = logFunction.setupLogger(global_variable["serviceName
 
 timestamp = times.getDatetime()
 global_variable["logger"].debug(f"Start : {timestamp}")
-first = 0
+first = 1
 
 def actionActuator(global_variable, actuator_run, actuator_data):
     status = ActuatorRTU.run(global_variable, actuator_run, actuator_data)
