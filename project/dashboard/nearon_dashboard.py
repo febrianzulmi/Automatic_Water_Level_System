@@ -1117,7 +1117,25 @@ def settingRtu():
    rtu_parameter_data = RtuParameterDB.select() 
 
    tab = "rtu-device"
-   # Logic goes here
+   result = {'state':'', 'message':''}
+   if 'tab' in request.args:
+      tab = request.args['tab']
+   
+   if 'result' in request.args:
+      result = json.loads(request.args['result'])
+
+   if request.method == 'POST':
+      tab = request.form.get('tab')
+      action = request.form.get('action')
+
+      if action == 'rtu-paramter-add':
+         pass
+      
+      elif action == 'rtu-parameter-update':
+         pass
+      
+      elif action == 'rtu-parameter-delete':
+         pass
 
    if int(session_data['state']) == 0:
       flash('Please Login to Access the Page')  
