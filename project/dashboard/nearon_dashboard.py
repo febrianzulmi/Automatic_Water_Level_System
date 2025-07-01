@@ -14,7 +14,7 @@ from query_project_db import (SensorGroupDB, SensorListDB, SensorParameterGroupD
                               ActuatorParameterListDB, ActuatorParameterGroupDB, ActuatorScheduleDB,
                               EnvironmentDeviceDB, EnvironmentMasterSensorDB, EnvironmentMasterParameterDB, LogMonitoringDB, LogSensorDB, LogActuatorDB, LogNotifDB,
                               LogErrorDB, SystemServiceDB, CalibrateFormulaDB, CalibrateSampleDB, PowerDeviceDB, ActuatorGroupDB,
-                              PowerMasterParameterDB, PowerMasterSensorDB, SensorPortConfigDB)
+                              PowerMasterParameterDB, PowerMasterSensorDB, SensorPortConfigDB, RtuParameterDB)
 sys.path.append('/home/connex/library')
 from SynapsisLibrary import times
 sys.path.append('/home/connex/project/function')
@@ -1111,19 +1111,20 @@ def settingExtensionDevice():
 def settingRtu():
    time = times.now()
    rule = str(request.url_rule)
-   sessionData = generalFunction.checkSession()  
-   projectData = generalFunction.getProjectSetting()
-   deviceSetting = dbFunction.getDeviceSetting()
+   session_data = generalFunction.checkSession()  
+   project_data = generalFunction.getProjectSetting()
+   device_setting = dbFunction.getDevice_setting()
+   rtu_parameter_data = RtuParameterDB.select() 
 
    tab = "rtu-device"
    # Logic goes here
 
-   if int(sessionData['state']) == 0:
+   if int(session_data['state']) == 0:
       flash('Please Login to Access the Page')  
       return redirect(url_for('login'))
 
-   return render_template('setting/rtu/rtu_setting.html', rule=rule, sessionData=sessionData, projectData=projectData, deviceSetting=deviceSetting,
-                           tab=tab)
+   return render_template('setting/rtu/rtu_setting.html', rule=rule, session_data=session_data, project_data=project_data, device_setting=device_setting,
+                           tab=tab, rtu_parameter_data=rtu_parameter_data)
 
 @app.route('/log/monitoring', methods=['GET','POST'])
 def logMonitoringPage():
