@@ -1111,9 +1111,9 @@ def settingExtensionDevice():
 def settingRtu():
    time = times.now()
    rule = str(request.url_rule)
-   session_data = generalFunction.checkSession()  
-   project_data = generalFunction.getProjectSetting()
-   device_setting = dbFunction.getDeviceSetting()
+   sessionData = generalFunction.checkSession()  
+   projectData = generalFunction.getProjectSetting()
+   deviceSetting = dbFunction.getDeviceSetting()
    rtu_parameter_data = RtuParameterDB.select() 
 
    tab = "rtu-device"
@@ -1137,11 +1137,11 @@ def settingRtu():
       elif action == 'rtu-parameter-delete':
          pass
 
-   if int(session_data['state']) == 0:
+   if int(sessionData['state']) == 0:
       flash('Please Login to Access the Page')  
       return redirect(url_for('login'))
 
-   return render_template('setting/rtu/rtu_setting.html', rule=rule, session_data=session_data, project_data=project_data, device_setting=device_setting,
+   return render_template('setting/rtu/rtu_setting.html', rule=rule, sessionData=sessionData, projectData=projectData, deviceSetting=deviceSetting,
                            tab=tab, rtu_parameter_data=rtu_parameter_data)
 
 @app.route('/log/monitoring', methods=['GET','POST'])
