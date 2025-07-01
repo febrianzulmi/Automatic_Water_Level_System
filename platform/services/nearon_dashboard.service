@@ -5,6 +5,7 @@ After=network.target
 [Service]
 ExecStart=/usr/bin/python3 nearon_dashboard.py
 WorkingDirectory=/home/connex/project/dashboard
+StandardOutput=null
 Restart=always
 RestartSec=3s
 User=root

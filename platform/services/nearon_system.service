@@ -5,6 +5,7 @@ After=network.target
 [Service]
 ExecStart=/usr/bin/python3 nearon_system.py
 WorkingDirectory=/home/connex/platform
+StandardOutput=null
 Restart=always
 RestartSec=3s
 User=root
