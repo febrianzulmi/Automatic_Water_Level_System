@@ -1107,6 +1107,23 @@ def settingExtensionDevice():
                         extensionDeviceData=extensionDeviceData, calculate_port=calculate_port,
                         extensionMasterSensorData=extensionMasterSensorData, extensionMasterParameterData=extensionMasterParameterData, result=result)
 
+@app.route('/setting/rtu', methods=['GET', 'POST'])
+def settingRtu():
+   time = times.now()
+   rule = str(request.url_rule)
+   sessionData = generalFunction.checkSession()  
+   projectData = generalFunction.getProjectSetting()
+   deviceSetting = dbFunction.getDeviceSetting()
+
+   tab = "rtu-device"
+   # Logic goes here
+
+   if int(sessionData['state']) == 0:
+      flash('Please Login to Access the Page')  
+      return redirect(url_for('login'))
+
+   return render_template('setting/rtu/rtu_setting.html', rule=rule, sessionData=sessionData, projectData=projectData, deviceSetting=deviceSetting,
+                           tab=tab)
 
 @app.route('/log/monitoring', methods=['GET','POST'])
 def logMonitoringPage():
