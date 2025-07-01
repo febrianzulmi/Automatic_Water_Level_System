@@ -1113,7 +1113,7 @@ def settingRtu():
    rule = str(request.url_rule)
    session_data = generalFunction.checkSession()  
    project_data = generalFunction.getProjectSetting()
-   device_setting = dbFunction.getDevice_setting()
+   device_setting = dbFunction.getDeviceSetting()
    rtu_parameter_data = RtuParameterDB.select() 
 
    tab = "rtu-device"
