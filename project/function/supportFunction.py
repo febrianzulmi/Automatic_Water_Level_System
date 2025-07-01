@@ -7,8 +7,7 @@ import RPi.GPIO as GPIO
 sys.path.append('/home/connex/library')
 from SynapsisLibrary import times, sql
 sys.path.append('/home/connex/project/database')
-from sql import resetDatabaseProject
-from query_project_db import SensorListDB, SensorGroupDB
+from query_project_db import SensorListDB, SensorGroupDB, ResetDatabaseProject
 sys.path.append('/home/connex/project/function')
 from serviceProjectFunction import ServiceProjectFunction
 sys.path.append('/home/connex/platform/database')
@@ -103,7 +102,7 @@ class supportFunctionSystem:
             file_path = os.path.join(db_path, sql_file)
             print(f"{timestamp} - Deleting table: {table_name}")
             if table_name == 'featureSettingDB':
-                delete_result_project = resetDatabaseProject.deleteTable(table_name)
+                delete_result_project = ResetDatabaseProject.deleteTable(table_name)
                 if not delete_result_project:
                     print(f"{timestamp} - Failed to delete table {table_name}")
                     all_files_overwrite = False

@@ -120,8 +120,8 @@ class ActuatorFunction():
                     if status_actuator["state"][x] == True:
                         control = "1x Action"
                         ActuatorScheduleDB.updateState(1, actuator_run["schedule"][x]["id"])
-                        ActuatorListDB.updateAction(value, 2, timestamp, actuator_data[x]["id"])
-                        LogActuatorDB.insert(actuator_data[x]["id"], value, 2, timestamp)
+                        ActuatorListDB.updateAction(actuator_run["value"][x], 2, timestamp, actuator_data[x]["id"])
+                        LogActuatorDB.insert(actuator_data[x]["id"], actuator_run["value"][x], 2, timestamp)
                         notificationFunction.generateNotificationActuator(actuator_data[x]["id"], 2, actuator_run["value"][x], timestamp, control)
         else:
             status_actuator = {"state": [], "value": [], "summary": "No Triggered Actuator by Schedule", "message": [], "": 0}

@@ -20,7 +20,7 @@ def openDB():
 
 host, database, username, password = openDB()
 
-class resetDatabaseProject():
+class ResetDatabaseProject():
     def deleteTable(table_name):
         try:
             connection = sql.connect(host, database, username, password)
