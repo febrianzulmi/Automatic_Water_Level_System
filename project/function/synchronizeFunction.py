@@ -28,44 +28,66 @@ class synchronizeFunction():
         
         if str(protocol_monitoring) == "1":
             if str(feature_setting["syncNode"]) == "1":
-                thread_sync_node = generalFunction.ThreadWithReturnValues(target=synchronizeFunction.syncNodeHttp, args=(device_setting, server_config["http"], timestamp, global_variable))
-                thread_sync_node.start()
-                thread_sync.append(thread_sync_node)
-        
-                if global_variable["flagRebootSync"] == 0:
-                    threadSyncNodeReboot = generalFunction.ThreadWithReturnValues(target=synchronizeFunction.syncNodeRebootHttp, args=(server_config["http"], timestamp, global_variable))
-                    threadSyncNodeReboot.start()
-                    thread_sync.append(threadSyncNodeReboot)
-        
+                try:
+                    thread_sync_node = generalFunction.ThreadWithReturnValues(target=synchronizeFunction.syncNodeHttp, 
+                                                                              args=(device_setting, server_config["http"], timestamp, global_variable))
+                    thread_sync_node.start()
+                    thread_sync.append(thread_sync_node)
+            
+                    if global_variable["flagRebootSync"] == 0:
+                        threadSyncNodeReboot = generalFunction.ThreadWithReturnValues(target=synchronizeFunction.syncNodeRebootHttp, 
+                                                                                      args=(server_config["http"], timestamp, global_variable))
+                        threadSyncNodeReboot.start()
+                        thread_sync.append(threadSyncNodeReboot)
+                
+                except Exception as e:
+                    log_service = f"Error Synchronize Node Detail - {e}"
+                    color_log_service = f"\033[31m{log_service} at {timestamp}\033[00m"
+                    global_variable["logger"].debug(f"{color_log_service}\n")
+                    global_variable["log"].append(log_service)
+
             else:
                 log_service = "Feature Synchronize Node Option Setting Inactive"
                 color_log_service = f"\033[31m{log_service} at {timestamp}\033[00m"
                 global_variable["logger"].debug(f"{color_log_service}\n")
-                # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
                 global_variable["log"].append(log_service)
         
             if str(feature_setting["syncSensor"]) == "1":
-                thread_sync_sensor = generalFunction.ThreadWithReturnValues(target=synchronizeFunction.syncSensorHttp, args=(server_config["http"], timestamp, global_variable))
-                thread_sync_sensor.start()
-                thread_sync.append(thread_sync_sensor)
+                try:
+                    thread_sync_sensor = generalFunction.ThreadWithReturnValues(target=synchronizeFunction.syncSensorHttp, 
+                                                                                args=(server_config["http"], timestamp, global_variable))
+                    thread_sync_sensor.start()
+                    thread_sync.append(thread_sync_sensor)
+                
+                except Exception as e:
+                    log_service = f"Error Synchronize Sensor Detail - {e}"
+                    color_log_service = f"\033[31m{log_service} at {timestamp}\033[00m"
+                    global_variable["logger"].debug(f"{color_log_service}\n")
+                    global_variable["log"].append(log_service)
         
             else:
                 log_service = "Feature Synchronize Sensor Option Setting Inactive"
                 color_log_service = f"\033[31m{log_service} at {timestamp}\033[00m"
                 global_variable["logger"].debug(f"{color_log_service}\n")
-                # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
                 global_variable["log"].append(log_service)
         
             if str(feature_setting["syncActuator"]) == "1":
-                thread_sync_actuator = generalFunction.ThreadWithReturnValues(target=synchronizeFunction.syncActuatorHttp, args=(server_config["http"], timestamp, global_variable))
-                thread_sync_actuator.start()
-                thread_sync.append(thread_sync_actuator) 
+                try:
+                    thread_sync_actuator = generalFunction.ThreadWithReturnValues(target=synchronizeFunction.syncActuatorHttp, 
+                                                                                  args=(server_config["http"], timestamp, global_variable))
+                    thread_sync_actuator.start()
+                    thread_sync.append(thread_sync_actuator) 
+                
+                except Exception as e:
+                    log_service = f"Error Synchronize Actuator Detail - {e}"
+                    color_log_service = f"\033[31m{log_service} at {timestamp}\033[00m"
+                    global_variable["logger"].debug(f"{color_log_service}\n")
+                    global_variable["log"].append(log_service)
         
             else:
                 log_service = "Feature Synchronize Actuator Option Setting Inactive"
                 color_log_service = f"\033[31m{log_service} at {timestamp}\033[00m"
                 global_variable["logger"].debug(f"{color_log_service}\n")
-                # SystemServiceDB.updateStatusByName(log_service, timestamp, global_variable["serviceName"])
                 global_variable["log"].append(log_service)
         
         elif str(protocol_monitoring) == "2":
