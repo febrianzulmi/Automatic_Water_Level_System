@@ -28,6 +28,26 @@
 </div>
 {% endblock %}
 
+{% block switch %}
+<script>
+    $(function () {
+        //Colorpicker
+        $(".my-colorpicker1").colorpicker()
+        //color picker with addon
+        $(".my-colorpicker2").colorpicker()
+
+        $(".my-colorpicker2").on("colorpickerChange", function (event) {
+            $(".my-colorpicker2 .fa-square").css("color", event.color.toString());
+        });
+        $("input[data-bootstrap-switch]").each(function () {
+			$(this).bootstrapSwitch("state", $(this).prop("checked"));
+				}).on('switchChange.bootstrapSwitch', function (e, state) {
+					$(`#hidden_state${this.id.replace('checkbox', '')}`).val(state ? '1' : '0');
+			});
+    })
+</script>
+{% endblock %}
+
 {% block toast %}
 {#
 {% if result['state'] != '' %}
