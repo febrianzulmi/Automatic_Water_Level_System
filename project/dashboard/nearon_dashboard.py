@@ -1173,12 +1173,12 @@ def settingRtu():
 
          return redirect(url_for("settingRtu", tab=tab, result=result))
       
-         elif action == 'rtu-parameter-delete':
-            id = request.form.get('id')
-            name = request.form.get('name')
-            result = dashboardFunction.SettingRtu.Parameter.delete(id, name)
+      elif action == 'rtu-parameter-delete':
+         id = request.form.get('id')
+         name = request.form.get('name')
+         result = dashboardFunction.SettingRtu.Parameter.delete(id, name)
 
-            return redirect(url_for("settingRtu", tab=tab, result=result))
+         return redirect(url_for("settingRtu", tab=tab, result=result))
       
       elif action == 'device-add':
          number = request.form.get('rtu-device-number')
