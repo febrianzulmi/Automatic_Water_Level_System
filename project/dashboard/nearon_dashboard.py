@@ -1115,28 +1115,70 @@ def settingRtu():
    projectData = generalFunction.getProjectSetting()
    deviceSetting = dbFunction.getDeviceSetting()
    rtu_device = RtuDeviceDB.select()
-   rtu_parameter_data = RtuParameterDB.select() 
+   rtuParameterData = RtuParameterDB.select()
+   monitorInterval = IntervalRoutineMonitorDB.selectEnable()
+   logInterval = IntervalRoutineLogDB.selectEnable()
 
    tab = "rtu-device"
-   result = {'state':'', 'message':''}
-   if 'tab' in request.args:
-      tab = request.args['tab']
+   result = {"state": "", "message": ""}
+   if "tab" in request.args:
+      tab = request.args["tab"]
    
-   if 'result' in request.args:
-      result = json.loads(request.args['result'])
+   if "result" in request.args:
+      result = json.loads(request.args["result"])
 
-   if request.method == 'POST':
-      tab = request.form.get('tab')
-      action = request.form.get('action')
+   if request.method == "POST":
+      tab = request.form.get("tab")
+      action = request.form.get("action")
 
-      if action == 'rtu-paramter-add':
-         pass
+      if action == "rtu-parameter-add":
+         name = request.form.get("name")
+         custom_id = request.form.get("custom_id")
+         address = request.form.get("address")
+         length = request.form.get("length")
+         divider = request.form.get("divider")
+         datatype = request.form.get("datatype")
+         type = request.form.get("type")
+         type_control = request.form.get("type_control")
+         unit = request.form.get("unit")
+         monitor = request.form.get("monitor")
+         log = request.form.get("log")
+         state = request.form.get("state")
+
+         result = dashboardFunction.SettingRtu.Parameter.insert(name, custom_id, address, length, datatype, divider, 
+                                                                type, type_control, unit, monitor, log, state)
+
+         return redirect(url_for("settingRtu", tab=tab, result=result))
       
       elif action == 'rtu-parameter-update':
-         pass
+         id = request.form.get('id')
+         name = request.form.get("name")
+         custom_id = request.form.get("custom_id")
+         address = request.form.get("address")
+         length = request.form.get("length")
+         divider = request.form.get("divider")
+         datatype = request.form.get("datatype")
+         type = request.form.get("type")
+         type_control = request.form.get("type_control")
+         unit = request.form.get("unit")
+         monitor = request.form.get("monitor")
+         log = request.form.get("log")
+         state = request.form.get(f'update_state{id}')
+         last_name = request.form.get("last_name")
+         last_address = request.form.get("last_address")
+         last_custom_id = request.form.get("last_custom_id")
+
+         result = dashboardFunction.SettingRtu.Parameter.update(id, name, custom_id, address, length, datatype, divider, type,
+                                                                type_control, unit, monitor, log, state, last_name, last_custom_id, last_address)
+
+         return redirect(url_for("settingRtu", tab=tab, result=result))
       
       elif action == 'rtu-parameter-delete':
-         pass
+         id = request.form.get('id')
+         name = request.form.get('name')
+         result = dashboardFunction.SettingRtu.Parameter.delete(id, name)
+
+         return redirect(url_for("settingRtu", tab=tab, result=result))
       
       
 
@@ -1145,7 +1187,7 @@ def settingRtu():
       return redirect(url_for('login'))
 
    return render_template('setting/rtu/rtu_setting.html', rule=rule, sessionData=sessionData, projectData=projectData, deviceSetting=deviceSetting,
-                           tab=tab, rtu_device=rtu_device, rtu_parameter_data=rtu_parameter_data)
+                           tab=tab, rtu_device=rtu_device, rtuParameterData=rtuParameterData, monitorInterval=monitorInterval, logInterval=logInterval, result=result)
 
 @app.route('/log/monitoring', methods=['GET','POST'])
 def logMonitoringPage():

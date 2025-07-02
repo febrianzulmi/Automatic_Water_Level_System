@@ -19,14 +19,14 @@ host, database, username, password = openDB()
 class RtuParameterDB():
     def select():
         connection = sql.connect(host, database, username, password)
-        query = "SELECT * FROM rtuParameterDB"
+        query = "SELECT * FROM rtuParameterDB ORDER BY created_at ASC"
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
 
 
     def selectById(id):
         connection = sql.connect(host, database, username, password)
-        query = "SELECT * FROM rtuParameterDB WHERE id = %s"
+        query = "SELECT * FROM rtuParameterDB WHERE id=%s"
         value = (id,)
         action = sql.selectWithInput(connection, query, value)
         return action
@@ -34,7 +34,7 @@ class RtuParameterDB():
 
     def selectByName(name): 
         connection = sql.connect(host, database, username, password)
-        query = "SELECT * FROM rtuParameterDB WHERE name = %s"
+        query = "SELECT * FROM rtuParameterDB WHERE name=%s"
         value = (name,)
         action = sql.selectWithInput(connection, query, value)
         return action
@@ -42,28 +42,28 @@ class RtuParameterDB():
 
     def selectByAddress(address): 
         connection = sql.connect(host, database, username, password)
-        query = "SELECT * FROM rtuParameterDB WHERE address = %s"
-        value = (name,)
+        query = "SELECT * FROM rtuParameterDB WHERE address=%s"
+        value = (address,)
         action = sql.selectWithInput(connection, query, value)
         return action
 
 
     def selectByCustomId(custom_id): 
         connection = sql.connect(host, database, username, password)
-        query = "SELECT * FROM rtuParameterDB WHERE custom_id = %s"
-        value = (name,)
+        query = "SELECT * FROM rtuParameterDB WHERE custom_id=%s"
+        value = (custom_id,)
         action = sql.selectWithInput(connection, query, value)
         return action
 
 
-    def insert(id, name, custom_id, address, length, datatype, divider, type_sensor,
+    def insert(parameter_id, name, custom_id, address, length, datatype, divider, type_sensor,
                type_control, unit, monitoring, log, state):
         connection = sql.connect(host, database, username, password)
         query = """INSERT INTO rtuParameterDB 
                    (id, name, custom_id, address, length, datatype, divider, type,
                    type_control, unit, monitoring, log, state)
                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-        value = (id, name, custom_id, address, length, datatype, divider, type_sensor,
+        value = (parameter_id, name, custom_id, address, length, datatype, divider, type_sensor,
                  type_control, unit, monitoring, log, state)
         action = sql.execute(connection, query, value)
         return action

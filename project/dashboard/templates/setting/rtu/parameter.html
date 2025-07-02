@@ -1,5 +1,429 @@
 {% block parameter %}
 <div class="tab-pane fade {% if 'parameter' in tab %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-parameter" role="tabpanel"
     aria-labelledby="custom-tabs-one-parameter-tab">
+    <div class="modal fade" id="modal-rtu-parameter-add">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form-horizontal" method="POST" action="/setting/rtu">
+                    <input type="hidden" name="tab" value="rtu-parameter">
+                    <input type="hidden" name="action" value="rtu-parameter-add">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Add RTU Parameter
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Name</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" name="name" required autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Custom ID</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" name="custom_id" required autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Address</label>
+                            <div class="col-sm-8">
+                                <input type="number" class="form-control" name="address" min="0" required autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Length</label>
+                            <div class="col-sm-8">
+                                <input type="number" class="form-control" name="length" min="1" required autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Divider</label>
+                            <div class="col-sm-8">
+                                <input type="number" class="form-control" name="divider" min="0" step="0.001" required autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Datatype</label>
+                            <div class="col-sm-6">
+                                <div class="icheck-primary d-inline">
+                                    <input type="radio" id="datatype_yes" name="datatype" value="1">
+                                    <label for="datatype_yes">Integer</label>
+                                </div>
+                                &nbsp;
+                                <div class="icheck-primary d-inline">
+                                    <input type="radio" id="datatype_no" name="datatype" value="0">
+                                    <label for="datatype_no">String</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Type</label>
+                            <div class="col-sm-6">
+                                <select name="type" class="form-control" required autocomplete="off">
+                                    <option value="0">Read Only</option>
+                                    <option value="1">Write Only</option>
+                                    <option value="2">Read & Write</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Type Control</label>
+                            <div class="col-sm-6">
+                                <select name="type_control" class="form-control" required autocomplete="off">
+                                    <option value="0">No Control</option>
+                                    <option value="1">True/False Value</option>
+                                    <option value="2">Custom Value</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Unit</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" name="unit" required autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Monitoring</label>
+                            <div class="col-sm-4">
+                                <select name="monitor" class="form-control" required autocomplete="off">
+                                    <option value="0">Disabled</option>
+                                    {% for i in range(monitorInterval|length) %}
+                                    <option value="{{ monitorInterval[i]['id'] }}">{{
+                                        monitorInterval[i]['interval'] }} {% if
+                                        monitorInterval[i]['unit']|string == '1' %}{{ 'Seconds' }}
+                                        {% elif monitorInterval[i]['unit']|string == '2' %}{{ 'Minutes' }}
+                                        {% elif monitorInterval[i]['unit']|string == '3' %}{{ 'Hours' }}
+                                        {% endif %}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Internal Log</label>
+                            <div class="col-sm-4">
+                                <select name="log" class="form-control" required autocomplete="off">
+                                    <option value="0">Disabled</option>
+                                    {% for i in range(logInterval|length) %}
+                                    <option value="{{ logInterval[i]['id'] }}">{{
+                                        logInterval[i]['interval'] }} {% if
+                                        logInterval[i]['unit']|string == '1' %}{{ 'Seconds' }}
+                                        {% elif logInterval[i]['unit']|string == '2' %}{{ 'Minutes' }}
+                                        {% elif logInterval[i]['unit']|string == '3' %}{{ 'Hours' }}
+                                        {% endif %}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center">
+                            <label class="col-sm-3 col-form-label">State</label>
+                            <div class="col-sm-3">
+                                <input type="checkbox" name="state" value="1" 
+                                data-bootstrap-switch data-off-color="danger" data-on-color="success">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row col-md-12">
+        {% if sessionData["level"] == 1 %}
+        <a href="" data-toggle="modal" data-target="#modal-rtu-parameter-add" role="button">
+            <button type="button" class="btn btn-primary">
+                <i class="fas fa-plus" title="Add"></i> Add
+            </button>
+        </a>
+        &nbsp;&nbsp;
+        <a href="/setting/rtu?tab=rtu-parameter" role="button">
+            <button type="button" class="btn btn-default">
+                <i class="fas fa-sync" title="Refresh"></i> Refresh
+            </button>
+        </a>
+        {% endif %}
+    </div>
+    <br />
+    <table id="TABLE_1" class="table table-bordered table-hover">
+        <thead>
+            <tr align="center">
+                <th>
+                    No
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Custom ID
+                </th>
+                <th>
+                    Address
+                </th>
+                <th>
+                    Type
+                </th>
+                <th>
+                    Control
+                </th>
+                <th>
+                    State
+                </th>
+                {% if sessionData["level"] == 1 %}
+                <th width="10%">
+                    Action
+                </th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for item_parameter in range(rtuParameterData|length) %}
+            <tr align="center">
+                <td>{{ item_parameter + 1 }}</td>
+                <td>{{ rtuParameterData[item_parameter]["name"] }}</td>
+                <td>{{ rtuParameterData[item_parameter]["custom_id"] }}</td>
+                <td>{{ rtuParameterData[item_parameter]["address"] }}</td>
+                <td>{% if rtuParameterData[item_parameter]["type"]|string == "0" %}{{ "Read Only" }}
+                    {% elif rtuParameterData[item_parameter]["type"]|string == "1" %}{{ "Write Only" }}
+                    {% else %}{{ "Read & Write" }}{% endif %}
+                </td>
+                <td>{% if rtuParameterData[item_parameter]["type_control"]|string == "0" %}{{ "No Control" }}
+                    {% elif rtuParameterData[item_parameter]["type_control"]|string == "1" %}{{ "True/False Value" }}
+                    {% else %}{{ "Custom Value" }}{% endif %}
+                </td>
+                {% if rtuParameterData[item_parameter]["state"] == "1" %}
+                    <td style="font-weight: bold; color: green;">{{ "Enable" }}</td>
+                {% elif rtuParameterData[item_parameter]["state"] == "0" %}
+                    <td style="font-weight: bold; color: red;">{{ "Disable" }}</td>
+                {% endif %}
+                {% if sessionData["level"] == 1 %}
+                <td>
+                    <a href="" data-toggle="modal"
+                        data-target="#modal-edit-rtuParameterData{{rtuParameterData[item_parameter]['id']}}" role="button">
+                        <i class="nav-icon fas fa-edit"></i>
+                    </a>
+                    &nbsp;
+                    <a href="" data-toggle="modal"
+                        data-target="#modal-delete-rtuParameterData{{rtuParameterData[item_parameter]['id']}}" role="button">
+                        <i class="nav-icon fas fa-trash"></i>
+                    </a>
+                </td>
+                {%endif%}
+            </tr>
+            <div class="modal fade" id="modal-edit-rtuParameterData{{ rtuParameterData[item_parameter]['id'] }}">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/rtu">
+                            <input type="hidden" name="tab" value="rtu-parameter">
+                            <input type="hidden" name="action" value="rtu-parameter-update">
+                            <input type="hidden" name="id" value="{{ rtuParameterData[item_parameter]['id'] }}">
+                            <input type="hidden" name="last_custom_id" value="{{ rtuParameterData[item_parameter]['custom_id'] }}">
+                            <input type="hidden" name="last_address" value="{{ rtuParameterData[item_parameter]['address'] }}">
+                            <input type="hidden" name="last_name" value="{{ rtuParameterData[item_parameter]['name'] }}">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    Update RTU Parameter
+                                    <b>{{ rtuParameterData[item_parameter]['name'] }}</b>
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Name</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="name" required autocomplete="off"
+                                        value="{{rtuParameterData[item_parameter]['name']}}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Custom ID</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="custom_id" required autocomplete="off"
+                                        value="{{rtuParameterData[item_parameter]['custom_id']}}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Address</label>
+                                    <div class="col-sm-8">
+                                        <input type="number" class="form-control" name="address" min="0" required autocomplete="off"
+                                        value="{{rtuParameterData[item_parameter]['address']}}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Length</label>
+                                    <div class="col-sm-8">
+                                        <input type="number" class="form-control" name="length" min="1" required autocomplete="off"
+                                        value="{{rtuParameterData[item_parameter]['length']}}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Divider</label>
+                                    <div class="col-sm-8">
+                                        <input type="number" class="form-control" name="divider" min="0" step="0.001" required autocomplete="off"
+                                        value="{{rtuParameterData[item_parameter]['divider']}}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Datatype</label>
+                                    <div class="col-sm-6">
+                                        <div class="icheck-primary d-inline">
+                                            <input type="radio" id="datatype_yes{{rtuParameterData[item_parameter]['id']}}" name="datatype" value="1"
+                                            {% if rtuParameterData[item_parameter]['datatype'] == 1 %} checked {% endif %}>
+                                            <label for="datatype_yes{{rtuParameterData[item_parameter]['id']}}">Integer</label>
+                                        </div>
+                                        &nbsp;
+                                        <div class="icheck-primary d-inline">
+                                            <input type="radio" id="datatype_no{{rtuParameterData[item_parameter]['id']}}" name="datatype" value="0"
+                                            {% if rtuParameterData[item_parameter]['datatype'] == 0 %} checked {% endif %}>
+                                            <label for="datatype_no{{rtuParameterData[item_parameter]['id']}}">String</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Type</label>
+                                    <div class="col-sm-6">
+                                        <select name="type" class="form-control" required autocomplete="off">
+                                            <option value="0" {% if rtuParameterData[item_parameter]['type'] == 0 %}
+                                            selected {% endif %}>Read Only</option>
+                                            <option value="1" {% if rtuParameterData[item_parameter]['type'] == 1 %}
+                                            selected {% endif %}>Write Only</option>
+                                            <option value="2" {% if rtuParameterData[item_parameter]['type'] == 2 %}
+                                            selected {% endif %}>Read & Write</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Type Control</label>
+                                    <div class="col-sm-6">
+                                        <select name="type_control" class="form-control" required autocomplete="off">
+                                            <option value="0" {% if rtuParameterData[item_parameter]['type_control'] == 0 %}
+                                            selected {% endif %}>No Control</option>
+                                            <option value="1" {% if rtuParameterData[item_parameter]['type_control'] == 1 %}
+                                            selected {% endif %}>True/False Value</option>
+                                            <option value="2" {% if rtuParameterData[item_parameter]['type_control'] == 2 %}
+                                            selected {% endif %}>Custom Value</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Unit</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="unit" required autocomplete="off"
+                                        value="{{rtuParameterData[item_parameter]['unit']}}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Monitoring</label>
+                                    <div class="col-sm-4">
+                                        <select name="monitor" class="form-control" required autocomplete="off">
+                                            <option value="0" {% if rtuParameterData[item_parameter]['monitoring'] == '0' %}
+                                            selected {% endif %}>Disabled</option>
+                                            {% for i in range(monitorInterval|length) %}
+                                            <option value="{{ monitorInterval[i]['id'] }}"
+                                            {% if monitorInterval[i]['id']|string == rtuParameterData[item_parameter]['monitoring'] %}
+                                            selected {% endif %}>{{
+                                                monitorInterval[i]['interval'] }} {% if
+                                                monitorInterval[i]['unit']|string == '1' %}{{ 'Seconds' }}
+                                                {% elif monitorInterval[i]['unit']|string == '2' %}{{ 'Minutes' }}
+                                                {% elif monitorInterval[i]['unit']|string == '3' %}{{ 'Hours' }}
+                                                {% endif %}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Internal Log</label>
+                                    <div class="col-sm-4">
+                                        <select name="log" class="form-control" required autocomplete="off">
+                                            <option value="0" {% if rtuParameterData[item_parameter]['log'] == '0' %}
+                                            selected {% endif %}>Disabled</option>
+                                            {% for i in range(logInterval|length) %}
+                                            <option value="{{ logInterval[i]['id'] }}"
+                                            {% if logInterval[i]['id']|string == rtuParameterData[item_parameter]['log'] %}
+                                            selected {% endif %}>{{
+                                                logInterval[i]['interval'] }} {% if
+                                                logInterval[i]['unit']|string == '1' %}{{ 'Seconds' }}
+                                                {% elif logInterval[i]['unit']|string == '2' %}{{ 'Minutes' }}
+                                                {% elif logInterval[i]['unit']|string == '3' %}{{ 'Hours' }}
+                                                {% endif %}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row align-items-center">
+                                    <label class="col-sm-3 col-form-label">State</label>
+                                    <div class="col-sm-4">
+                                        <input type="hidden" id="hidden_state{{ rtuParameterData[item_parameter]['id'] }}" 
+                                        name="update_state{{ rtuParameterData[item_parameter]['id'] }}" 
+                                        value="{% if rtuParameterData[item_parameter]['state'] == '1' %}1{% else %}0{% endif %}">
+                                        <input type="hidden" name="index_state" value="{{ rtuParameterData[item_parameter]['id'] }}">
+                                        <input type="checkbox" id="checkbox{{ rtuParameterData[item_parameter]['id'] }}" value="1"
+                                        {% if rtuParameterData[item_parameter]['state']|string == '1' %}checked{% endif %}
+                                        data-bootstrap-switch data-off-color="danger" data-on-color="success">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Update
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="modal-delete-rtuParameterData{{ rtuParameterData[item_parameter]['id'] }}">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form class="form-horizontal" method="POST" action="/setting/rtu">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    Confirmation Delete
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="tab" value="rtu-parameter">
+                                <input type="hidden" name="action" value="rtu-parameter-delete">
+                                <input type="hidden" name="id" value="{{ rtuParameterData[item_parameter]['id'] }}">
+                                <input type="hidden" name="name" value="{{ rtuParameterData[item_parameter]['name'] }}">
+                                <p>
+                                    Are you sure to delete RTU Parameter
+                                    <b>
+                                        {{ rtuParameterData[item_parameter]['name'] }}
+                                    </b>?
+                                </p>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                    No
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Yes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
+
 {% endblock %}
