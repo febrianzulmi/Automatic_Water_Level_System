@@ -10,7 +10,7 @@ import subprocess
 sys.path.append('/home/connex/project/database')
 from query_project_db import (SensorGroupDB, SensorListDB, SensorParameterGroupDB, SensorParameterListDB, EnvironmentDeviceDB, EnvironmentMasterSensorDB, 
                               EnvironmentMasterParameterDB, PowerDeviceDB, PowerMasterParameterDB, PowerMasterSensorDB, ActuatorListDB, ActuatorParameterListDB, 
-                              ActuatorScheduleDB, ActuatorGroupDB, ActuatorParameterGroupDB, RtuParameterDB)
+                              ActuatorScheduleDB, ActuatorGroupDB, ActuatorParameterGroupDB, RtuParameterDB, RtuDeviceDB)
 
 
 class generalFunction():
