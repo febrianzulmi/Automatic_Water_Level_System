@@ -5,7 +5,6 @@ After=network.target
 [Service]
 ExecStart=/usr/bin/python3 nearon_auth.py
 WorkingDirectory=/home/connex/project/auth
-StandardOutput=null
 Restart=always
 RestartSec=3s
 User=root
