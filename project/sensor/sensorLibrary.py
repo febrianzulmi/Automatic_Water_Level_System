@@ -393,23 +393,23 @@ class EnvironmentExt:
                 "sht20": {"temp": roundValue(values.get("temp", 0.00)), "humid": roundValue(values.get("humid", 0.00))},
                 "smoke": {"smoke": values.get("smoke", -1)},
                 "door": {"door": values.get("door", -1)},
-                "waterleak": {"water": values.get("water", -1)},
+                "waterleak": {"water": values.get("waterleak", -1)},
             }
             parsed_data = mappings.get(port_type, {"state": False, "undefined": "N/A"})
             parsed_data["state"] = state
             return parsed_data
         else:
             mappings_modbus = {
-                "SHT20": {"temp": roundValue(values[0] / 10.0), "humid": roundValue(values[1] / 10.0)},  # SHT20
-                "Smoke": {"smoke": values[2]},  # Smoke Sensor
-                "Door": {"door": values[3]},  # Door Sensor
-                "Water": {"water": values[4]},  # Water Leak Sensor
+                "sht20": {"temp": roundValue(values[0] / 10.0), "humid": roundValue(values[1] / 10.0)},  # SHT20
+                "smoke": {"smoke": values[2]},  # Smoke Sensor
+                "door": {"door": values[3]},  # Door Sensor
+                "water": {"water": values[4]},  # Water Leak Sensor
             }
             port_type_mapping = {
-                1: "SHT20",
-                2: "Smoke",
-                3: "Door",
-                4: "Water",
+                1: "sht20",
+                2: "smoke",
+                3: "door",
+                4: "water",
             }
             mappings_state = {
                 1: "Success",

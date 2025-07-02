@@ -6,7 +6,7 @@ import time
 sys.path.append('/home/connex/library')
 from SynapsisLibrary import times
 sys.path.append('/home/connex/project/database')
-from query_project_db import ActuatorGroupDB, ActuatorListDB, SystemServiceDB
+from query_project_db import ActuatorListDB, SystemServiceDB
 sys.path.append('/home/connex/project/function')
 from actuatorFunction import ActuatorFunction
 from actuatorLibrary import ActuatorRTU
@@ -62,7 +62,7 @@ def main():
 
 while True:
     if __name__ == '__main__':        
-        # try:
+        try:
             main()
-        # except Exception as e:
-            # ServiceProjectFunction.handlingServiceError("Actuator " + str(number), e, global_variable)
+        except Exception as e:
+            ServiceProjectFunction.handlingServiceError("Actuator " + str(number), e, global_variable)

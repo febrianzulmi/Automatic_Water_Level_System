@@ -89,7 +89,7 @@ class serviceSensor():
         filename_check_sensor_file_path = base_path + f'/project/sensor/check_sensor{number}.py'
         command = f"/usr/bin/python3 {filename}.py"
             
-        services.updateService(filename, filename_service_file_path, command, service_id)
+        services.updateService(filename, f"{base_path}/project/sensor/", command, service_id)
 
         if os.path.exists(last_service_file_path): os.rename(last_service_file_path, filename_service_file_path)
         if os.path.exists(last_sensor_file_path): os.rename(last_sensor_file_path, filename_sensor_file_path)

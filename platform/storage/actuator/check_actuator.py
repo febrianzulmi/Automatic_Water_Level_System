@@ -6,62 +6,71 @@ import sys
 sys.path.append('/home/connex/library')
 from SynapsisLibrary import times
 sys.path.append('/home/connex/project/database')
-from query_project_db import ActuatorDB, LogActuatorDB
-from actuatorLibrary import actuatorAC
+from query_project_db import ActuatorListDB, LogActuatorDB
+from actuatorLibrary import ActuatorRTU
 sys.path.append("/home/connex/project/function")
-from actuatorFunction import actuatorFunction
 from notificationFunction import notificationFunction
 from dbFunction import dbFunction
-
 
 
 parser = argparse.ArgumentParser()
 
 # Adding optional argument
 parser.add_argument("-a", "--action", help = "Show Output")
+parser.add_argument("-l", "--list", help = "Show Output")
 
 # Read arguments from command line
+global_variable = {}
+global_variable["number"] = number
 args = parser.parse_args()
-action = None
+action_value = None
+actuator_list_id = None
 
 if args.action != None:
-   action = args.action
+   action_value = args.action
+if args.list != None:
+   actuator_list_id = args.list
 
-def actionActuator(actuator_custom_id):
-    status = actuatorAC(actuator_custom_id, action)
+def actionActuator(global_variable, actuator_run, actuator_data):
+    status = ActuatorRTU.run(global_variable, actuator_run, actuator_data)
     return status
 
 def main():
-    global number, action
+    global action_value, actuator_list_id, global_variable
 
     timestamp = times.getDatetime()
-    print("Timestamp : " + timestamp)
+    print(f"Timestamp : {timestamp}")
 
     feature_setting = dbFunction.getFeatureSetting()
-    get = ActuatorDB.selectByNumber(number)
-    actuator_list_id = get[0]['id']
-    for i in get:
-        actuator_custom_id = i['actuator_custom_id']
-        actuator_name = i['name']
+    actuator_data = ActuatorListDB.selectByIdFull(actuator_list_id)
+    actuator_run = {"value": [], "action": [], "count": 0}
+    if len(actuator_data) == 1:
+        actuator_name = actuator_data[0]['name']
+        actuator_group_name = actuator_data[0]['actuator_group_name']
+        actuator_run["action"].append(True)
+        actuator_run["value"].append(action_value)
+        actuator_run["count"] += 1
 
-    print("Actuator Name : " + str(actuator_name))
-    if action == '1':
-       print("Action Actuator : ON")
-       parameterActuator = actuatorFunction.getParameterActuator(number)
-       print("Parameter Mode Swing : ", str(parameterActuator['swing']))
-       print("Parameter Temperature : ", str(parameterActuator['temperature']))
-
+        print(f"Actuator Group Name : {actuator_group_name}")
+        print(f"Actuator List Name : {actuator_name}")
+        print(f"Action Value : {action_value}")
+        status_actuator = actionActuator(global_variable, actuator_run, actuator_data)
+        status_actuator["summary"] = f"{status_actuator['summary']} - Controlled by Local Remote"
+        for x in range(len(actuator_data)):
+            print(f"Result Action : {status_actuator['state'][x]}")
+            print(f"Result Message : {status_actuator['message'][x]}")
+            if status_actuator["state"][x] == True:
+                control = "1x Action"
+                ActuatorListDB.updateAction(actuator_run["value"][x], 3, timestamp, actuator_data[x]["id"])
+                LogActuatorDB.insert(actuator_data[x]["id"], actuator_run["value"][x], 3, timestamp)
+                if str(feature_setting['notification']) == "1":
+                    notificationFunction.generateNotificationActuator(actuator_data[x]["id"], 3, actuator_run["value"][x], timestamp, control)
     else:
-       print("Action Actuator : OFF")
+        print("No Actuator List Found")    
+        
 
-    status_actuator = actionActuator(actuator_custom_id)
-    if "Action Success" in status_actuator:
-       ActuatorDB.updateAction(action, 3, timestamp, actuator_list_id)
-       LogActuatorDB.insert(actuator_list_id, action, 3, timestamp)
-       control = status_actuator.replace("Action Success | ", "")
-       if str(feature_setting['notification']) == "1":
-          notificationFunction.generateNotificationActuator(actuator_list_id, 3, action, timestamp, control)
-
-    print("State Action : " + status_actuator)
-
-if __name__ == '__main__': main()
+if __name__ == '__main__': 
+    try:
+        main()
+    except Exception as e:
+        print(f"Error Run Actuator Local Remote - {str(e)}")

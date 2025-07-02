@@ -237,7 +237,7 @@ class ActuatorFunction():
             filename_check_actuator_file_path = base_path + f'/project/actuator/check_actuator{number}.py'
             command = f"/usr/bin/python3 {filename}.py"
             
-            services.updateService(filename, filename_service_file_path, command, service_id)
+            services.updateService(filename, f"{base_path}/project/actuator/", command, service_id)
 
             if os.path.exists(last_service_file_path): os.rename(last_service_file_path, filename_service_file_path)
             if os.path.exists(last_actuator_file_path): os.rename(last_actuator_file_path, filename_actuator_file_path)
