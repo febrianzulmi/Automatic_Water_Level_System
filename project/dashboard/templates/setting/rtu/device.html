@@ -4,7 +4,7 @@
     <div class="modal fade" id="modal-device">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form class="form-horizontal" method="POST" action="/setting/external_sensor">
+                <form class="form-horizontal" method="POST" action="/setting/rtu">
                     <div class="modal-header">
                         <h5 class="modal-title">Add RTU Device</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -17,7 +17,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Number</label>
                             <div class="col-sm-2">
-                                <input type="number" class="form-control" min="1" name="device-data-number"
+                                <input type="number" class="form-control" min="1" name="rtu-device-number"
                                     required autocomplete="off">
                             </div>
                         </div>
@@ -25,7 +25,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Name</label>
                             <div class="col-sm-4">
-                                <input type="text" class="form-control" name="device-data-name" required
+                                <input type="text" class="form-control" name="rtu-device-name" required
                                     autocomplete="off">
                             </div>
                         </div>
@@ -33,7 +33,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Slave ID</label>
                             <div class="col-sm-4">
-                                <input type="number" class="form-control" min="0" name="device-data-slaveid" required
+                                <input type="number" class="form-control" min="0" name="rtu-device-slaveid" required
                                     autocomplete="off">
                             </div>
                         </div>

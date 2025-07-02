@@ -13,7 +13,7 @@ def main():
     global globalVariable
     
     systemFunction.readInformationSBC(globalVariable)
-    # systemFunction.checkSyncTime()
+    systemFunction.checkSyncTime()
     systemFunction.checkServiceProject()
 
     print("")

@@ -75,7 +75,7 @@ class generalFunction():
                 
                 elif flag == "rtu":
                     if type == "rtu-device":
-                        # checkId = RtuDeviceDB.selectById(id)
+                        checkId = RtuDeviceDB.selectById(id)
                         pass
                     elif type == "rtu-parameter":
                         checkId = RtuParameterDB.selectById(id)

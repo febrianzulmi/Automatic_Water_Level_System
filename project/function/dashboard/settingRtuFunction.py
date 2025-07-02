@@ -4,7 +4,7 @@ import requests
 import sys
 
 sys.path.append("/home/connex/project/database")
-from query_project_db import RtuParameterDB
+from query_project_db import (RtuParameterDB, RtuDeviceDB)
 sys.path.append("/home/connex/project/function")
 from generalFunction import generalFunction
 sys.path.append("/home/connex/library")
@@ -13,8 +13,38 @@ from SynapsisLibrary import times
 
 class SettingRtu():
     class Device():
-        pass
-    
+        def insert(number, name, slave_id, state):
+            try:
+                check_number = RtuDeviceDB.selectByNumber(number)
+                check_slaveid = RtuDeviceDB.selectBySlaveid(slave_id)
+                
+                if len(check_number) != 0:
+                    result = {'state': '2', 'message': '{number} All Ready Exist'}
+                    return json.dumps(result)
+                
+                elif len(check_slaveid) != 0:
+                    result = {'state': '2', 'message': '{slave_id} All Ready Exist'}
+                    return json.dumps(result)
+                
+                else:
+                    if not state: state = "0"
+                    
+                    device_id = generalFunction.GenerateId.generateIdNearon("rtu", "rtu-device")
+                    state = RtuDeviceDB.insert(device_id, number, name, slave_id, state)
+                    
+                    result = {'state': state, 'message': 'RTU Device Added successfully!'}
+                    return json.dumps(result)
+                
+            except Exception as e:
+                result = {'state': '0', 'message': f'Failed to ADD RTU device {name}. There is an issue - {str(e)}'}
+                return json.dumps(result)
+                    
+                    
+        def update():
+            pass
+        
+        def delete():
+            pass
     
     class Parameter():
         def insert(name, custom_id, address, length, datatype, divider, type_sensor, type_control, unit, monitoring, log, state):
@@ -41,14 +71,18 @@ class SettingRtu():
                     rtu_parameter_id = generalFunction.GenerateId.generateIdNearon("rtu", "rtu-parameter")
                     state = RtuParameterDB.insert(rtu_parameter_id, name, custom_id, address, length, datatype, divider, 
                                                   type_sensor, type_control, unit, monitoring, log, state)
-
-                    if str(state) == '1':
-                        result = {"state": state, "message": "RTU Parameter Added successfully!"}
-                        return json.dumps(result)
                     
-                    else:
-                        result = {"state": state, "message": f"Failed to Add RTU Parameter {name}. There was an issue - failed add database"}
-                        return json.dumps(result)
+                    
+                    # if str(state) == '1':
+                    #     serviceId = SensorFunction.serviceSensor.createSensorFile(number)
+                    #     SensorGroupDB.updateService(serviceId, sensor_group_id)
+                    #     result = {'state': state, 'message': 'Sensor Group Added successfully!'}
+                    #     return json.dumps(result)
+                    # else:
+                    #     result = {"state": state, "message": f"Failed Add Sensor Group {name}. There was an issue - failed add database"}
+                    
+                    result = {'state': state, 'message': 'Sensor Group Added successfully!'}
+                    return json.dumps(result)
                 
             except Exception as e:
                 result = {"state": "0", "message": f"Failed to Add RTU Parameter {name}. There is an issue - {str(e)}"}

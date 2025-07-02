@@ -27,7 +27,21 @@ class RtuDeviceDB():
     def selectById(id):
         connection = sql.connect(host, database, username, password)
         query = "SELECT * FROM rtuDeviceDB WHERE id = %s"
-        value = (id,)
+        value = (id)
+        action = sql.selectWithInput(connection, query, value)
+        return action
+    
+    def selectByNumber(number):
+        connection = sql.connect(host, database, username, password)
+        query = "SELECT * FROM rtuDeviceDB WHERE number = %s"
+        value = (number,)
+        action = sql.selectWithInput(connection, query, value)
+        return action
+    
+    def selectBySlaveid(slave_id):
+        connection = sql.connect(host, database, username, password)
+        query = "SELECT * FROM rtuDeviceDB WHERE slave_id = %s"
+        value = (slave_id,)
         action = sql.selectWithInput(connection, query, value)
         return action
 
