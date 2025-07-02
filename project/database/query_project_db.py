@@ -37,3 +37,4 @@ from power_master_parameter_querydb import PowerMasterParameterDB
 from power_device_querydb import PowerDeviceDB
 from sensor_port_querydb import SensorPortConfigDB
 from rtu_parameter_querydb import RtuParameterDB
+from rtu_device_querydb import RtuDeviceDB
