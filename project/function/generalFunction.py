@@ -10,7 +10,7 @@ import subprocess
 sys.path.append('/home/connex/project/database')
 from query_project_db import (SensorGroupDB, SensorListDB, SensorParameterGroupDB, SensorParameterListDB, EnvironmentDeviceDB, EnvironmentMasterSensorDB, 
                               EnvironmentMasterParameterDB, PowerDeviceDB, PowerMasterParameterDB, PowerMasterSensorDB, ActuatorListDB, ActuatorParameterListDB, 
-                              ActuatorScheduleDB, ActuatorGroupDB, ActuatorParameterGroupDB)
+                              ActuatorScheduleDB, ActuatorGroupDB, ActuatorParameterGroupDB, RtuParameterDB)
 
 
 class generalFunction():
@@ -72,6 +72,13 @@ class generalFunction():
                         checkId = ActuatorParameterListDB.selectById(id)
                     elif type == "actuator-schedule":
                         checkId = ActuatorScheduleDB.selectById(id)
+                
+                elif flag == "rtu":
+                    if type == "rtu-device":
+                        # checkId = RtuDeviceDB.selectById(id)
+                        pass
+                    elif type == "rtu-parameter":
+                        checkId = RtuParameterDB.selectById(id)
 
                 if len(checkId) == 0:
                     break
@@ -91,7 +98,9 @@ class generalFunction():
             elif flag == 'remote':
                 id = 'R'
             elif flag == "actuator":
-                id = 'P'   
+                id = 'P'
+            elif flag == "rtu":
+                id = "RTU"
             
             if type == "sensor-group":
                 id += "GS"
@@ -117,6 +126,10 @@ class generalFunction():
                 id += "APL"
             elif type == "actuator-schedule":
                 id += "ALS"
+            elif type == "rtu-device":
+                id += "EXT"
+            elif type == "rtu-parameter":
+                id += "PRM"
 
             generate = generalFunction.getRandomID(5)
             id += '-' + str(generate)

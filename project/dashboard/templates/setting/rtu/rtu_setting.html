@@ -1,0 +1,70 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="row justify-content-center">
+	<div class="col-md-12">
+		<div class="card card-dark card-tabs">
+			<div class="card-header p-0 pt-1">
+				<ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link {% if 'device' in tab %}{{ 'active' }}{% endif %}" id="custom-tabs-one-device-tab" data-toggle="pill" 
+						href="#custom-tabs-one-device" role="tab" aria-controls="custom-tabs-one-device" aria-selected="true">Device</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {% if 'parameter' in tab %}{{ 'active' }}{% endif %}" id="custom-tabs-one-parameter-tab" data-toggle="pill" 
+						href="#custom-tabs-one-parameter" role="tab" aria-controls="custom-tabs-one-parameter" aria-selected="true">Parameter</a>
+					</li>
+				</ul>
+			</div>
+			<div class="card-body">
+				<div class="tab-content" id="custom-tabs-one-tabContent">
+					{% include "setting/rtu/device.html" %}
+					
+					{% include "setting/rtu/parameter.html" %}
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block switch %}
+<script>
+    $(function () {
+        //Colorpicker
+        $(".my-colorpicker1").colorpicker()
+        //color picker with addon
+        $(".my-colorpicker2").colorpicker()
+
+        $(".my-colorpicker2").on("colorpickerChange", function (event) {
+            $(".my-colorpicker2 .fa-square").css("color", event.color.toString());
+        });
+        $("input[data-bootstrap-switch]").each(function () {
+			$(this).bootstrapSwitch("state", $(this).prop("checked"));
+				}).on('switchChange.bootstrapSwitch', function (e, state) {
+					$(`#hidden_state${this.id.replace('checkbox', '')}`).val(state ? '1' : '0');
+			});
+    })
+</script>
+{% endblock %}
+
+{% block toast %}
+{#
+{% if result['state'] != '' %}
+<script>
+	$(function () {
+		var Toast = Swal.mixin({
+			toast: true,
+			position: 'top-end',
+			showConfirmButton: false,
+			timer: 5000
+		});
+		Toast.fire({
+			icon: "{% if result['state'] == '0' %}{{ 'error' }}{% elif result['state'] == '1' %}{{ 'success' }}{% elif result['state'] == '2' %}{{ 'warning' }}{% endif %}",
+			title: "&nbsp;&nbsp;{{ result['message'] }}"
+		})
+	});
+</script>
+{% endif %}
+#}
+{% endblock %}

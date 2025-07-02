@@ -14,7 +14,7 @@ from query_project_db import (SensorGroupDB, SensorListDB, SensorParameterGroupD
                               ActuatorParameterListDB, ActuatorParameterGroupDB, ActuatorScheduleDB,
                               EnvironmentDeviceDB, EnvironmentMasterSensorDB, EnvironmentMasterParameterDB, LogMonitoringDB, LogSensorDB, LogActuatorDB, LogNotifDB,
                               LogErrorDB, SystemServiceDB, CalibrateFormulaDB, CalibrateSampleDB, PowerDeviceDB, ActuatorGroupDB,
-                              PowerMasterParameterDB, PowerMasterSensorDB, SensorPortConfigDB)
+                              PowerMasterParameterDB, PowerMasterSensorDB, SensorPortConfigDB, RtuParameterDB)
 sys.path.append('/home/connex/library')
 from SynapsisLibrary import times
 sys.path.append('/home/connex/project/function')
@@ -1107,6 +1107,42 @@ def settingExtensionDevice():
                         extensionDeviceData=extensionDeviceData, calculate_port=calculate_port,
                         extensionMasterSensorData=extensionMasterSensorData, extensionMasterParameterData=extensionMasterParameterData, result=result)
 
+@app.route('/setting/rtu', methods=['GET', 'POST'])
+def settingRtu():
+   time = times.now()
+   rule = str(request.url_rule)
+   sessionData = generalFunction.checkSession()  
+   projectData = generalFunction.getProjectSetting()
+   deviceSetting = dbFunction.getDeviceSetting()
+   rtu_parameter_data = RtuParameterDB.select() 
+
+   tab = "rtu-device"
+   result = {'state':'', 'message':''}
+   if 'tab' in request.args:
+      tab = request.args['tab']
+   
+   if 'result' in request.args:
+      result = json.loads(request.args['result'])
+
+   if request.method == 'POST':
+      tab = request.form.get('tab')
+      action = request.form.get('action')
+
+      if action == 'rtu-paramter-add':
+         pass
+      
+      elif action == 'rtu-parameter-update':
+         pass
+      
+      elif action == 'rtu-parameter-delete':
+         pass
+
+   if int(sessionData['state']) == 0:
+      flash('Please Login to Access the Page')  
+      return redirect(url_for('login'))
+
+   return render_template('setting/rtu/rtu_setting.html', rule=rule, sessionData=sessionData, projectData=projectData, deviceSetting=deviceSetting,
+                           tab=tab, rtu_parameter_data=rtu_parameter_data)
 
 @app.route('/log/monitoring', methods=['GET','POST'])
 def logMonitoringPage():

@@ -17,3 +17,4 @@ class dashboardFunction():
     from logBufferFunction import logBuffer
     from logNotificationFunction import logNotification
     from logErrorFunction import logErrorSystem
+    from settingRtuFunction import SettingRtu
