@@ -1173,8 +1173,12 @@ def settingRtu():
 
          return redirect(url_for("settingRtu", tab=tab, result=result))
       
-      elif action == 'rtu-parameter-delete':
-         pass
+         elif action == 'rtu-parameter-delete':
+            id = request.form.get('id')
+            name = request.form.get('name')
+            result = dashboardFunction.SettingRtu.Parameter.delete(id, name)
+
+            return redirect(url_for("settingRtu", tab=tab, result=result))
       
       elif action == 'device-add':
          number = request.form.get('rtu-device-number')
@@ -1197,7 +1201,7 @@ def settingRtu():
       return redirect(url_for('login'))
 
    return render_template('setting/rtu/rtu_setting.html', rule=rule, sessionData=sessionData, projectData=projectData, deviceSetting=deviceSetting,
-                           tab=tab, rtu_device=rtu_device, rtu_parameter_data=rtu_parameter_data, result=result)
+                           tab=tab, rtu_device=rtu_device, rtuParameterData=rtuParameterData, monitorInterval=monitorInterval, logInterval=logInterval, result=result)
 
 @app.route('/log/monitoring', methods=['GET','POST'])
 def logMonitoringPage():
