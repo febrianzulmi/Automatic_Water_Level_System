@@ -1191,12 +1191,13 @@ def settingRtu():
       
       elif action == 'device-update':
          id = request.form.get('update-device-id')
+         last_number = request.form.get('device-data-lastnumbe')
+         last_slaveid = request.form.get('device-data-slaveid')
          number = request.form.get('update-device-number')
          name = request.form.get('update-device-name')
          slave_id = request.form.get('update-device-slaveid')
          state = request.form.get(f'update_state{id}')
-         print(f"isi state {state}")
-         result = dashboardFunction.SettingRtu.Device.update(id, number, name, slave_id, state)
+         result = dashboardFunction.SettingRtu.Device.update(id, number, name, slave_id, state, last_number, last_slaveid)
          
          return redirect(url_for("settingRtu", tab=tab, result=result))
       

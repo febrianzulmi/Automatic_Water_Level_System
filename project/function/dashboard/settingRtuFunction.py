@@ -40,17 +40,17 @@ class SettingRtu():
                 return json.dumps(result)
                     
                     
-        def update(device_id, number, name, slave_id, state):
+        def update(device_id, number, name, slave_id, state, last_number, last_slaveid):
             try:
                 check_number = RtuDeviceDB.selectByNumber(number)
                 check_slaveid = RtuDeviceDB.selectBySlaveid(slave_id)
                 
-                if len(check_number) != 0:
-                    result = {'state': '2', 'message': f'{number} All Ready Exist'}
+                if len(check_number) != 0 and last_number != number:
+                    result = {'state': '2', 'message': f'Number {number} All Ready Exist'}
                     return json.dumps(result)
                 
-                elif len(check_slaveid) != 0:
-                    result = {'state': '2', 'message': f'{slave_id} All Ready Exist'}
+                elif len(check_slaveid) != 0 and last_slaveid != slave_id:
+                    result = {'state': '2', 'message': f'Slave Id {slave_id} All Ready Exist'}
                     return json.dumps(result)
                 
                 else:
@@ -68,9 +68,9 @@ class SettingRtu():
         def delete(id, name):
             try:
                 state = RtuDeviceDB.deleteById(id)
-                result = {"state": state, "message": f"RTU Parameter {name} has been deleted!"}
+                result = {"state": state, "message": f"RTU Device {name} has been deleted!"}
             except Exception as e:
-                result = {"state": "0", "message": f"RTU Parameter {name} failed to delete, there was an issue - {e}"}
+                result = {"state": "0", "message": f"RTU Device {name} failed to delete, there was an issue - {e}"}
             return json.dumps(result)
         
     
