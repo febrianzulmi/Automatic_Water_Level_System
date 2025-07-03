@@ -1191,7 +1191,7 @@ def settingRtu():
       
       elif action == 'device-update':
          id = request.form.get('update-device-id')
-         last_number = request.form.get('device-data-lastnumbe')
+         last_number = request.form.get('device-data-lastnumber')
          last_slaveid = request.form.get('device-data-slaveid')
          number = request.form.get('update-device-number')
          name = request.form.get('update-device-name')
