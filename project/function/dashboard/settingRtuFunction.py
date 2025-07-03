@@ -19,11 +19,11 @@ class SettingRtu():
                 check_slaveid = RtuDeviceDB.selectBySlaveid(slave_id)
                 
                 if len(check_number) != 0:
-                    result = {'state': '2', 'message': '{number} All Ready Exist'}
+                    result = {'state': '2', 'message': f'{number} All Ready Exist'}
                     return json.dumps(result)
                 
                 elif len(check_slaveid) != 0:
-                    result = {'state': '2', 'message': '{slave_id} All Ready Exist'}
+                    result = {'state': '2', 'message': f'{slave_id} All Ready Exist'}
                     return json.dumps(result)
                 
                 else:
@@ -36,12 +36,34 @@ class SettingRtu():
                     return json.dumps(result)
                 
             except Exception as e:
-                result = {'state': '0', 'message': f'Failed to ADD RTU device {name}. There is an issue - {str(e)}'}
+                result = {'state': '0', 'message': f'Failed to Add RTU device {name}. There is an issue - {str(e)}'}
                 return json.dumps(result)
                     
                     
-        def update():
-            pass
+        def update(device_id, number, name, slave_id, state):
+            try:
+                check_number = RtuDeviceDB.selectByNumber(number)
+                check_slaveid = RtuDeviceDB.selectBySlaveid(slave_id)
+                
+                if len(check_number) != 0:
+                    result = {'state': '2', 'message': f'{number} All Ready Exist'}
+                    return json.dumps(result)
+                
+                elif len(check_slaveid) != 0:
+                    result = {'state': '2', 'message': f'{slave_id} All Ready Exist'}
+                    return json.dumps(result)
+                
+                else:
+                    if not state: state = "0"
+                    
+                    status = RtuDeviceDB.update(device_id, number, name, slave_id, state)
+                    
+                    result = {'state': status, 'message': 'RTU Device Updated successfully!'}
+                    return json.dumps(result)
+                
+            except Exception as e:
+                result = {'state': '0', 'message': f'Failed to Updated RTU device {name}. There is an issue - {str(e)}'}
+                return json.dumps(result)
         
         def delete():
             pass

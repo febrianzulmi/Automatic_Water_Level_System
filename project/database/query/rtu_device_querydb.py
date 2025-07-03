@@ -46,25 +46,22 @@ class RtuDeviceDB():
         return action
 
 
-    def insert(id, number, name, slave_id, state, created_at):
+    def insert(id, number, name, slave_id, state):
         connection = sql.connect(host, database, username, password)
         query = """INSERT INTO rtuDeviceDB 
-                   (id, number, name, slave_id, state, created_at)
-                   VALUES (%s, %s, %s, %s, %s, %s)"""
-        value = (id, number, name, slave_id, state, created_at)
+                   (id, number, name, slave_id, state)
+                   VALUES (%s, %s, %s, %s, %s)"""
+        value = (id, number, name, slave_id, state)
         action = sql.execute(connection, query, value)
         return action
 
 
-    def update(id, name, custom_id, address, length, datatype, divider, type_sensor,
-               type_control, unit, monitoring, log, state, updated_at):
+    def update(id, number, name, slave_id, state):
         connection = sql.connect(host, database, username, password)
         query = """UPDATE rtuDeviceDB 
-                   SET name=%s, custom_id=%s, address=%s, length=%s, datatype=%s, divider=%s, type=%s,
-                   type_control=%s, unit=%s, monitoring=%s, log=%s, state=%s, updated_at=%s
+                   SET number=%s, name=%s, slave_id=%s, state=%s 
                    WHERE id=%s"""
-        value = (name, custom_id, address, length, datatype, divider, type_sensor,
-                 type_control, unit, monitoring, log, state, updated_at, id)
+        value = (number, name, slave_id, state, id)
         action = sql.execute(connection, query, value) 
         return action
 
@@ -84,7 +81,7 @@ class RtuDeviceDB():
 
     def deleteById(id):
         connection = sql.connect(host, database, username, password)
-        query = "DELETE FROM rtuParameterDB WHERE id = %s"
+        query = "DELETE FROM rtuDeviceDB WHERE id = %s"
         value = (id,)
         action = sql.execute(connection, query, value)
         return action

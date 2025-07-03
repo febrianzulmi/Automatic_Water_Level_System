@@ -1190,7 +1190,15 @@ def settingRtu():
          return redirect(url_for("settingRtu", tab=tab, result=result))
       
       elif action == 'device-update':
-         pass
+         id = request.form.get('update-device-id')
+         number = request.form.get('update-device-number')
+         name = request.form.get('update-device-name')
+         slave_id = request.form.get('update-device-slaveid')
+         state = request.form.get(f'update_state{id}')
+         print(f"isi state {state}")
+         result = dashboardFunction.SettingRtu.Device.update(id, number, name, slave_id, state)
+         
+         return redirect(url_for("settingRtu", tab=tab, result=result))
       
       elif action == 'device-delete':
          pass
