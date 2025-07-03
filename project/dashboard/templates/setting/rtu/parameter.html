@@ -2,7 +2,7 @@
 <div class="tab-pane fade {% if 'parameter' in tab %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-parameter" role="tabpanel"
     aria-labelledby="custom-tabs-one-parameter-tab">
     <div class="modal fade" id="modal-rtu-parameter-add">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form class="form-horizontal" method="POST" action="/setting/rtu">
                     <input type="hidden" name="tab" value="rtu-parameter">
@@ -17,38 +17,25 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Name</label>
-                            <div class="col-sm-8">
+                            <label class="col-sm-2 col-form-label">Name</label>
+                            <div class="col-sm-10">
                                 <input type="text" class="form-control" name="name" required autocomplete="off">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Custom ID</label>
-                            <div class="col-sm-8">
+                            <label class="col-sm-2 col-form-label">Custom ID</label>
+                            <div class="col-sm-10">
                                 <input type="text" class="form-control" name="custom_id" required autocomplete="off">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Address</label>
-                            <div class="col-sm-8">
+                            <label class="col-sm-2 col-form-label">Address</label>
+                            <div class="col-sm-3">
                                 <input type="number" class="form-control" name="address" min="0" required autocomplete="off">
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Length</label>
-                            <div class="col-sm-8">
-                                <input type="number" class="form-control" name="length" min="1" required autocomplete="off">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Divider</label>
-                            <div class="col-sm-8">
-                                <input type="number" class="form-control" name="divider" min="0" step="0.001" required autocomplete="off">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Datatype</label>
-                            <div class="col-sm-6">
+                            <div class="col-sm-2"></div>
+                            <label class="col-sm-2 col-form-label">Datatype</label>
+                            <div class="col-sm-3 col-form-label">
                                 <div class="icheck-primary d-inline">
                                     <input type="radio" id="datatype_yes" name="datatype" value="1">
                                     <label for="datatype_yes">Integer</label>
@@ -61,18 +48,28 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Type</label>
-                            <div class="col-sm-6">
+                            <label class="col-sm-2 col-form-label">Length</label>
+                            <div class="col-sm-3">
+                                <input type="number" class="form-control" name="length" min="1" required autocomplete="off">
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <label class="col-sm-2 col-form-label">Divider</label>
+                            <div class="col-sm-3">
+                                <input type="number" class="form-control" name="divider" min="0" step="0.001" required autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Type</label>
+                            <div class="col-sm-3">
                                 <select name="type" class="form-control" required autocomplete="off">
                                     <option value="0">Read Only</option>
                                     <option value="1">Write Only</option>
                                     <option value="2">Read & Write</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Type Control</label>
-                            <div class="col-sm-6">
+                            <div class="col-sm-2"></div>
+                            <label class="col-sm-2 col-form-label">Type Control</label>
+                            <div class="col-sm-3">
                                 <select name="type_control" class="form-control" required autocomplete="off">
                                     <option value="0">No Control</option>
                                     <option value="1">True/False Value</option>
@@ -81,14 +78,8 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Unit</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" name="unit" required autocomplete="off">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Monitoring</label>
-                            <div class="col-sm-4">
+                            <label class="col-sm-2 col-form-label">Monitoring</label>
+                            <div class="col-sm-3">
                                 <select name="monitor" class="form-control" required autocomplete="off">
                                     <option value="0">Disabled</option>
                                     {% for i in range(monitorInterval|length) %}
@@ -101,10 +92,9 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Internal Log</label>
-                            <div class="col-sm-4">
+                            <div class="col-sm-2"></div>
+                            <label class="col-sm-2 col-form-label">Internal Log</label>
+                            <div class="col-sm-3">
                                 <select name="log" class="form-control" required autocomplete="off">
                                     <option value="0">Disabled</option>
                                     {% for i in range(logInterval|length) %}
@@ -119,7 +109,12 @@
                             </div>
                         </div>
                         <div class="form-group row align-items-center">
-                            <label class="col-sm-3 col-form-label">State</label>
+                            <label class="col-sm-2 col-form-label">Unit</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" name="unit" required autocomplete="off">
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <label class="col-sm-2 col-form-label">State</label>
                             <div class="col-sm-3">
                                 <input type="checkbox" name="state" value="1" 
                                 data-bootstrap-switch data-off-color="danger" data-on-color="success">
@@ -136,7 +131,6 @@
             </div>
         </div>
     </div>
-    <br>
     <div class="row col-md-12">
         {% if sessionData["level"] == 1 %}
         <a href="" data-toggle="modal" data-target="#modal-rtu-parameter-add" role="button">
