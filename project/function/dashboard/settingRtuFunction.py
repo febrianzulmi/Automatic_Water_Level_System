@@ -65,8 +65,14 @@ class SettingRtu():
                 result = {'state': '0', 'message': f'Failed to Updated RTU device {name}. There is an issue - {str(e)}'}
                 return json.dumps(result)
         
-        def delete():
-            pass
+        def delete(id, name):
+            try:
+                state = RtuDeviceDB.deleteById(id)
+                result = {"state": state, "message": f"RTU Parameter {name} has been deleted!"}
+            except Exception as e:
+                result = {"state": "0", "message": f"RTU Parameter {name} failed to delete, there was an issue - {e}"}
+            return json.dumps(result)
+        
     
     class Parameter():
         def insert(name, custom_id, address, length, datatype, divider, type_sensor, type_control, unit, monitoring, log, state):

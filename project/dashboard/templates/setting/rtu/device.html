@@ -191,10 +191,10 @@
                             <div class="modal-body">
                                 <input type="hidden" class="form-control" name="tab" value="device">
                                 <input type="hidden" class="form-control" name="action" value="device-delete">
-                                <input type="hidden" class="form-control" name="device-data-id"
-                                    value="{{ rtu_device[i]['id'] }}">
-                                <p>Are you sure to delete External RTU Device Number <b>{{
-                                    rtu_device[i]["number"] }}</b></p>
+                                <input type="hidden" class="form-control" name="delete-device-id" value="{{ rtu_device[i]['id'] }}">
+                                <input type="hidden" class="form-control" name="name" value="{{ rtu_device[i]['name'] }}">
+                                <p>Are you sure to delete External RTU Device  <b>{{
+                                    rtu_device[i]["name"] }}</b></p>
                             </div>
     
                             <div class="modal-footer justify-content-between">

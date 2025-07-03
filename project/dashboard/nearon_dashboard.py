@@ -1201,7 +1201,11 @@ def settingRtu():
          return redirect(url_for("settingRtu", tab=tab, result=result))
       
       elif action == 'device-delete':
-         pass
+         id = request.form.get('delete-device-id')
+         name = request.form.get('name')
+         result = dashboardFunction.SettingRtu.Device.delete(id, name)
+
+         return redirect(url_for("settingRtu", tab=tab, result=result))
       
 
    if int(sessionData['state']) == 0:
