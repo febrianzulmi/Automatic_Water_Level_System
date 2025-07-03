@@ -118,3 +118,11 @@ class ActuatorListDB():
         value = (id_data,)
         action = sql.execute(connection, query, value)
         return action
+
+
+    def deleteByGroupId(group_id):
+        connection = sql.connect(host, database, username, password)
+        query = "DELETE FROM actuatorListDB WHERE actuator_group_id=%s"
+        value = (group_id,)
+        action = sql.execute(connection, query, value)
+        return action

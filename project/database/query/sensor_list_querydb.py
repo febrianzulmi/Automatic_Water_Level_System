@@ -145,11 +145,13 @@ class SensorListDB():
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
 
+
     def selectPriorityLog():
         connection = sql.connect(host, database, username, password)
         query = "SELECT sensorListDB.*, sensorGroupDB.* FROM sensorListDB join sensorGroupDB on sensorListDB.group_id=sensorGroupDB.id where sensorListDB.log=1"
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
+
 
     def selectPriorityMonitor():
         connection = sql.connect(host, database, username, password)
@@ -157,17 +159,20 @@ class SensorListDB():
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
 
+
     def selectDailyLog():
         connection = sql.connect(host, database, username, password)
         query = "SELECT sensorListDB.*, sensorGroupDB.* FROM sensorListDB join sensorGroupDB on sensorListDB.group_id=sensorGroupDB.id where sensorListDB.log=2"
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
 
+
     def selectDailyMonitor():
         connection = sql.connect(host, database, username, password)
         query = "SELECT sensorListDB.*, sensorGroupDB.* FROM sensorListDB join sensorGroupDB on sensorListDB.group_id=sensorGroupDB.id where sensorListDB.monitor=2"
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
+
 
     def selectOne(sensor_id):
         connection = sql.connect(host, database, username, password)
@@ -176,12 +181,14 @@ class SensorListDB():
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
 
+
     def selectValue(id):
         connection = sql.connect(host, database, username, password)
         query = "SELECT value, timestamp FROM sensorListDB where id = %s"
         value = (id,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
+
 
     def selectById(id):
         connection = sql.connect(host, database, username, password)
@@ -198,12 +205,14 @@ class SensorListDB():
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
 
+
     def selectCalibrateById(id):
         connection = sql.connect(host, database, username, password)
         query = "SELECT calibrate, formula FROM sensorListDB where id=%s"
         value=(id,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
+
 
     def selectByGroup(id_group):
         connection = sql.connect(host, database, username, password)
@@ -219,14 +228,16 @@ class SensorListDB():
         value = (group, oid)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
-    
+
+
     def selectByGroupState(group, state):
         connection = sql.connect(host, database, username, password)
         query = "SELECT * FROM sensorListDB where group_id = %s and state = %s ORDER BY oid ASC"
         value = (group, state)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
-    
+
+
     def selectByRoutineMonitorInterval(routineMonitorIntervalId):
         connection = sql.connect(host, database, username, password)
         query = "SELECT sensorListDB.* FROM sensorListDB join sensorGroupDB on sensorListDB.group_id=sensorGroupDB.id where sensorListDB.monitor=%s AND sensorListDB.state='1' AND sensorGroupDB.state='1'"
@@ -234,13 +245,15 @@ class SensorListDB():
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
 
+
     def selectByLogInterval(logIntervalId):
         connection = sql.connect(host, database, username, password)
         query = "SELECT sensorListDB.* FROM sensorListDB join sensorGroupDB on sensorListDB.group_id=sensorGroupDB.id where sensorListDB.log=%s AND sensorListDB.state='1' AND sensorGroupDB.state='1'"
         value = (logIntervalId,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
-    
+
+   
     def selectMaxOidByGroup(group_id):
         connection = sql.connect(host, database, username, password)
         query = "SELECT MAX(oid) AS max_oid FROM sensorListDB WHERE group_id = %s"
@@ -248,13 +261,15 @@ class SensorListDB():
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
 
+
     def insert(id, sensor_id, oid, group_id, name, calibrate, formula, oid_tipe, monitor, log, state):
         connection = sql.connect(host, database, username, password)
         query = "INSERT INTO sensorListDB (id, sensor_id, oid, group_id, name, calibrate, formula, oid_tipe, monitor, log, state) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         value = (id, sensor_id, oid, group_id, name, calibrate, formula, oid_tipe, monitor, log, state)
         action = sql.execute(connection, query, value)
         return action
-    
+
+
     def batchInsertSensors(extension_id, ports, port_config, deviceState, generalFunction):
         connection = sql.connect(host, database, username, password)
         query = """
@@ -281,7 +296,8 @@ class SensorListDB():
 
         action = sql.executeMany(connection, query, values)
         return action
-    
+
+
     def insertSyncronizerPowerExt(number, deviceState, total_port, generalFunction):
         connection = sql.connect(host, database, username, password)
         group_id = "PGS-44539"
@@ -312,13 +328,13 @@ class SensorListDB():
         return action
 
 
-
     def update(sensor_id, oid, group_id, name, calibrate, formula, oid_tipe, monitor, log, alarm, min, max, alarm_type, stateSensorList, id):
         connection = sql.connect(host, database, username, password)
         query = "UPDATE sensorListDB set sensor_id=%s, oid=%s, group_id=%s, name=%s, calibrate=%s, formula=%s, oid_tipe=%s, monitor=%s, log=%s, alarm=%s, min=%s, max=%s, alarm_type=%s ,state=%s WHERE id=%s"
         value = (sensor_id, oid, group_id, name, calibrate, formula, oid_tipe, monitor, log, alarm, min, max, alarm_type, stateSensorList, id)
         action = sql.execute(connection, query, value)
         return action
+
 
     def updateParam(name, alarm, sensor_max, sensor_min, unit, alarm_type, last_sync, sensor_id):
         connection = sql.connect(host, database, username, password)
@@ -334,13 +350,15 @@ class SensorListDB():
         value = (value,timestamp,id)
         action = sql.execute(connection, query, value)
         return action
-    
+
+
     def updateState(state, timestamp, sensor_id):
         connection = sql.connect(host, database, username, password)
         query = "UPDATE sensorListDB set state=%s, timestamp=%s WHERE sensor_id=%s"
         value = (state, timestamp, sensor_id)
         action = sql.execute(connection, query, value)
         return action
+
 
     def updateAlarmId(alarmId, id):
         connection = sql.connect(host, database, username, password)
@@ -349,12 +367,14 @@ class SensorListDB():
         action = sql.execute(connection, query, value)
         return action
 
+
     def updateLastAlarmId(alarmId, id):
         connection = sql.connect(host, database, username, password)
         query = "UPDATE sensorListDB set alarmId2=%s WHERE sensor_id=%s"
         value = (alarmId, id)
         action = sql.execute(connection, query, value)
         return action
+
 
     def updateCondition(condition, id):
         connection = sql.connect(host, database, username, password)
@@ -363,12 +383,14 @@ class SensorListDB():
         action = sql.execute(connection, query, value)
         return action
 
+
     def updateNotifState(notif_state, id):
         connection = sql.connect(host, database, username, password)
         query = "UPDATE sensorListDB set notif_state=%s WHERE sensor_id=%s"
         value = (notif_state,id)
         action = sql.execute(connection, query, value)
         return action
+
 
     def updateNotifCount(notif_count, notif_time, id):
         connection = sql.connect(host, database, username, password)
@@ -377,6 +399,7 @@ class SensorListDB():
         action = sql.execute(connection, query, value)
         return action
 
+
     def updateResetAlarm(id):
         connection = sql.connect(host, database, username, password)
         query = "UPDATE sensorListDB set notif_state=0, notif_count= 0, notif_time=0, conditions='Alarm Inactive', alarmId1='', alarmId2='' WHERE id=%s"
@@ -384,6 +407,7 @@ class SensorListDB():
         action = sql.execute(connection, query, value)
         return action
     
+
     def updateStateByMonitorId(state, monitor_id):
         connection = sql.connect(host, database, username, password)
         query = "UPDATE sensorListDB SET state = %s WHERE monitor = %s"
@@ -391,12 +415,22 @@ class SensorListDB():
         action = sql.execute(connection, query, value)
         return action
     
+
     def updateStateByLogId(state, log_id):
         connection = sql.connect(host, database, username, password)
         query = "UPDATE sensorListDB SET state = %s WHERE log = %s"
         value = (state, log_id)
         action = sql.execute(connection, query, value)
         return action
+
+
+    def updateUnitById(id, unit):
+        connection = sql.connect(host, database, username, password)
+        query = "UPDATE sensorListDB SET unit = %s WHERE id = %s"
+        value = (unit, id)
+        action = sql.execute(connection, query, value)
+        return action
+
 
     def deleteOne(id_data):
         connection = sql.connect(host, database, username, password)
@@ -405,6 +439,7 @@ class SensorListDB():
         action = sql.execute(connection, query, value)
         return action
     
+
     def batchDeleteSensors(extension_id, ports, port_config):
         connection = sql.connect(host, database, username, password)
         sensor_ids = []
@@ -419,6 +454,7 @@ class SensorListDB():
         action = sql.execute(connection, query, tuple(sensor_ids))
         return action
     
+
     def deleteSyncronizerPowerExt(number, total_port):
         connection = sql.connect(host, database, username, password)
 
@@ -432,4 +468,12 @@ class SensorListDB():
         
         query = "DELETE FROM sensorListDB WHERE sensor_id IN ({})".format(",".join(["%s"] * len(sensor_ids)))
         action = sql.execute(connection, query, tuple(sensor_ids))
+        return action
+    
+
+    def deleteByGroupId(group_id):
+        connection = sql.connect(host, database, username, password)
+        query = "DELETE FROM sensorListDB WHERE group_id=%s"
+        value = (group_id,)
+        action = sql.execute(connection, query, value)
         return action

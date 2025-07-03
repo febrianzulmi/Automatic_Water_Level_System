@@ -1214,7 +1214,7 @@ def settingRtu():
       return redirect(url_for('login'))
 
    return render_template('setting/rtu/rtu_setting.html', rule=rule, sessionData=sessionData, projectData=projectData, deviceSetting=deviceSetting,
-                           tab=tab, rtu_device=rtu_device,rtuParameterData=rtuParameterData, monitorInterval=monitorInterval, logInterval=logInterval, result=result)
+                           tab=tab, rtu_device=rtu_device, rtuParameterData=rtuParameterData, monitorInterval=monitorInterval, logInterval=logInterval, result=result)
 
 @app.route('/log/monitoring', methods=['GET','POST'])
 def logMonitoringPage():
