@@ -20,11 +20,11 @@ class SettingRtu():
                 check_slaveid = RtuDeviceDB.selectBySlaveid(slave_id)
                 
                 if len(check_number) != 0:
-                    result = {'state': '2', 'message': f'{number} All Ready Exist'}
+                    result = {'state': '2', 'message': f'number {number} All Ready Exist'}
                     return json.dumps(result)
                 
                 elif len(check_slaveid) != 0:
-                    result = {'state': '2', 'message': f'{slave_id} All Ready Exist'}
+                    result = {'state': '2', 'message': f'slave {slave_id} All Ready Exist'}
                     return json.dumps(result)
                 
                 else:
