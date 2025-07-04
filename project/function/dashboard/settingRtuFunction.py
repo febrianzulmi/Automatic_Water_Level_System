@@ -1,6 +1,4 @@
 import json 
-import os 
-import requests
 import sys
 
 sys.path.append("/home/connex/project/database")
@@ -8,8 +6,6 @@ from query_project_db import RtuParameterDB, RtuDeviceDB
 sys.path.append("/home/connex/project/function")
 from generalFunction import generalFunction
 from rtuFunction import RtuFunction
-sys.path.append("/home/connex/library")
-from SynapsisLibrary import times
 
 
 class SettingRtu():
@@ -20,11 +16,11 @@ class SettingRtu():
                 check_slaveid = RtuDeviceDB.selectBySlaveid(slave_id)
                 
                 if len(check_number) != 0:
-                    result = {'state': '2', 'message': f'number {number} All Ready Exist'}
+                    result = {'state': '2', 'message': f'RTU Device Number {number} All Ready Exist'}
                     return json.dumps(result)
                 
                 elif len(check_slaveid) != 0:
-                    result = {'state': '2', 'message': f'slave {slave_id} All Ready Exist'}
+                    result = {'state': '2', 'message': f'RTU Device Slave Id {slave_id} All Ready Exist'}
                     return json.dumps(result)
                 
                 else:
@@ -43,7 +39,7 @@ class SettingRtu():
                         return json.dumps(result)
                 
             except Exception as e:
-                result = {'state': '0', 'message': f'Failed to Add RTU Device {name}. There is an issue - {str(e)}'}
+                result = {'state': '0', 'message': f'Failed to Add RTU Device {name}. There was an issue - {str(e)}'}
                 return json.dumps(result)
                     
                     
@@ -53,11 +49,11 @@ class SettingRtu():
                 check_slaveid = RtuDeviceDB.selectBySlaveid(slave_id)
                 
                 if len(check_number) != 0 and last_number != number:
-                    result = {'state': '2', 'message': f'Number {number} Already Exist'}
+                    result = {'state': '2', 'message': f'RTU Device Number {number} Already Exist'}
                     return json.dumps(result)
                 
                 elif len(check_slaveid) != 0 and last_slaveid != slave_id:
-                    result = {'state': '2', 'message': f'Slave Id {slave_id} Already Exist'}
+                    result = {'state': '2', 'message': f'RTU Device Slave Id {slave_id} Already Exist'}
                     return json.dumps(result)
                 
                 else:
@@ -75,7 +71,7 @@ class SettingRtu():
                         return json.dumps(result)
                 
             except Exception as e:
-                result = {'state': '0', 'message': f'Failed to Updated RTU device {name}. There is an issue - {str(e)}'}
+                result = {'state': '0', 'message': f'Failed to Update RTU device {name}. There was an issue - {str(e)}'}
                 return json.dumps(result)
         
         def delete(id, name):
@@ -119,7 +115,7 @@ class SettingRtu():
                     
                     rtu_parameter_id = generalFunction.GenerateId.generateIdNearon("rtu", "rtu-parameter")
                     status = RtuParameterDB.insert(rtu_parameter_id, name, custom_id, address, length, datatype, divider, 
-                                                  type_parameter, type_control, unit, monitoring, log, state)
+                                                    type_parameter, type_control, unit, monitoring, log, state)
                     
                     if str(status) == '1':
                         RtuFunction.createSensorandActuatorList()
@@ -131,11 +127,11 @@ class SettingRtu():
                         return json.dumps(result)
                 
             except Exception as e:
-                result = {"state": "0", "message": f"Failed to Add RTU Parameter {name}. There is an issue - {str(e)}"}
+                result = {"state": "0", "message": f"Failed to Add RTU Parameter {name}. There was an issue - {str(e)}"}
                 return json.dumps(result)
     
         def update(id, name, custom_id, address, length, datatype, divider, type_parameter, type_control, 
-                   unit, monitoring, log, state, last_name, last_custom_id, last_address):
+                    unit, monitoring, log, state, last_name, last_custom_id, last_address):
             try:
                 is_name = RtuParameterDB.selectByName(name)
                 is_address = RtuParameterDB.selectByAddress(address)
@@ -155,7 +151,7 @@ class SettingRtu():
                     
                 else:
                     status = RtuParameterDB.updateById(id, name, custom_id, address, length, datatype, divider,
-                                                      type_parameter, type_control, unit, monitoring, log, state)
+                                                        type_parameter, type_control, unit, monitoring, log, state)
 
                     if str(status) == '1':
                         RtuFunction.createSensorandActuatorList()
@@ -167,7 +163,7 @@ class SettingRtu():
                         return json.dumps(result)
                 
             except Exception as e:
-                result = {"state": "0", "message": f"Failed to Update RTU Parameter {name}. There is an issue - {str(e)}"}
+                result = {"state": "0", "message": f"Failed to Update RTU Parameter {name}. There was an issue - {str(e)}"}
                 return json.dumps(result)
 
         def delete(id, name):
