@@ -35,11 +35,11 @@ class SettingRtu():
 
                     if str(status) == '1':
                         RtuFunction.createSensorandActuatorList()
-                        result = {'state': state, 'message': 'RTU Device Added successfully!'}
+                        result = {"state": status, "message": "RTU Device Added successfully!"}
                         return json.dumps(result)
                     
                     else:
-                        result = {"state": state, "message": f"Failed to Add RTU Device {name}. There was an issue - failed add database"}
+                        result = {"state": status, "message": f"Failed to Add RTU Device {name}. There was an issue - failed add database"}
                         return json.dumps(result)
                 
             except Exception as e:
@@ -67,11 +67,11 @@ class SettingRtu():
                     
                     if str(status) == '1':
                         RtuFunction.createSensorandActuatorList()
-                        result = {'state': state, 'message': 'RTU Device Updated successfully!'}
+                        result = {"state": status, "message": "RTU Device Updated successfully!"}
                         return json.dumps(result)
                     
                     else:
-                        result = {"state": state, "message": f"Failed to Update RTU Device {name}. There was an issue - failed update database"}
+                        result = {"state": status, "message": f"Failed to Update RTU Device {name}. There was an issue - failed update database"}
                         return json.dumps(result)
                 
             except Exception as e:
@@ -83,11 +83,11 @@ class SettingRtu():
                 state = RtuDeviceDB.deleteById(id)
                 if str(state) == '1':
                         RtuFunction.createSensorandActuatorList()
-                        result = {"state": state, "message": f"RTU Device {name} has been deleted!"}
+                        result = {"state": status, "message": f"RTU Device {name} has been deleted!"}
                         return json.dumps(result)
 
                 else:
-                    result = {"state": state, "message": f"Failed to Delete RTU Device {name}. There was an issue - failed delete database"}
+                    result = {"state": status, "message": f"Failed to Delete RTU Device {name}. There was an issue - failed delete database"}
                     return json.dumps(result)
             
             except Exception as e:
@@ -123,11 +123,11 @@ class SettingRtu():
                     
                     if str(status) == '1':
                         RtuFunction.createSensorandActuatorList()
-                        result = {"state": state, "message": "RTU Parameter Added successfully!"}
+                        result = {"state": status, "message": "RTU Parameter Added successfully!"}
                         return json.dumps(result)
                     
                     else:
-                        result = {"state": state, "message": f"Failed to Add RTU Parameter {name}. There was an issue - failed add database"}
+                        result = {"state": status, "message": f"Failed to Add RTU Parameter {name}. There was an issue - failed add database"}
                         return json.dumps(result)
                 
             except Exception as e:
@@ -159,11 +159,11 @@ class SettingRtu():
 
                     if str(status) == '1':
                         RtuFunction.createSensorandActuatorList()
-                        result = {"state": state, "message": "RTU Parameter Updated successfully!"}
+                        result = {"state": status, "message": "RTU Parameter Updated successfully!"}
                         return json.dumps(result)
                     
                     else:
-                        result = {"state": state, "message": f"Failed to Update RTU Parameter {name}. There was an issue - failed update database"}
+                        result = {"state": status, "message": f"Failed to Update RTU Parameter {name}. There was an issue - failed update database"}
                         return json.dumps(result)
                 
             except Exception as e:
@@ -176,11 +176,11 @@ class SettingRtu():
                 
                 if str(status) == '1':
                     RtuFunction.createSensorandActuatorList()
-                    result = {"state": state, "message": f"RTU Parameter {name} has been deleted!"}
+                    result = {"state": status, "message": f"RTU Parameter {name} has been deleted!"}
                     return json.dumps(result)
 
                 else:
-                    result = {"state": state, "message": f"Failed to Delete RTU Parameter {name}. There was an issue - failed delete database"}
+                    result = {"state": status, "message": f"Failed to Delete RTU Parameter {name}. There was an issue - failed delete database"}
                     return json.dumps(result)
 
             except Exception as e:
