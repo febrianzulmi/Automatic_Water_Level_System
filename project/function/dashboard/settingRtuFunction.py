@@ -81,7 +81,7 @@ class SettingRtu():
         def delete(id, name):
             try:
                 status = RtuDeviceDB.deleteById(id)
-                if str(state) == '1':
+                if str(status) == '1':
                         RtuFunction.createSensorandActuatorList()
                         result = {"state": status, "message": f"RTU Device {name} has been deleted!"}
                         return json.dumps(result)
