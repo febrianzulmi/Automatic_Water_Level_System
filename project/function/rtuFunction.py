@@ -5,7 +5,10 @@ sys.path.append("/home/connex/project/database")
 from query_project_db import (RtuParameterDB, RtuDeviceDB, SensorListDB,
                               SensorGroupDB, SensorParameterListDB,
                               ActuatorListDB, ActuatorGroupDB, ActuatorParameterListDB)
+sys.path.append("/home/connex/project/function")
 from generalFunction import generalFunction
+sys.path.append("/home/connex/project/function/sensor")
+from oidSensorFunction import OidSensorFunction
 
 class RtuFunction:
     def createSensorandActuatorList():       
@@ -56,3 +59,5 @@ class RtuFunction:
                                                     id_actuator, "Length", "length", rtu_parameter[item_parameter]["length"])
                     ActuatorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("actuator", "actuator-parameter-list"),
                                                     id_actuator, "Divider", "divider", rtu_parameter[item_parameter]["divider"])
+        
+        OidSensorFunction.createSensorOid()

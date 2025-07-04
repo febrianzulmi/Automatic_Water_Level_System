@@ -19,7 +19,7 @@ host, database, username, password = openDB()
 class RtuDeviceDB():
     def select():
         connection = sql.connect(host, database, username, password)
-        query = "SELECT * FROM rtuDeviceDB"
+        query = "SELECT * FROM rtuDeviceDB ORDER BY number"
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
 
