@@ -20,18 +20,56 @@ host, database, username, password = openDB()
 class SensorParameterListDB():
     def select():
         connection = sql.connect(host, database, username, password)
-        query = "SELECT sensorParameterListDB.id as id_param_value, sensorParameterListDB.sensor_id, sensorParameterListDB.name as name_param_list, sensorParameterListDB.parameter, sensorParameterListDB.value as value_param_list, sensorListDB.* FROM sensorParameterListDB join sensorListDB on sensorParameterListDB.sensor_id=sensorListDB.id"
+        query = """SELECT 
+                    sensorParameterListDB.id as id_param_value, 
+                    sensorParameterListDB.sensor_id, 
+                    sensorParameterListDB.name as name_param_list, 
+                    sensorParameterListDB.parameter, 
+                    sensorParameterListDB.value as value_param_list, 
+                    sensorListDB.*,
+                    sensorGroupDB.number
+                FROM 
+                    sensorParameterListDB 
+                JOIN 
+                    sensorListDB ON sensorParameterListDB.sensor_id = sensorListDB.id
+                JOIN
+                    sensorGroupDB ON sensorListDB.group_id = sensorGroupDB.id
+            """
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
 
     def selectByGroupFull(group_id):
         connection = sql.connect(host, database, username, password)
-        query = """SELECT sensorParameterListDB.id as id_param_value, sensorParameterListDB.sensor_id, sensorParameterListDB.name as name_param_list, 
-                sensorParameterListDB.parameter, sensorParameterListDB.value as value_param_list, sensorListDB.* FROM sensorParameterListDB join sensorListDB on 
-                sensorParameterListDB.sensor_id=sensorListDB.id where sensorListDB.group_id = %s"""
+        query = """
+            SELECT 
+                sensorParameterListDB.id as id_param_value, 
+                sensorParameterListDB.sensor_id, 
+                sensorParameterListDB.name as name_param_list, 
+                sensorParameterListDB.parameter, 
+                sensorParameterListDB.value as value_param_list, 
+                sensorListDB.*,
+                sensorGroupDB.number 
+            FROM 
+                sensorParameterListDB 
+            JOIN 
+                sensorListDB ON sensorParameterListDB.sensor_id = sensorListDB.id
+            JOIN
+                sensorGroupDB ON sensorListDB.group_id = sensorGroupDB.id
+            WHERE 
+                sensorListDB.group_id = %s
+        """
         value = (group_id,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
+
+    # def selectByGroupFull(group_id):
+    #     connection = sql.connect(host, database, username, password)
+    #     query = """SELECT sensorParameterListDB.id as id_param_value, sensorParameterListDB.sensor_id, sensorParameterListDB.name as name_param_list, 
+    #             sensorParameterListDB.parameter, sensorParameterListDB.value as value_param_list, sensorListDB.* FROM sensorParameterListDB join sensorListDB on 
+    #             sensorParameterListDB.sensor_id=sensorListDB.id where sensorListDB.group_id = %s"""
+    #     value = (group_id,)
+    #     fetchall = sql.selectWithInput(connection, query, value)
+    #     return fetchall
 
     def selectBySensorParameter(id,parameter):
         connection = sql.connect(host, database, username, password)

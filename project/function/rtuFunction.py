@@ -101,7 +101,7 @@ class RtuFunction:
                     sensor_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{rtu_device[item_device]['number']}"
                     
                     for item_sensor in range(len(sensor_list)):
-                        if sensor_custom_id = sensor_list[item_sensor]["sensor_id"]:
+                        if sensor_custom_id == sensor_list[item_sensor]["sensor_id"]:
                             SensorListDB.updateOidById(sensor_list[item_sensor]["id"], oid_number)
                             SensorListDB.updateCreatedAtById(sensor_list[item_sensor]["id"])
                             oid_number += 1
@@ -110,7 +110,7 @@ class RtuFunction:
                     actuator_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{rtu_device[item_device]['number']}"
                     
                     for item_sensor in range(len(actuator_list)):
-                        if actuator_custom_id = actuator_list[item_sensor]["actuator_custom_id"]:
+                        if actuator_custom_id == actuator_list[item_sensor]["actuator_custom_id"]:
                             ActuatorListDB.updateCreatedAtById(actuator_list[item_sensor]["id"])
 
         OidSensorFunction.createSensorOid()
