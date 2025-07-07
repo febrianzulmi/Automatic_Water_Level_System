@@ -164,7 +164,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Actuator Group</label>
                                     <div class="col-sm-4">
-                                        {% if actuatorList[itemActuator]['actuator_group_number'] == 1 %}
+                                        {% if actuatorList[itemActuator]['actuator_group_number'] == 1 or actuatorList[itemActuator]['number'] == 1 %}
                                             <input type="text" class="form-control"
                                                 value="{{ actuatorList[itemActuator]['actuator_group_name'] }}"
                                                 readonly>
@@ -185,7 +185,8 @@
                                     <label class="col-sm-3 col-form-label">Name</label>
                                     <div class="col-sm-8">
                                         <input type="text" class="form-control" name="name"
-                                            {% if actuatorList[itemActuator]['actuator_group_number'] == 1 %} readonly {%endif%}
+                                            {% if actuatorList[itemActuator]['actuator_group_number'] == 1 
+                                            or actuatorList[itemActuator]['number'] == 1 %} readonly {%endif%}
                                             value="{{ actuatorList[itemActuator]['name'] }}" required
                                             autocomplete="off">
                                     </div>
@@ -194,7 +195,8 @@
                                     <label class="col-sm-3 col-form-label">Custom ID</label>
                                     <div class="col-sm-8">
                                         <input type="text" class="form-control" name="custom_id"
-                                            {% if actuatorList[itemActuator]['actuator_group_number'] == 1 %} readonly {%endif%}
+                                            {% if actuatorList[itemActuator]['actuator_group_number'] == 1 
+                                            or actuatorList[itemActuator]['number'] == 1 %} readonly {%endif%}
                                             value="{{ actuatorList[itemActuator]['actuator_custom_id'] }}" required
                                             autocomplete="off">
                                     </div>
@@ -202,7 +204,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Type Actuator</label>
                                     <div class="col-sm-6">
-                                        {% if actuatorList[itemActuator]['actuator_group_number'] == 1 %}
+                                        {% if actuatorList[itemActuator]['actuator_group_number'] == 1 or actuatorList[itemActuator]['number'] == 1 %}
                                             <input type="text" class="form-control"
                                                 value="{{ 'True/False Value' if actuatorList[itemActuator]['type_actuator'] == 0 else 'Custom Value' }}"
                                                 readonly>
@@ -224,7 +226,8 @@
                                     Cancel
                                 </button>
                                 <button type="submit" class="btn btn-primary"
-                                    {% if actuatorList[itemActuator]['actuator_group_number'] == 1 %} disabled btn-secondary{% endif %}>
+                                    {% if actuatorList[itemActuator]['actuator_group_number'] == 1 
+                                    or actuatorList[itemActuator]['number'] == 1 %} disabled btn-secondary{% endif %}>
                                     Update
                                 </button>
                             </div>
