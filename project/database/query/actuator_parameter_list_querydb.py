@@ -27,15 +27,35 @@ class ActuatorParameterListDB():
         fetchall = sql.selectWithInput(connection, query, value)
         isExist = len(fetchall)
         return isExist
-    
+
     def selectFull():
         connection = sql.connect(host, database, username, password)
-        query = """SELECT actuatorParameterListDB.id, actuatorParameterListDB.actuator_list_id, actuatorParameterListDB.name as name_parameter, actuatorParameterListDB.parameter, 
-                actuatorParameterListDB.value, actuatorListDB.actuator_custom_id, actuatorListDB.name, actuatorListDB.server_value, actuatorListDB.last_server_value, 
-                actuatorListDB.last_server_sync_at, actuatorListDB.last_action, actuatorListDB.last_action_value, actuatorListDB.last_action_at FROM actuatorParameterListDB 
-                join actuatorListDB on actuatorParameterListDB.actuator_list_id=actuatorListDB.id"""
+        query = """
+            SELECT 
+                actuatorGroupDB.number,
+                actuatorParameterListDB.id, 
+                actuatorParameterListDB.actuator_list_id, 
+                actuatorParameterListDB.name as name_parameter, 
+                actuatorParameterListDB.parameter, 
+                actuatorParameterListDB.value, 
+                actuatorListDB.actuator_custom_id, 
+                actuatorListDB.name, 
+                actuatorListDB.server_value, 
+                actuatorListDB.last_server_value, 
+                actuatorListDB.last_server_sync_at, 
+                actuatorListDB.last_action, 
+                actuatorListDB.last_action_value, 
+                actuatorListDB.last_action_at 
+            FROM 
+                actuatorParameterListDB 
+            JOIN 
+                actuatorListDB ON actuatorParameterListDB.actuator_list_id = actuatorListDB.id
+            JOIN
+                actuatorGroupDB ON actuatorListDB.actuator_group_id = actuatorGroupDB.id
+        """
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
+    
 
     def selectById(id):
         connection = sql.connect(host, database, username, password)
@@ -64,16 +84,47 @@ class ActuatorParameterListDB():
         value = (number,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
-    
+
     def selectByActuatorGroupFull(id):
         connection = sql.connect(host, database, username, password)
-        query = """SELECT actuatorParameterListDB.id, actuatorParameterListDB.actuator_list_id, actuatorParameterListDB.name as name_parameter, actuatorParameterListDB.parameter, 
-                actuatorParameterListDB.value, actuatorListDB.actuator_custom_id, actuatorListDB.name, actuatorListDB.server_value, actuatorListDB.last_server_value, 
-                actuatorListDB.last_server_sync_at, actuatorListDB.last_action, actuatorListDB.last_action_value, actuatorListDB.last_action_at FROM actuatorParameterListDB 
-                join actuatorListDB on actuatorParameterListDB.actuator_list_id=actuatorListDB.id where actuatorListDB.actuator_group_id=%s"""
+        query = """
+            SELECT 
+                actuatorGroupDB.number, 
+                actuatorParameterListDB.id, 
+                actuatorParameterListDB.actuator_list_id, 
+                actuatorParameterListDB.name as name_parameter, 
+                actuatorParameterListDB.parameter, 
+                actuatorParameterListDB.value, 
+                actuatorListDB.actuator_custom_id, 
+                actuatorListDB.name, 
+                actuatorListDB.server_value, 
+                actuatorListDB.last_server_value, 
+                actuatorListDB.last_server_sync_at, 
+                actuatorListDB.last_action, 
+                actuatorListDB.last_action_value, 
+                actuatorListDB.last_action_at 
+            FROM 
+                actuatorParameterListDB 
+            JOIN 
+                actuatorListDB ON actuatorParameterListDB.actuator_list_id = actuatorListDB.id
+            JOIN 
+                actuatorGroupDB ON actuatorListDB.actuator_group_id = actuatorGroupDB.id
+            WHERE 
+                actuatorListDB.actuator_group_id = %s
+        """
         value = (id,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
+    
+    # def selectByActuatorGroupFull(id):
+    #     connection = sql.connect(host, database, username, password)
+    #     query = """SELECT actuatorParameterListDB.id, actuatorParameterListDB.actuator_list_id, actuatorParameterListDB.name as name_parameter, actuatorParameterListDB.parameter, 
+    #             actuatorParameterListDB.value, actuatorListDB.actuator_custom_id, actuatorListDB.name, actuatorListDB.server_value, actuatorListDB.last_server_value, 
+    #             actuatorListDB.last_server_sync_at, actuatorListDB.last_action, actuatorListDB.last_action_value, actuatorListDB.last_action_at FROM actuatorParameterListDB 
+    #             join actuatorListDB on actuatorParameterListDB.actuator_list_id=actuatorListDB.id where actuatorListDB.actuator_group_id=%s"""
+    #     value = (id,)
+    #     fetchall = sql.selectWithInput(connection, query, value)
+    #     return fetchall
 
     def insert(id,actuator_list_id,name,param,value):
         connection = sql.connect(host, database, username, password)
