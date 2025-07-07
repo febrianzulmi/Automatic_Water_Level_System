@@ -24,13 +24,15 @@ class ActuatorListDB():
         query = "SELECT * FROM actuatorListDB ORDER by created_at ASC"
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
-    
+
+
     def selectFull():
         connection = sql.connect(host, database, username, password)
         query = """SELECT actuatorGroupDB.name as actuator_group_name, actuatorGroupDB.number as actuator_group_number, actuatorListDB.* FROM actuatorListDB join 
                 actuatorGroupDB on actuatorListDB.actuator_group_id=actuatorGroupDB.id ORDER by actuatorGroupDB.number ASC, actuatorListDB.created_at ASC"""
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
+
 
     def selectByActId(actuator_custom_id):
         connection = sql.connect(host, database, username, password)
@@ -39,12 +41,14 @@ class ActuatorListDB():
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
 
+
     def selectById(id):
         connection = sql.connect(host, database, username, password)
         query = "SELECT * FROM actuatorListDB where id = %s"
         value = (id,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
+
     
     def selectByIdFull(id):
         connection = sql.connect(host, database, username, password)
@@ -53,6 +57,7 @@ class ActuatorListDB():
         value = (id,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
+
     
     def selectByActuatorGroupFull(id):
         connection = sql.connect(host, database, username, password)
@@ -61,6 +66,7 @@ class ActuatorListDB():
         value = (id,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
+
     
     def selectByActuatorGroupNumberFull(number):
         connection = sql.connect(host, database, username, password)
@@ -70,12 +76,14 @@ class ActuatorListDB():
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
 
+
     def insert(id, actuator_group_id, name, actuator_custom_id, type_actuator):
         connection = sql.connect(host, database, username, password)
         query = "INSERT INTO actuatorListDB (id, actuator_group_id, name, actuator_custom_id, type_actuator) VALUES (%s, %s, %s, %s, %s)"
         value = (id, actuator_group_id, name, actuator_custom_id, type_actuator)
         action = sql.execute(connection, query, value)
         return action
+
 
     def update(actuator_group_id, name, actuator_custom_id, type_actuator, id):
         connection = sql.connect(host, database, username, password)
@@ -84,12 +92,14 @@ class ActuatorListDB():
         action = sql.execute(connection, query, value)
         return action
 
+
     def updateParam(name, value, timestamp, schedule, id):
         connection = sql.connect(host, database, username, password)
         query = "UPDATE actuatorListDB set name=%s, server_value=%s, server_sync_at=%s, schedule=%s WHERE id=%s"
         value = (name, value, timestamp, schedule, id)
         action = sql.execute(connection, query, value)
         return action
+
 
     def updateStatus(status,times,id):
         connection = sql.connect(host, database, username, password)
@@ -98,6 +108,7 @@ class ActuatorListDB():
         action = sql.execute(connection, query, value)
         return action
 
+
     def updateAction(value,action,times,id):
         connection = sql.connect(host, database, username, password)
         query = "UPDATE actuatorListDB set last_action_value=%s, last_action=%s, last_action_at=%s WHERE id=%s"
@@ -105,12 +116,22 @@ class ActuatorListDB():
         action = sql.execute(connection, query, value)
         return action
 
+
     def updateLastServer(value,times,id):
         connection = sql.connect(host, database, username, password)
         query = "UPDATE actuatorListDB set last_server_value=%s, last_server_sync_at=%s WHERE id=%s"
         value = (value,times,id)
         action = sql.execute(connection, query, value)
         return action    
+
+
+    def updateCreatedAtById(id):
+        connection = sql.connect(host, database, username, password)
+        query = "UPDATE actuatorListDB set created_at=NOW() WHERE id=%s"
+        value = (value,action,times,id)
+        action = sql.execute(connection, query, value)
+        return action
+
 
     def deleteOne(id_data):
         connection = sql.connect(host, database, username, password)

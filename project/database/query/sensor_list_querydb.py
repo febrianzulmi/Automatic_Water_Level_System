@@ -431,6 +431,21 @@ class SensorListDB():
         action = sql.execute(connection, query, value)
         return action
 
+    
+    def updateOidById(id, oid):
+        connection = sql.connect(host, database, username, password)
+        query = "UPDATE sensorListDB SET oid = %s WHERE id = %s"
+        value = (oid, id)
+        action = sql.execute(connection, query, value)
+        return action
+    
+    def updateCreatedAtById(id):
+        connection = sql.connect(host, database, username, password)
+        query = "UPDATE sensorListDB SET created_at = NOW() WHERE id = %s"
+        value = (id)
+        action = sql.execute(connection, query, value)
+        return action
+
 
     def deleteOne(id_data):
         connection = sql.connect(host, database, username, password)

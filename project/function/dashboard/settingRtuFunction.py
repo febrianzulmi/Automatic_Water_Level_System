@@ -30,7 +30,7 @@ class SettingRtu():
                     status = RtuDeviceDB.insert(device_id, number, name, slave_id, state)
 
                     if str(status) == '1':
-                        RtuFunction.createSensorandActuatorList()
+                        # RtuFunction.createSensorandActuatorList()
                         result = {"state": status, "message": "RTU Device Added successfully!"}
                         return json.dumps(result)
                     
@@ -62,7 +62,7 @@ class SettingRtu():
                     status = RtuDeviceDB.update(device_id, number, name, slave_id, state)
                     
                     if str(status) == '1':
-                        RtuFunction.createSensorandActuatorList()
+                        # RtuFunction.createSensorandActuatorList()
                         result = {"state": status, "message": "RTU Device Updated successfully!"}
                         return json.dumps(result)
                     
@@ -78,7 +78,7 @@ class SettingRtu():
             try:
                 status = RtuDeviceDB.deleteById(id)
                 if str(status) == '1':
-                        RtuFunction.createSensorandActuatorList()
+                        # RtuFunction.createSensorandActuatorList()
                         result = {"state": status, "message": f"RTU Device {name} has been deleted!"}
                         return json.dumps(result)
 
@@ -118,7 +118,7 @@ class SettingRtu():
                                                     type_parameter, type_control, unit, monitoring, log, state)
                     
                     if str(status) == '1':
-                        RtuFunction.createSensorandActuatorList()
+                        # RtuFunction.createSensorandActuatorList()
                         result = {"state": status, "message": "RTU Parameter Added successfully!"}
                         return json.dumps(result)
                     
@@ -154,7 +154,7 @@ class SettingRtu():
                                                         type_parameter, type_control, unit, monitoring, log, state)
 
                     if str(status) == '1':
-                        RtuFunction.createSensorandActuatorList()
+                        # RtuFunction.createSensorandActuatorList()
                         result = {"state": status, "message": "RTU Parameter Updated successfully!"}
                         return json.dumps(result)
                     
@@ -171,7 +171,7 @@ class SettingRtu():
                 status = RtuParameterDB.deleteById(id)
                 
                 if str(status) == '1':
-                    RtuFunction.createSensorandActuatorList()
+                    # RtuFunction.createSensorandActuatorList()
                     result = {"state": status, "message": f"RTU Parameter {name} has been deleted!"}
                     return json.dumps(result)
 
