@@ -216,7 +216,7 @@ class SensorListDB():
 
     def selectByGroup(id_group):
         connection = sql.connect(host, database, username, password)
-        query = "SELECT id, sensor_id, name, oid_tipe FROM sensorListDB where group_id=%s ORDER BY oid ASC"
+        query = "SELECT id, sensor_id, name, oid_tipe, oid FROM sensorListDB where group_id=%s ORDER BY oid ASC"
         value=(id_group,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
@@ -438,13 +438,6 @@ class SensorListDB():
         value = (oid, id)
         action = sql.execute(connection, query, value)
         return action
-    
-    def updateCreatedAtById(id):
-        connection = sql.connect(host, database, username, password)
-        query = "UPDATE sensorListDB SET created_at = NOW() WHERE id = %s"
-        value = (id)
-        action = sql.execute(connection, query, value)
-        return action
 
 
     def deleteOne(id_data):
@@ -490,5 +483,13 @@ class SensorListDB():
         connection = sql.connect(host, database, username, password)
         query = "DELETE FROM sensorListDB WHERE group_id=%s"
         value = (group_id,)
+        action = sql.execute(connection, query, value)
+        return action
+
+
+    def deleteByName(name):
+        connection = sql.connect(host, database, username, password)
+        query = "DELETE FROM sensorListDB WHERE name=%s"
+        value = (name,)
         action = sql.execute(connection, query, value)
         return action

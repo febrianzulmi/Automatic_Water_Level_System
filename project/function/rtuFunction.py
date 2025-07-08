@@ -42,21 +42,6 @@ class RtuFunction:
                                                 id_sensor, "Length", "length", rtu_parameter[item_parameter]["length"])
                     SensorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("sensor", "parameter-list"), 
                                                 id_sensor, "Divider", "divider", rtu_parameter[item_parameter]["divider"])
-                
-                if rtu_parameter[item_parameter]["type"] == 1 or rtu_parameter[item_parameter]["type"] == 2:
-                    id_actuator = generalFunction.GenerateId.generateIdNearon("actuator", "actuator-list")
-                    actuator_name = f"{rtu_parameter[item_parameter]['name']} {rtu_device[item_device]['name']}"
-                    actuator_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{rtu_device[item_device]['number']}"
-                    type_actuator = int(rtu_parameter[item_parameter]['type_control']) - 1
-
-                    ActuatorListDB.insert(id_actuator, actuator_group_id, actuator_name, actuator_custom_id, type_actuator)
-
-                    ActuatorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("actuator", "actuator-parameter-list"),
-                                                    id_actuator, "Address", "address", rtu_parameter[item_parameter]["address"])
-                    ActuatorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("actuator", "actuator-parameter-list"),
-                                                    id_actuator, "Length", "length", rtu_parameter[item_parameter]["length"])
-                    ActuatorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("actuator", "actuator-parameter-list"),
-                                                    id_actuator, "Divider", "divider", rtu_parameter[item_parameter]["divider"])
         
         OidSensorFunction.createSensorOid()
 
@@ -74,8 +59,9 @@ class RtuFunction:
                     actuator_name = f"{rtu_parameter[item_parameter]['name']} {rtu_device[item_device]['name']}"
                     actuator_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{rtu_device[item_device]['number']}"
                     type_actuator = int(rtu_parameter[item_parameter]['type_control']) - 1
+                    state_actuator = '1' if (rtu_device[item_device]['state'] == '1' and rtu_parameter[item_parameter]['state'] == '1') else '0'
 
-                    ActuatorListDB.insert(id_actuator, actuator_group_id, actuator_name, actuator_custom_id, type_actuator)
+                    ActuatorListDB.insert(id_actuator, actuator_group_id, actuator_name, actuator_custom_id, type_actuator, state_actuator)
 
                     ActuatorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("actuator", "actuator-parameter-list"),
                                                     id_actuator, "Address", "address", rtu_parameter[item_parameter]["address"])
@@ -90,11 +76,11 @@ class RtuFunction:
         rtu_parameter = RtuParameterDB.select()
         sensor_group_id = SensorGroupDB.selectByName("RTU")[0]["id"]
         actuator_group_id = ActuatorGroupDB.selectByName("RTU")[0]["id"]
-        sensor_list = SensorListDB.selectByGroup(sensor_group_id)
-        actuator_list = ActuatorListDB.seletByGroup()
+        sensor_list = SensorListDB.selectByGroupFull(sensor_group_id)
+        actuator_list = ActuatorListDB.selectByActuatorGroupFull(actuator_group_id)
 
         oid_number = 1
-
+            
         for item_device in range(len(rtu_device)):
             for item_parameter in range(len(rtu_parameter)):
                 if rtu_parameter[item_parameter]["type"] == 0 or rtu_parameter[item_parameter]["type"] == 2:
@@ -103,9 +89,8 @@ class RtuFunction:
                     for item_sensor in range(len(sensor_list)):
                         if sensor_custom_id == sensor_list[item_sensor]["sensor_id"]:
                             SensorListDB.updateOidById(sensor_list[item_sensor]["id"], oid_number)
-                            SensorListDB.updateCreatedAtById(sensor_list[item_sensor]["id"])
                             oid_number += 1
-                
+
                 if rtu_parameter[item_parameter]["type"] == 1 or rtu_parameter[item_parameter]["type"] == 2:
                     actuator_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{rtu_device[item_device]['number']}"
                     

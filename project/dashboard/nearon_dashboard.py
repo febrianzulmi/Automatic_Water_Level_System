@@ -551,7 +551,6 @@ def settingSensorPage():
 
    if request.method == 'POST':
       tab = request.form.get('tab')
-      print(F"Tab : {tab}")
 
       if tab == 'sensor-management-group' :
          action = request.form.get('action')
@@ -803,7 +802,8 @@ def settingActuatorPage():
             unit = request.form.get('unit')
             last_number = request.form.get('last_number')
             service_id = request.form.get('service_id')
-            result = dashboardFunction.SettingActuator.Group.update(number, name, interval, unit, id, last_number, service_id)
+            state = request.form.get(f'update_state{id}')
+            result = dashboardFunction.SettingActuator.Group.update(number, name, interval, unit, id, last_number, service_id, state)
             return redirect(url_for('settingActuatorPage', tab=tab, result=result))
          elif action == 'groupActuatorDelete':
             id = request.form.get('id')
@@ -828,7 +828,8 @@ def settingActuatorPage():
             name = request.form.get('name')
             type_actuator = request.form.get('type_actuator')
             last_actuator_custom_id = request.form.get('last_custom_id')
-            result = dashboardFunction.SettingActuator.List.update(actuator_group_id, name, actuator_custom_id, type_actuator, id, last_actuator_custom_id)
+            state = request.form.get(f'update_state{id}')
+            result = dashboardFunction.SettingActuator.List.update(actuator_group_id, name, actuator_custom_id, type_actuator, id, last_actuator_custom_id, state)
             return redirect(url_for('settingActuatorPage', tab=tab, result=result))
          elif action == 'listActuatorDelete':
             id = request.form.get('id')

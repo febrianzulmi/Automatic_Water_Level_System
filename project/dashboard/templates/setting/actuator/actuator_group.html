@@ -90,6 +90,9 @@
                 <th>
                     Interval
                 </th>
+                <th>
+                    State
+                </th>
                 {% if sessionData['level'] == 1 %}
                 <th width="10%">
                     Action
@@ -112,6 +115,11 @@
                     Hours
                     {% endif %}
                 </td>
+                {% if actuatorData[itemActuator]["state"] == "1" %}
+                    <td style="font-weight: bold; color: green;">{{ "Enable" }}</td>
+                {% elif actuatorData[itemActuator]["state"] == "0" %}
+                    <td style="font-weight: bold; color: red;">{{ "Disable" }}</td>
+                {% endif %}
                 {% if sessionData['level'] == 1 %}
                 <td>
                     <a href="" data-toggle="modal"
@@ -183,6 +191,18 @@
                                                 Hours
                                             </option>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">State</label>
+                                    <div class="col-sm-4">
+                                        <input type="hidden" id="hidden_state{{ actuatorData[itemActuator]['id'] }}" 
+                                        name="update_state{{ actuatorData[itemActuator]['id'] }}" 
+                                        value="{% if actuatorData[itemActuator]['state'] == '1' %}1{% else %}0{% endif %}">
+                                        <input type="hidden" name="index_state" value="{{ actuatorData[itemActuator]['id'] }}">
+                                        <input type="checkbox" id="checkbox{{ actuatorData[itemActuator]['id'] }}" value="1"
+                                        {% if actuatorData[itemActuator]['state']|string == '1' %}checked{% endif %}
+                                        data-bootstrap-switch data-off-color="danger" data-on-color="success">
                                     </div>
                                 </div>
                             </div>

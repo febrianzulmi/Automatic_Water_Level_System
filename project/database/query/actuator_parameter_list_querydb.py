@@ -52,6 +52,8 @@ class ActuatorParameterListDB():
                 actuatorListDB ON actuatorParameterListDB.actuator_list_id = actuatorListDB.id
             JOIN
                 actuatorGroupDB ON actuatorListDB.actuator_group_id = actuatorGroupDB.id
+            ORDER BY
+                actuatorParameterListDB.created_at ASC
         """
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
@@ -69,7 +71,8 @@ class ActuatorParameterListDB():
         query = """SELECT actuatorParameterListDB.id, actuatorParameterListDB.actuator_list_id, actuatorParameterListDB.name as name_parameter, actuatorParameterListDB.parameter, 
                 actuatorParameterListDB.value, actuatorListDB.actuator_custom_id, actuatorListDB.name, actuatorListDB.server_value, actuatorListDB.last_server_value, 
                 actuatorListDB.last_server_sync_at, actuatorListDB.last_action, actuatorListDB.last_action_value, actuatorListDB.last_action_at FROM actuatorParameterListDB 
-                join actuatorListDB on actuatorParameterListDB.actuator_list_id=actuatorListDB.id where actuatorParameterListDB.actuator_list_id=%s"""
+                join actuatorListDB on actuatorParameterListDB.actuator_list_id=actuatorListDB.id where actuatorParameterListDB.actuator_list_id=%s ORDER BY
+                actuatorParameterListDB.created_at ASC"""
         value = (id,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
@@ -80,7 +83,8 @@ class ActuatorParameterListDB():
                 actuatorParameterListDB.value, actuatorListDB.actuator_custom_id, actuatorListDB.name, actuatorListDB.server_value, actuatorListDB.last_server_value, 
                 actuatorListDB.last_server_sync_at, actuatorListDB.last_action, actuatorListDB.last_action_value, actuatorListDB.last_action_at,  actuatorGroupDB.name as group_name, 
                 actuatorGroupDB.number as group_number FROM actuatorParameterListDB join actuatorListDB on actuatorParameterListDB.actuator_list_id=actuatorListDB.id 
-                join actuatorGroupDB on actuatorGroupDB.id=actuatorListDB.actuator_group_id where actuatorGroupDB.number=%s"""
+                join actuatorGroupDB on actuatorGroupDB.id=actuatorListDB.actuator_group_id where actuatorGroupDB.number=%s ORDER BY
+                actuatorParameterListDB.created_at ASC""" 
         value = (number,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
@@ -111,6 +115,9 @@ class ActuatorParameterListDB():
                 actuatorGroupDB ON actuatorListDB.actuator_group_id = actuatorGroupDB.id
             WHERE 
                 actuatorListDB.actuator_group_id = %s
+            ORDER BY
+                actuatorParameterListDB.created_at ASC
+            
         """
         value = (id,)
         fetchall = sql.selectWithInput(connection, query, value)
@@ -125,6 +132,13 @@ class ActuatorParameterListDB():
     #     value = (id,)
     #     fetchall = sql.selectWithInput(connection, query, value)
     #     return fetchall
+
+    def selectByActuatorParameter(id,parameter):
+        connection = sql.connect(host, database, username, password)
+        query = "SELECT * FROM actuatorParameterListDB where actuator_list_id = %s and parameter=%s"
+        value = (id,parameter)
+        fetchall = sql.selectWithInput(connection, query, value)
+        return fetchall
 
     def insert(id,actuator_list_id,name,param,value):
         connection = sql.connect(host, database, username, password)
@@ -153,4 +167,3 @@ class ActuatorParameterListDB():
         value = (id,)
         action = sql.execute(connection, query, value)
         return action
-    

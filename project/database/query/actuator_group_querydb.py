@@ -46,17 +46,17 @@ class ActuatorGroupDB():
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
 
-    def insert(id, number, name, interval, unit):
+    def insert(id, number, name, interval, unit, state):
         connection = sql.connect(host, database, username, password)
-        query = "INSERT INTO actuatorGroupDB (id, number, name, intervals, unit) VALUES (%s, %s, %s, %s, %s)"
-        value = (id, number, name, interval, unit)
+        query = "INSERT INTO actuatorGroupDB (id, number, name, intervals, unit, state) VALUES (%s, %s, %s, %s, %s, %s)"
+        value = (id, number, name, interval, unit, state)
         action = sql.execute(connection, query, value)
         return action
 
-    def update(number, name, interval, unit, id):
+    def update(number, name, interval, unit, state, id):
         connection = sql.connect(host, database, username, password)
-        query = "UPDATE actuatorGroupDB set number = %s, name = %s, intervals=%s, unit=%s WHERE id=%s"
-        value = (number, name, interval, unit, id)
+        query = "UPDATE actuatorGroupDB set number = %s, name = %s, intervals=%s, unit=%s, state=%s WHERE id=%s"
+        value = (number, name, interval, unit, state, id)
         action = sql.execute(connection, query, value)
         return action
 

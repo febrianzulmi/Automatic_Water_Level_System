@@ -2,7 +2,8 @@ import json
 import sys
 
 sys.path.append("/home/connex/project/database")
-from query_project_db import RtuParameterDB, RtuDeviceDB
+from query_project_db import (RtuParameterDB, RtuDeviceDB, SensorListDB, SensorGroupDB, SensorParameterListDB, 
+                              ActuatorListDB, ActuatorGroupDB, ActuatorParameterListDB)
 sys.path.append("/home/connex/project/function")
 from generalFunction import generalFunction
 from rtuFunction import RtuFunction
@@ -30,10 +31,63 @@ class SettingRtu():
                     status = RtuDeviceDB.insert(device_id, number, name, slave_id, state)
 
                     if str(status) == '1':
-                        # RtuFunction.createSensorandActuatorList()
+                        ####################################### Sync Sensor and Actuator #######################################
+                        rtu_parameter = RtuParameterDB.select()
+                        sensor_group_id = SensorGroupDB.selectByName("RTU")[0]["id"]
+                        actuator_group_id = ActuatorGroupDB.selectByName("RTU")[0]["id"]
+                        oid_number = len(SensorListDB.select()) + 1
+                        for item_parameter in range(len(rtu_parameter)):
+                            if int(rtu_parameter[item_parameter]['type']) == 0 or int(rtu_parameter[item_parameter]['type']) == 2:
+                                id_sensor = generalFunction.GenerateId.generateIdNearon("sensor", "sensor-list")
+                                sensor_name = f"{rtu_parameter[item_parameter]['name']} {name}"
+                                sensor_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{number}"
+                                state_sensor = '1' if (rtu_parameter[item_parameter]['state'] == '1' and state == '1') else '0'
+                                datatype = rtu_parameter[item_parameter]['datatype']
+                                monitoring = rtu_parameter[item_parameter]['monitoring']
+                                log = rtu_parameter[item_parameter]['log']
+                                unit = rtu_parameter[item_parameter]['unit']
+                                address = rtu_parameter[item_parameter]['address']
+                                length = rtu_parameter[item_parameter]['length']
+                                divider = rtu_parameter[item_parameter]['divider']
+                                
+                                SensorListDB.insert(id_sensor, sensor_custom_id, oid_number, sensor_group_id, sensor_name, "0", "0", 
+                                                    datatype, monitoring, log, state_sensor)
+                                SensorListDB.updateUnitById(id_sensor, unit)
+                                oid_number += 1
+
+                                SensorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("sensor", "parameter-list"), 
+                                                            id_sensor, "Address", "address", address)
+                                SensorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("sensor", "parameter-list"), 
+                                                            id_sensor, "Length", "length", length)
+                                SensorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("sensor", "parameter-list"), 
+                                                            id_sensor, "Divider", "divider", divider)
+
+
+                            if int(rtu_parameter[item_parameter]['type']) == 1 or int(rtu_parameter[item_parameter]['type']) == 2:
+                                id_actuator = generalFunction.GenerateId.generateIdNearon("actuator", "actuator-list")
+                                actuator_name = f"{rtu_parameter[item_parameter]['name']} {name}"
+                                actuator_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{number}"
+                                type_actuator = int(rtu_parameter[item_parameter]['type_control']) - 1
+                                state_actuator = '1' if (rtu_parameter[item_parameter]['state'] == '1' and state == '1') else '0'
+                                address = rtu_parameter[item_parameter]['address']
+                                length = rtu_parameter[item_parameter]['length']
+                                divider = rtu_parameter[item_parameter]['divider']
+
+                                ActuatorListDB.insert(id_actuator, actuator_group_id, actuator_name, actuator_custom_id, type_actuator, state_actuator)
+
+                                ActuatorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("actuator", "actuator-parameter-list"),
+                                                                id_actuator, "Address", "address", address)
+                                ActuatorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("actuator", "actuator-parameter-list"),
+                                                                id_actuator, "Length", "length", length)
+                                ActuatorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("actuator", "actuator-parameter-list"),
+                                                                id_actuator, "Divider", "divider", divider)
+
+                        RtuFunction.rearrangeSensorandActuatorList()
+                        ####################################### Sync Sensor and Actuator #######################################
+                        
                         result = {"state": status, "message": "RTU Device Added successfully!"}
                         return json.dumps(result)
-                    
+
                     else:
                         result = {"state": status, "message": f"Failed to Add RTU Device {name}. There was an issue - failed add database"}
                         return json.dumps(result)
@@ -58,11 +112,70 @@ class SettingRtu():
                 
                 else:
                     if not state: state = "0"
-                    
+
                     status = RtuDeviceDB.update(device_id, number, name, slave_id, state)
-                    
+
                     if str(status) == '1':
-                        # RtuFunction.createSensorandActuatorList()
+                        ####################################### Sync Sensor and Actuator #######################################
+                        rtu_parameter = RtuParameterDB.select()
+                        sensor_group_id = SensorGroupDB.selectByName("RTU")[0]["id"]
+                        actuator_group_id = ActuatorGroupDB.selectByName("RTU")[0]["id"]
+                        sensor_list = SensorListDB.selectByGroupFull(sensor_group_id)
+                        actuator_list = ActuatorListDB.selectByActuatorGroupFull(actuator_group_id)
+                        oid_number = len(SensorListDB.select()) + 1
+
+                        for item_parameter in range(len(rtu_parameter)):
+                            if int(rtu_parameter[item_parameter]['type']) == 0 or int(rtu_parameter[item_parameter]['type']) == 2:
+                                sensor_name = f"{rtu_parameter[item_parameter]['name']} {name}"
+                                sensor_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{number}"
+                                last_sensor_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{last_number}"
+                                state_sensor = '1' if (rtu_parameter[item_parameter]['state'] == '1' and state == '1') else '0'
+                                datatype = rtu_parameter[item_parameter]['datatype']
+                                monitoring = rtu_parameter[item_parameter]['monitoring']
+                                log = rtu_parameter[item_parameter]['log']
+                                unit = rtu_parameter[item_parameter]['unit']
+                                address = rtu_parameter[item_parameter]['address']
+                                length = rtu_parameter[item_parameter]['length']
+                                divider = rtu_parameter[item_parameter]['divider']
+
+                                for item_sensor in range(len(sensor_list)):
+                                    if sensor_custom_id == sensor_list[item_sensor]["sensor_id"] or last_sensor_custom_id == sensor_list[item_sensor]["sensor_id"]:                                  
+                                        SensorListDB.update(sensor_custom_id, sensor_list[item_sensor]["oid"], sensor_group_id, 
+                                                            sensor_name, sensor_list[item_sensor]["calibrate"], sensor_list[item_sensor]["formula"],
+                                                            datatype, monitoring, log, sensor_list[item_sensor]["alarm"], sensor_list[item_sensor]["min"], 
+                                                            sensor_list[item_sensor]["max"], sensor_list[item_sensor]["alarm_type"], state_sensor, sensor_list[item_sensor]["id"])
+                                        SensorListDB.updateUnitById(sensor_list[item_sensor]["id"], unit)
+
+                                        SensorParameterListDB.update(sensor_list[item_sensor]["id"], "Address", "address", address,
+                                                                     SensorParameterListDB.selectBySensorParameter(sensor_list[item_sensor]["id"], "address")[0]["id"])
+                                        SensorParameterListDB.update(sensor_list[item_sensor]["id"], "Length", "length", length,
+                                                                     SensorParameterListDB.selectBySensorParameter(sensor_list[item_sensor]["id"], "length")[0]["id"])
+                                        SensorParameterListDB.update(sensor_list[item_sensor]["id"], "Divider", "divider", divider,
+                                                                     SensorParameterListDB.selectBySensorParameter(sensor_list[item_sensor]["id"], "divider")[0]["id"])
+                                        
+                            if int(rtu_parameter[item_parameter]['type']) == 1 or int(rtu_parameter[item_parameter]['type']) == 2:
+                                actuator_name = f"{rtu_parameter[item_parameter]['name']} {name}"
+                                actuator_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{number}"
+                                last_actuator_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{last_number}"
+                                type_actuator = int(rtu_parameter[item_parameter]['type_control']) - 1
+                                state_actuator = '1' if (rtu_parameter[item_parameter]['state'] == '1' and state == '1') else '0'
+                                address = rtu_parameter[item_parameter]['address']
+                                length = rtu_parameter[item_parameter]['length']
+                                divider = rtu_parameter[item_parameter]['divider']
+
+                                for item_sensor in range(len(sensor_list)):
+                                    if actuator_custom_id == actuator_list[item_sensor]["actuator_custom_id"] or last_actuator_custom_id == actuator_list[item_sensor]["actuator_custom_id"]:
+                                        ActuatorListDB.update(actuator_group_id, actuator_name, actuator_custom_id, type_actuator, state_actuator, actuator_list[item_sensor]["id"])
+
+                                        ActuatorParameterListDB.update(actuator_list[item_sensor]["id"], "Address", "address", address,
+                                                                       ActuatorParameterListDB.selectByActuatorParameter(actuator_list[item_sensor]["id"], "address")[0]["id"])
+                                        ActuatorParameterListDB.update(actuator_list[item_sensor]["id"], "Length", "length", length,
+                                                                       ActuatorParameterListDB.selectByActuatorParameter(actuator_list[item_sensor]["id"], "length")[0]["id"])
+                                        ActuatorParameterListDB.update(actuator_list[item_sensor]["id"], "Divider", "divider", divider,
+                                                                       ActuatorParameterListDB.selectByActuatorParameter(actuator_list[item_sensor]["id"], "divider")[0]["id"])
+                            
+                        RtuFunction.rearrangeSensorandActuatorList()
+                        ####################################### Sync Sensor and Actuator #######################################
                         result = {"state": status, "message": "RTU Device Updated successfully!"}
                         return json.dumps(result)
                     
@@ -78,7 +191,16 @@ class SettingRtu():
             try:
                 status = RtuDeviceDB.deleteById(id)
                 if str(status) == '1':
-                        # RtuFunction.createSensorandActuatorList()
+                        ####################################### Sync Sensor and Actuator #######################################
+                        rtu_parameter = RtuParameterDB.select()
+                        for item_parameter in range(len(rtu_parameter)):
+                            fullname = f"{rtu_parameter[item_parameter]['name']} {name}"
+                            SensorListDB.deleteByName(fullname)
+                            ActuatorListDB.deleteByName(fullname)
+                        
+                        RtuFunction.rearrangeSensorandActuatorList()
+                        ####################################### Sync Sensor and Actuator #######################################
+
                         result = {"state": status, "message": f"RTU Device {name} has been deleted!"}
                         return json.dumps(result)
 
@@ -118,7 +240,50 @@ class SettingRtu():
                                                     type_parameter, type_control, unit, monitoring, log, state)
                     
                     if str(status) == '1':
-                        # RtuFunction.createSensorandActuatorList()
+                        ####################################### Sync Sensor and Actuator #######################################
+                        rtu_device = RtuDeviceDB.select()
+                        sensor_group_id = SensorGroupDB.selectByName("RTU")[0]["id"]
+                        actuator_group_id = ActuatorGroupDB.selectByName("RTU")[0]["id"]
+                        oid_number = len(SensorListDB.select()) + 1
+                        for item_device in range(len(rtu_device)):
+                            if int(type_parameter) == 0 or int(type_parameter) == 2:
+                                id_sensor = generalFunction.GenerateId.generateIdNearon("sensor", "sensor-list")
+                                sensor_name = f"{name} {rtu_device[item_device]['name']}"
+                                sensor_custom_id = f"{custom_id}Rtu{rtu_device[item_device]['number']}"
+                                state_sensor = '1' if (rtu_device[item_device]['state'] == '1' and state == '1') else '0'
+                                
+                                SensorListDB.insert(id_sensor, sensor_custom_id, oid_number, sensor_group_id, sensor_name, "0", "0", 
+                                                    datatype, monitoring, log, state_sensor)
+                                SensorListDB.updateUnitById(id_sensor, unit)
+                                oid_number += 1
+
+                                SensorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("sensor", "parameter-list"), 
+                                                            id_sensor, "Address", "address", address)
+                                SensorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("sensor", "parameter-list"), 
+                                                            id_sensor, "Length", "length", length)
+                                SensorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("sensor", "parameter-list"), 
+                                                            id_sensor, "Divider", "divider", divider)
+                            
+
+                            if int(type_parameter) == 1 or int(type_parameter) == 2:
+                                id_actuator = generalFunction.GenerateId.generateIdNearon("actuator", "actuator-list")
+                                actuator_name = f"{name} {rtu_device[item_device]['name']}"
+                                actuator_custom_id = f"{custom_id}Rtu{rtu_device[item_device]['number']}"
+                                type_actuator = int(type_control) - 1
+                                state_actuator = '1' if (rtu_device[item_device]['state'] == '1' and state == '1') else '0'
+
+                                ActuatorListDB.insert(id_actuator, actuator_group_id, actuator_name, actuator_custom_id, type_actuator, state_actuator)
+
+                                ActuatorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("actuator", "actuator-parameter-list"),
+                                                                id_actuator, "Address", "address", address)
+                                ActuatorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("actuator", "actuator-parameter-list"),
+                                                                id_actuator, "Length", "length", length)
+                                ActuatorParameterListDB.insert(generalFunction.GenerateId.generateIdNearon("actuator", "actuator-parameter-list"),
+                                                                id_actuator, "Divider", "divider", divider)
+                        
+                        RtuFunction.rearrangeSensorandActuatorList()
+                        ####################################### Sync Sensor and Actuator #######################################
+
                         result = {"state": status, "message": "RTU Parameter Added successfully!"}
                         return json.dumps(result)
                     
@@ -154,7 +319,57 @@ class SettingRtu():
                                                         type_parameter, type_control, unit, monitoring, log, state)
 
                     if str(status) == '1':
-                        # RtuFunction.createSensorandActuatorList()
+                        ####################################### Sync Sensor and Actuator #######################################
+                        rtu_device = RtuDeviceDB.select()
+                        sensor_group_id = SensorGroupDB.selectByName("RTU")[0]["id"]
+                        actuator_group_id = ActuatorGroupDB.selectByName("RTU")[0]["id"]
+                        sensor_list = SensorListDB.selectByGroupFull(sensor_group_id)
+                        actuator_list = ActuatorListDB.selectByActuatorGroupFull(actuator_group_id)
+                        oid_number = len(SensorListDB.select()) + 1
+
+                        for item_device in range(len(rtu_device)):
+                            if int(type_parameter) == 0 or int(type_parameter) == 2:
+                                sensor_name = f"{name} {rtu_device[item_device]['name']}"
+                                sensor_custom_id = f"{custom_id}Rtu{rtu_device[item_device]['number']}"
+                                last_sensor_custom_id = f"{last_custom_id}Rtu{rtu_device[item_device]['number']}"
+                                state_sensor = '1' if (rtu_device[item_device]['state'] == '1' and state == '1') else '0'
+
+                                for item_sensor in range(len(sensor_list)):
+                                    if sensor_custom_id == sensor_list[item_sensor]["sensor_id"] or last_sensor_custom_id == sensor_list[item_sensor]["sensor_id"]:                                  
+                                        SensorListDB.update(sensor_custom_id, sensor_list[item_sensor]["oid"], sensor_group_id, 
+                                                            sensor_name, sensor_list[item_sensor]["calibrate"], sensor_list[item_sensor]["formula"],
+                                                            datatype, monitoring, log, sensor_list[item_sensor]["alarm"], sensor_list[item_sensor]["min"], 
+                                                            sensor_list[item_sensor]["max"], sensor_list[item_sensor]["alarm_type"], state_sensor, sensor_list[item_sensor]["id"])
+                                        SensorListDB.updateUnitById(sensor_list[item_sensor]["id"], unit)
+
+                                        SensorParameterListDB.update(sensor_list[item_sensor]["id"], "Address", "address", address,
+                                                                     SensorParameterListDB.selectBySensorParameter(sensor_list[item_sensor]["id"], "address")[0]["id"])
+                                        SensorParameterListDB.update(sensor_list[item_sensor]["id"], "Length", "length", length,
+                                                                     SensorParameterListDB.selectBySensorParameter(sensor_list[item_sensor]["id"], "length")[0]["id"])
+                                        SensorParameterListDB.update(sensor_list[item_sensor]["id"], "Divider", "divider", divider,
+                                                                     SensorParameterListDB.selectBySensorParameter(sensor_list[item_sensor]["id"], "divider")[0]["id"])
+                                        
+                            if int(type_parameter) == 1 or int(type_parameter) == 2:
+                                actuator_name = f"{name} {rtu_device[item_device]['name']}"
+                                actuator_custom_id = f"{custom_id}Rtu{rtu_device[item_device]['number']}"
+                                last_actuator_custom_id = f"{last_custom_id}Rtu{rtu_device[item_device]['number']}"
+                                type_actuator = int(type_control) - 1
+                                state_actuator = '1' if (rtu_device[item_device]['state'] == '1' and state == '1') else '0'
+
+                                for item_sensor in range(len(sensor_list)):
+                                    if actuator_custom_id == actuator_list[item_sensor]["actuator_custom_id"] or last_actuator_custom_id == actuator_list[item_sensor]["actuator_custom_id"]:
+                                        ActuatorListDB.update(actuator_group_id, actuator_name, actuator_custom_id, type_actuator, state_actuator, actuator_list[item_sensor]["id"])
+
+                                        ActuatorParameterListDB.update(actuator_list[item_sensor]["id"], "Address", "address", address,
+                                                                       ActuatorParameterListDB.selectByActuatorParameter(actuator_list[item_sensor]["id"], "address")[0]["id"])
+                                        ActuatorParameterListDB.update(actuator_list[item_sensor]["id"], "Length", "length", length,
+                                                                       ActuatorParameterListDB.selectByActuatorParameter(actuator_list[item_sensor]["id"], "length")[0]["id"])
+                                        ActuatorParameterListDB.update(actuator_list[item_sensor]["id"], "Divider", "divider", divider,
+                                                                       ActuatorParameterListDB.selectByActuatorParameter(actuator_list[item_sensor]["id"], "divider")[0]["id"])
+                            
+                        RtuFunction.rearrangeSensorandActuatorList()
+                        ####################################### Sync Sensor and Actuator #######################################
+
                         result = {"state": status, "message": "RTU Parameter Updated successfully!"}
                         return json.dumps(result)
                     
@@ -171,7 +386,16 @@ class SettingRtu():
                 status = RtuParameterDB.deleteById(id)
                 
                 if str(status) == '1':
-                    # RtuFunction.createSensorandActuatorList()
+                    ####################################### Sync Sensor and Actuator #######################################
+                    rtu_device = RtuDeviceDB.select()
+                    for item_device in range(len(rtu_device)):
+                        fullname = f"{name} {rtu_device[item_device]['name']}"
+                        SensorListDB.deleteByName(fullname)
+                        ActuatorListDB.deleteByName(fullname)
+                    
+                    RtuFunction.rearrangeSensorandActuatorList()
+                    ####################################### Sync Sensor and Actuator #######################################
+
                     result = {"state": status, "message": f"RTU Parameter {name} has been deleted!"}
                     return json.dumps(result)
 

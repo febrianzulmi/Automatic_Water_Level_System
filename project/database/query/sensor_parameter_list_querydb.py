@@ -119,4 +119,3 @@ class SensorParameterListDB():
         value = (id,)
         action = sql.execute(connection, query, value)
         return action
-    

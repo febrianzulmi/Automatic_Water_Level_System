@@ -17,7 +17,7 @@ class SettingActuator():
                     result = {"state": "2", "message": f"Actuator Group with number {number} is already exist!"}
                     return json.dumps(result)
                 id = generalFunction.GenerateId.generateIdNearon("actuator", "actuator-group")
-                state = ActuatorGroupDB.insert(id, number, name, interval, unit)
+                state = ActuatorGroupDB.insert(id, number, name, interval, unit, '0')
                 if str(state) == '1':
                     service_id = ActuatorFunction.ServiceActuator.createActuatorFile(number)
                     ActuatorGroupDB.updateService(service_id, id)
@@ -28,13 +28,13 @@ class SettingActuator():
                 result = {"state": "0", "message": f"Failed Add Actuator Group {name}. There was an issue - {e}"}
             return json.dumps(result)
         
-        def update(number, name, interval, unit, id, last_number, service_id):
+        def update(number, name, interval, unit, id, last_number, service_id, state_group):
             try:
                 is_number_exist = ActuatorGroupDB.selectByNumber(number)
                 if is_number_exist and number != last_number:
                     result = {"state": "2", "message": f"Actuator Group with number {number} is already exist!"}
                     return json.dumps(result)
-                state = ActuatorGroupDB.update(number, name, interval, unit, id)
+                state = ActuatorGroupDB.update(number, name, interval, unit, state_group, id)
                 if str(state) == '1':
                     if number != last_number:
                         service_id = ActuatorFunction.ServiceActuator.renameActuatorFile(last_number, number, service_id)
@@ -67,7 +67,7 @@ class SettingActuator():
                     result = {"state": "2", "message": f"Actuator List with Custom ID {actuator_custom_id} is already exist!"}
                     return json.dumps(result)
                 id = generalFunction.GenerateId.generateIdNearon("actuator", "actuator-list")
-                state = ActuatorListDB.insert(id, actuator_group_id, name, actuator_custom_id, type_actuator)
+                state = ActuatorListDB.insert(id, actuator_group_id, name, actuator_custom_id, type_actuator, '0')
                 if str(state) == '1':
                     result = {"state": state, "message": f"Success Add Actuator List {name}"}
                 else:
@@ -76,13 +76,13 @@ class SettingActuator():
                 result = {"state": "0", "message": f"Failed Add Actuator List {name}. There was an issue - {e}"}
             return json.dumps(result)
         
-        def update(actuator_group_id, name, actuator_custom_id, type_actuator, id, last_actuator_custom_id):
+        def update(actuator_group_id, name, actuator_custom_id, type_actuator, id, last_actuator_custom_id, state_actuator):
             try:
                 is_number_exist = ActuatorListDB.selectByActId(actuator_custom_id)
                 if is_number_exist and actuator_custom_id != last_actuator_custom_id:
                     result = {"state": "2", "message": f"Actuator List with Custom ID {actuator_custom_id} is already exist!"}
                     return json.dumps(result)
-                state = ActuatorListDB.update(actuator_group_id, name, actuator_custom_id, type_actuator, id)
+                state = ActuatorListDB.update(actuator_group_id, name, actuator_custom_id, type_actuator, state_actuator, id)
                 if str(state) == '1':
                     result = {"state": state, "message": f"Success Update Actuator List {name}"}
                 else:
