@@ -127,8 +127,9 @@
                                     <!-- Button Edit -->
                                 </i>
                             </a>
-                            &nbsp;
+                            {% if parameterList[itemParam]['number'] != "1" %}
                             {% if sessionData['level'] == 1 %}
+                            &nbsp;
                             <a href="" data-toggle="modal"
                                 data-target="#modal-delete-parameterList{{ parameterList[itemParam]['id_param_value'] }}"
                                 role="button">
@@ -136,6 +137,7 @@
                                     <!-- Button Delete -->
                                 </i>
                             </a>
+                            {% endif %}
                             {% endif %}
                         </td>
                     </tr>

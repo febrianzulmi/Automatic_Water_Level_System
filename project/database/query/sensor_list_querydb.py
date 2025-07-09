@@ -35,6 +35,7 @@ class SensorListDB():
                 sensorGroupDB.id AS idGroup, 
                 sensorGroupDB.number, 
                 sensorGroupDB.name AS name_group, 
+                sensorGroupDB.oid AS oid_group, 
                 sensorGroupDB.intervals,  
                 sensorGroupDB.unit, 
                 sensorGroupDB.frekuensi, 

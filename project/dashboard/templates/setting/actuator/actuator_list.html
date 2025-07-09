@@ -18,7 +18,7 @@
                     <div class="modal-body">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Actuator Group</label>
-                            <div class="col-sm-4">
+                            <div class="col-sm-9">
                                 <select name="actuator_group_id" class="form-control" required autocomplete="off">
                                     {% for itemActuator in range(actuatorData|length) %}
                                     <option value="{{ actuatorData[itemActuator]['id'] }}">
@@ -30,13 +30,13 @@
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Name</label>
-                            <div class="col-sm-8">
+                            <div class="col-sm-9">
                                 <input type="text" class="form-control" name="name" required autocomplete="off">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Custom ID</label>
-                            <div class="col-sm-8">
+                            <div class="col-sm-9">
                                 <input type="text" class="form-control" name="custom_id" required autocomplete="off">
                             </div>
                         </div>
@@ -60,7 +60,6 @@
             </div>
         </div>
     </div>
-    <br>
     <div class="row col-md-12">
         {% if sessionData['level'] == 1 %}
         <a href="" data-toggle="modal" data-target="#modal-actuator-list-add" role="button">
@@ -143,11 +142,13 @@
                         data-target="#modal-edit-actuatorList{{actuatorList[itemActuator]['id']}}" role="button">
                         <i class="nav-icon fas fa-edit"></i>
                     </a>
+                    {% if actuatorList[itemActuator]['actuator_group_number'] == 1 or actuatorList[itemActuator]['number'] != 1 %}
                     &nbsp;
                     <a href="" data-toggle="modal"
                         data-target="#modal-delete-actuatorList{{actuatorList[itemActuator]['id']}}" role="button">
                         <i class="nav-icon fas fa-trash"></i>
                     </a>
+                    {%endif%}
                 </td>
                 {%endif%}
             </tr>
@@ -171,7 +172,7 @@
                             <div class="modal-body">
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Actuator Group</label>
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-9">
                                         {% if actuatorList[itemActuator]['actuator_group_number'] == 1 or actuatorList[itemActuator]['number'] == 1 %}
                                             <input type="text" class="form-control"
                                                 value="{{ actuatorList[itemActuator]['actuator_group_name'] }}"
@@ -191,7 +192,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Name</label>
-                                    <div class="col-sm-8">
+                                    <div class="col-sm-9">
                                         <input type="text" class="form-control" name="name"
                                             {% if actuatorList[itemActuator]['actuator_group_number'] == 1 
                                             or actuatorList[itemActuator]['number'] == 1 %} readonly {%endif%}
@@ -201,7 +202,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Custom ID</label>
-                                    <div class="col-sm-8">
+                                    <div class="col-sm-9">
                                         <input type="text" class="form-control" name="custom_id"
                                             {% if actuatorList[itemActuator]['actuator_group_number'] == 1 
                                             or actuatorList[itemActuator]['number'] == 1 %} readonly {%endif%}

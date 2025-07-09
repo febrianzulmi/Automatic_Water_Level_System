@@ -208,6 +208,7 @@
                             <!-- Button Edit -->
                         </i>
                     </a>
+                    {% if sensorDetail[itemSensorDetail]['number'] != "1" %}
                     &nbsp;
                     <a href="" data-toggle="modal"
                         data-target="#modal-delete-sensor{{ sensorDetail[itemSensorDetail]['id'] }}" role="button">
@@ -215,6 +216,7 @@
                             <!-- Button Delete -->
                         </i>
                     </a>
+                    {% endif %}
                 </td>
                 {% endif %}
             </tr>

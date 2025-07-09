@@ -42,7 +42,7 @@ class OidSensorFunction:
                     id = sensors[itemSensor]['id']
                     oid_sensor = sensors[itemSensor]['oid']
                     base_oid = OidSensorFunction.getBaseOID(sensors[itemSensor]['group_id'])
-                    oid = base_oid + "." + str(oid_sensor)
+                    oid = f"{base_oid}.{sensors[itemSensor]['oid_group']}.{oid_sensor}"
                     oid_script = path_snmp + "/" + oid + ".sh"
                     cek_script = os.path.exists(oid_script)
                     if cek_script == False:
@@ -74,7 +74,7 @@ class OidSensorFunction:
                     state = OidSensorFunction.writeSensorOidFile(oid_file, oid, oid_tipe, oid_value)
                     files.write("pass ." + oid + " /bin/sh " + oid_script + "\n")
                 files.close()
-                os.system("sudo systemctl snmpd status")
+                os.system("sudo systemctl restart snmpd")
 
     def generateOidAtBoot():
         dataSensor = CollectDataSensorFunction.all()

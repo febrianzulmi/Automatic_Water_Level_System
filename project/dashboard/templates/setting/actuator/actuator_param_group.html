@@ -1,6 +1,5 @@
 {% block paramActuatorGroup %}
 <div class="tab-pane fade {% if tab == 'paramActuatorGroup' %}{{ 'show active' }}{% endif %}" id="custom-tabs-one-paramActuatorGroup" role="tabpanel" aria-labelledby="custom-tabs-one-paramActuatorGroup-tab">
-    <br>
     <div class="modal fade" id="modal-paramActuatorGroup-add">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
@@ -22,7 +21,7 @@
                             <label class="col-sm-3 col-form-label">
                                 Actuator Group
                             </label>
-                            <div class="col-sm-8">
+                            <div class="col-sm-9">
                                 <select name="actuator_group_id" class="form-control">
                                     {% for itemActuatorList in range (actuatorData|length) %}
                                     <option value="{{ actuatorData[itemActuatorList]['id'] }}">
@@ -36,7 +35,7 @@
                             <label class="col-sm-3 col-form-label">
                                 Name
                             </label>
-                            <div class="col-sm-8">
+                            <div class="col-sm-9">
                                 <input type="text" name="name" class="form-control" required autocomplete="off">
                             </div>
                         </div>
@@ -44,7 +43,7 @@
                             <label class="col-sm-3 col-form-label">
                                 Parameter
                             </label>
-                            <div class="col-sm-8">
+                            <div class="col-sm-9">
                                 <input type="text" name="parameter" class="form-control" required autocomplete="off">
                             </div>
                         </div>
@@ -52,7 +51,7 @@
                             <label class="col-sm-3 col-form-label">
                                 Value
                             </label>
-                            <div class="col-sm-8">
+                            <div class="col-sm-9">
                                 <input type="text" name="value" class="form-control" required autocomplete="off">
                             </div>
                         </div>
@@ -111,11 +110,11 @@
             <tr align="center">
                 <th>Actuator Group</th>
                 <th>Name</th>
-                <th>Parameter</th>
-                <th>Value</th>
                 {% if sessionData['level'] == 1 %}
-                <th width="5%">Action</th>
+                <th>Parameter</th>
                 {% endif %}
+                <th>Value</th>
+                <th width="5%">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -127,23 +126,25 @@
                 <td>
                     {{ actuatorParamGroup[itemActuatorParam]['name_parameter'] }}
                 </td>
+                {% if sessionData['level'] == 1 %}
                 <td>
                     {{ actuatorParamGroup[itemActuatorParam]['parameter'] }}
                 </td>
+                {% endif %}
                 <td>
                     {{ actuatorParamGroup[itemActuatorParam]['value'] }}
                 </td>
-                {% if sessionData['level'] == 1 %}
                 <td>
                     <a href="" data-toggle="modal" data-target="#modal-edit-actuatorParamGroup{{ actuatorParamGroup[itemActuatorParam]['id'] }}" role="button">
                         <i class="nav-icon fas fa-edit"></i>
                     </a>
+                    {% if sessionData['level'] == 1 %}
                     &nbsp;
                     <a href="" data-toggle="modal" data-target="#modal-delete-actuatorParamGroup{{ actuatorParamGroup[itemActuatorParam]['id'] }}" role="button">
                         <i class="nav-icon fas fa-trash"></i>
                     </a>
+                    {%endif%}
                 </td>
-                {%endif%}
             </tr>
             <div class="modal fade" id="modal-edit-actuatorParamGroup{{ actuatorParamGroup[itemActuatorParam]['id'] }}">
                 <div class="modal-dialog">
@@ -168,11 +169,12 @@
                                 </button>
                             </div>
                             <div class="modal-body">
+                                {% if sessionData['level'] == 1 %}
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">
                                         Actuator
                                     </label>
-                                    <div class="col-sm-8">
+                                    <div class="col-sm-9">
                                         <select name="actuator_group_id" class="form-control">
                                             {% for itemActuators in range (actuatorData|length) %}
                                             <option value="{{ actuatorData[itemActuators]['id'] }}" {% if actuatorParamGroup[itemActuatorParam]['actuator_group_id']|string==actuatorData[itemActuators]['id']|string %}{{ 'selected' }}{% endif %}>
@@ -186,7 +188,7 @@
                                     <label class="col-sm-3 col-form-label">
                                         Name
                                     </label>
-                                    <div class="col-sm-8">
+                                    <div class="col-sm-9">
                                         <input type="text" name="name" class="form-control" value="{{ actuatorParamGroup[itemActuatorParam]['name_parameter'] }}">
                                     </div>
                                 </div>
@@ -194,15 +196,20 @@
                                     <label class="col-sm-3 col-form-label">
                                         Parameter
                                     </label>
-                                    <div class="col-sm-8">
+                                    <div class="col-sm-9">
                                         <input type="text" name="parameter" class="form-control" value="{{ actuatorParamGroup[itemActuatorParam]['parameter'] }}">
                                     </div>
                                 </div>
+                                {% else %}
+                                    <input type="hidden" name="actuator_group_id" value="{{ actuatorParamGroup[itemActuatorParam]['actuator_group_id'] }}">
+                                    <input type="hidden" name="name" value="{{ actuatorParamGroup[itemActuatorParam]['name_parameter'] }}">
+                                    <input type="hidden" name="parameter" value="{{ actuatorParamGroup[itemActuatorParam]['parameter'] }}">
+                                {% endif %}
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">
                                         Value
                                     </label>
-                                    <div class="col-sm-8">
+                                    <div class="col-sm-9">
                                         <input type="text" name="value" class="form-control" value="{{ actuatorParamGroup[itemActuatorParam]['value'] }}">
                                     </div>
                                 </div>
