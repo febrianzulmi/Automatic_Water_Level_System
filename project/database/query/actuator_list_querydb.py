@@ -76,16 +76,6 @@ class ActuatorListDB():
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
 
-    
-    # def selectByActuatorGroupFull(id):
-    #     connection = sql.connect(host, database, username, password)
-    #     query = """SELECT actuatorGroupDB.name as actuator_group_name, actuatorListDB.* FROM actuatorListDB join actuatorGroupDB on actuatorListDB.actuator_group_id=actuatorGroupDB.id
-    #             where actuatorListDB.actuator_group_id=%s ORDER by actuatorGroupDB.number ASC"""
-    #     value = (id,)
-    #     fetchall = sql.selectWithInput(connection, query, value)
-    #     return fetchall
-
-    
     def selectByActuatorGroupNumberFull(number):
         connection = sql.connect(host, database, username, password)
         query = """SELECT actuatorGroupDB.name as actuator_group_name, actuatorListDB.* FROM actuatorListDB join actuatorGroupDB on actuatorListDB.actuator_group_id=actuatorGroupDB.id

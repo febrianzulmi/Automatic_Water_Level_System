@@ -377,7 +377,7 @@
                                     <div class="col-sm-4">
                                         {% if sensorDetail[itemSensorDetail]['number'] in ["1", "3", "4"] %}
                                             <input type="text" class="form-control"
-                                                value="{{ 'disable' if sensorDetail[itemSensorDetail]['monitor'] == 0 else '' }}"
+                                                value="{{ 'Disable' if sensorDetail[itemSensorDetail]['monitor'] == 0 else sensorDetail[itemSensorDetail]['monitor'] }}"
                                                 readonly>
 
                                         {% else %}
@@ -412,7 +412,7 @@
                                     <div class="col-sm-4">
                                         {% if sensorDetail[itemSensorDetail]['number'] in ["1", "3", "4"] %}
                                             <input type="text" class="form-control"
-                                                value="{{ 'disable' if sensorDetail[itemSensorDetail]['log'] == 0 else '' }}"
+                                                value="{{ 'Disable' if sensorDetail[itemSensorDetail]['log'] == 0 else sensorDetail[itemSensorDetail]['log'] }}"
                                                 readonly>
 
                                         {% else %}
