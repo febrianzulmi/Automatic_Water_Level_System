@@ -379,7 +379,19 @@
                                     <div class="col-sm-4">
                                         {% if sensorDetail[itemSensorDetail]['number'] in ["1", "3", "4"] %}
                                             <input type="text" class="form-control"
-                                                value="{{ 'Disable' if sensorDetail[itemSensorDetail]['monitor'] == 0 else sensorDetail[itemSensorDetail]['monitor'] }}"
+                                                value="{%- if sensorDetail[itemSensorDetail]['monitor'] == 0 -%}
+                                                            Disable
+                                                        {%- else -%}
+                                                            {%- for item in monitorInterval -%}
+                                                                {%- if item['id'] == sensorDetail[itemSensorDetail]['monitor'] -%}
+                                                                    {{ item['interval'] }}
+                                                                    {%- if item['unit']|string == '1' %} Seconds
+                                                                    {% elif item['unit']|string == '2' %} Minutes
+                                                                    {% elif item['unit']|string == '3' %} Hours
+                                                                    {% endif -%}
+                                                                {%- endif -%}
+                                                            {%- endfor -%}
+                                                        {%- endif -%}"
                                                 readonly>
 
                                         {% else %}
@@ -414,7 +426,19 @@
                                     <div class="col-sm-4">
                                         {% if sensorDetail[itemSensorDetail]['number'] in ["1", "3", "4"] %}
                                             <input type="text" class="form-control"
-                                                value="{{ 'Disable' if sensorDetail[itemSensorDetail]['log'] == 0 else sensorDetail[itemSensorDetail]['log'] }}"
+                                                value="{%- if sensorDetail[itemSensorDetail]['log'] == 0 -%}
+                                                            Disable
+                                                        {%- else -%}
+                                                            {%- for item in logInterval -%}
+                                                                {%- if item['id'] == sensorDetail[itemSensorDetail]['log'] -%}
+                                                                    {{ item['interval'] }}
+                                                                    {%- if item['unit']|string == '1' %} Seconds
+                                                                    {% elif item['unit']|string == '2' %} Minutes
+                                                                    {% elif item['unit']|string == '3' %} Hours
+                                                                    {% endif -%}
+                                                                {%- endif -%}
+                                                            {%- endfor -%}
+                                                        {%- endif -%}"
                                                 readonly>
 
                                         {% else %}
