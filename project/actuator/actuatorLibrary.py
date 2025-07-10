@@ -37,7 +37,7 @@ class ActuatorRTU():
                                 rtu_number = actuator_custom_id[actuator_custom_id.lower().find("rtu") + 3:]
                                 slave_id = int(RtuDeviceDB.selectByNumber(rtu_number)[0]["slave_id"])
                                 address = int(parameter_list[actuator_data[x]["actuator_custom_id"]]["address"])
-                                divider = int(parameter_list[actuator_data[x]["actuator_custom_id"]]["divider"])
+                                divider = float(parameter_list[actuator_data[x]["actuator_custom_id"]]["divider"])
                                 if address > 40000:
                                     result = rtu_object.write_register(address=address-40001, value=int(actuator_run["value"][x]) * divider, unit=slave_id)
                                 else:
