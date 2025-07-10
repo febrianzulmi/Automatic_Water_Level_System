@@ -9,7 +9,7 @@ import requests
 sys.path.append('/home/connex/library')
 from SynapsisLibrary import times
 sys.path.append('/home/connex/project/database')
-from query_project_db import SensorListDB
+from query_project_db import SensorListDB, RtuDeviceDB
 sys.path.append("/home/connex/project/function")
 from actuatorFunction import ActuatorFunction
 from generalFunction import generalFunction
