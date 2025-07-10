@@ -1162,7 +1162,6 @@ class SensorRTU:
         self.port = self.port[1]
         if self.port != "N/A":
             self.port = "/dev/" + self.port
-        print(f'Port : {self.port}')
         self.baudrate = int(self.parameterGroupSensor['baudrate'])
 
     def main(self):
@@ -1181,15 +1180,19 @@ class SensorRTU:
                             slave_id = int(RtuDeviceDB.selectByNumber(rtu_number)[0]["slave_id"])
                             address = int(self.parameterListSensor[sensor_id]["address"])
                             count = int(self.parameterListSensor[sensor_id]["length"])
-                            divider = int(self.parameterListSensor[sensor_id]["divider"])
+                            divider = float(self.parameterListSensor[sensor_id]["divider"])
                             if address > 0 and address < 20000:
-                                if address > 10000: address = address - 10001
-                                else: address = address - 1
+                                if address > 10000 : 
+                                    address = address - 10001
+                                else: 
+                                    address = address - 1
                                 read = rtu_object.read_discrete_inputs(address=address, count=count, unit=slave_id)
                                 type = "state"
                             else:
-                                if address > 30000 and address < 40000: address = address - 30001
-                                elif address > 40000: address = address - 40001
+                                if address > 30000 and address < 40000: 
+                                    address = address - 30001
+                                elif address > 40000: 
+                                    address = address - 40001
                                 read = rtu_object.read_input_registers(address=address, count=count, unit=slave_id)
                                 type = "value"
                             if read.isError() == False:
@@ -1201,7 +1204,7 @@ class SensorRTU:
                                         menit = (value % 3600) // 60
                                         detik = value % 60
                                         value = f"{jam:02}:{menit:02}:{detik:02}"
-                                    else: value = int(read.registers[0]) / int(divider)
+                                    else: value = read.registers[0] / divider
                                 state = True
                                 sensor_count += 1
                             else:
