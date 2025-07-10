@@ -15,7 +15,7 @@ import RPi.GPIO as GPIO
 import serial
 
 sys.path.append('/home/connex/project/database')
-from query_project_db import SensorListDB, SensorGroupDB, EnvironmentDeviceDB, PowerDeviceDB,  SensorPortConfigDB
+from query_project_db import SensorListDB, SensorGroupDB, EnvironmentDeviceDB, PowerDeviceDB,  SensorPortConfigDB, RtuDeviceDB
 sys.path.append('/home/connex/library')
 from SynapsisLibrary import times
 sys.path.append("/home/connex/project/function")
@@ -1178,29 +1178,30 @@ class SensorRTU:
                         try:
                             sensor_id = self.dataSensor["sensorId"][x]
                             rtu_number = sensor_id[sensor_id.lower().find("rtu") + 3:]
-                            slave_id = int(self.parameterGroupSensor[f"slave_id{rtu_number}"])
+                            slave_id = int(RtuDeviceDB.selectByNumber(rtu_number)[0]["slave_id"])
                             address = int(self.parameterListSensor[sensor_id]["address"])
-                            if address > 0 and address < 20000: 
-                                address = address - 10001
-                                read = rtu_object.read_discrete_inputs(address=address, count=1, unit=slave_id)
+                            count = int(self.parameterListSensor[sensor_id]["length"])
+                            divider = int(self.parameterListSensor[sensor_id]["divider"])
+                            if address > 0 and address < 20000:
+                                if address > 10000: address = address - 10001
+                                else: address = address - 1
+                                read = rtu_object.read_discrete_inputs(address=address, count=count, unit=slave_id)
                                 type = "state"
                             else:
                                 if address > 30000 and address < 40000: address = address - 30001
                                 elif address > 40000: address = address - 40001
-                                if "current" in sensor_id.lower(): count = 2
-                                else: count = 1
                                 read = rtu_object.read_input_registers(address=address, count=count, unit=slave_id)
                                 type = "value"
                             if read.isError() == False:
                                 if type == "state" : value = read.bits[0]
                                 else: 
-                                    if "current" in sensor_id.lower(): 
+                                    if "offtime" in sensor_id.lower() or "runtime" in sensor_id.lower(): 
                                         value = (read.registers[0] * 65535) + read.registers[1]
                                         jam = value // 3600
                                         menit = (value % 3600) // 60
                                         detik = value % 60
                                         value = f"{jam:02}:{menit:02}:{detik:02}"
-                                    else: value = read.registers[0]
+                                    else: value = int(read.registers[0]) / int(divider)
                                 state = True
                                 sensor_count += 1
                             else:

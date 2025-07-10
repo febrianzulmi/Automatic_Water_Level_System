@@ -18,7 +18,7 @@ class ActuatorRTU():
     def run(global_variable, actuator_run, actuator_data):
         parameter_group = ActuatorFunction.getParameterGroupActuator(global_variable["number"])
         parameter_list = ActuatorFunction.getParameterListActuator(global_variable["number"])
-        result_action = {"state": [], "value": [], "summary": "", "message": [], "": 0}
+        result_action = {"state": [], "value": [], "summary": "", "message": []}
         if len(actuator_data) > 0:
             port = generalFunction.checkUSBDevice(parameter_group["port"])
             port = port[1]
@@ -35,12 +35,13 @@ class ActuatorRTU():
                             if actuator_run["action"][x] == True:
                                 actuator_custom_id = actuator_data[x]["actuator_custom_id"]
                                 rtu_number = actuator_custom_id[actuator_custom_id.lower().find("rtu") + 3:]
-                                slave_id = int(parameter_group[f"slave_id{rtu_number}"])
+                                slave_id = int(RtuDeviceDB.selectByNumber(rtu_number)[0]["slave_id"])
                                 address = int(parameter_list[actuator_data[x]["actuator_custom_id"]]["address"])
+                                divider = int(parameter_list[actuator_data[x]["actuator_custom_id"]]["divider"])
                                 if address > 40000:
-                                    result = rtu_object.write_register(address=address-40001, value=int(actuator_run["value"][x]), unit=slave_id)
+                                    result = rtu_object.write_register(address=address-40001, value=int(actuator_run["value"][x]) * divider, unit=slave_id)
                                 else:
-                                    result = rtu_object.write_coil(address=address-1, value=int(actuator_run["value"][x]), unit=slave_id)
+                                    result = rtu_object.write_coil(address=address-1, value=int(actuator_run["value"][x]) * divider, unit=slave_id)
                                 if result.isError() == False:
                                     result_state, result_value = True, result.value
                                     result_action["message"].append("Success")
@@ -58,11 +59,18 @@ class ActuatorRTU():
                         result_action["value"].append(result_value)
                     result_action["summary"] = f"Success Run {success_run} of {actuator_run['count']} Actuator from {len(actuator_data)} Actuator"
                 else:
+                    result_action["state"].append(False)
+                    result_action["value"].append(None)
+                    result_action["message"].append("RTU Device Not Found")
                     result_action["summary"] = "RTU Device Not Found"    
             else:
+                result_action["state"].append(False)
+                result_action["value"].append(None)
+                result_action["message"].append("Port N/A")
                 result_action["summary"] = "Port N/A"
         else:
             result_action["summary"] = "No Actuator Data"
+        # print(result_action)
         return result_action
 
 

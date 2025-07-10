@@ -13,7 +13,7 @@
                             <select name="sensor" class="form-control" required>
                                 <option value="">--- Choose Sensor ---</option>
                                 {% for sensor in sensors %}
-                                <option value="{{ sensor['id'] }}" {% if sensor['id']|string == sensor_id|string %} {{ "selected" }} {% endif %}>
+                                <option value="{{ sensor['number'] }}" {% if sensor['number']|string == sensor_id|string %} {{ "selected" }} {% endif %}>
                                     {{ sensor['name'] }}
                                 </option>
                                 {% endfor %}

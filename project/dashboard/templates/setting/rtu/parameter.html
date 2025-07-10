@@ -37,12 +37,12 @@
                             <label class="col-sm-2 col-form-label">Datatype</label>
                             <div class="col-sm-3 col-form-label">
                                 <div class="icheck-primary d-inline">
-                                    <input type="radio" id="datatype_yes" name="datatype" value="1">
+                                    <input type="radio" id="datatype_yes" name="datatype" value="0">
                                     <label for="datatype_yes">Integer</label>
                                 </div>
                                 &nbsp;
                                 <div class="icheck-primary d-inline">
-                                    <input type="radio" id="datatype_no" name="datatype" value="0">
+                                    <input type="radio" id="datatype_no" name="datatype" value="1">
                                     <label for="datatype_no">String</label>
                                 </div>
                             </div>
@@ -257,13 +257,13 @@
                                     <div class="col-sm-3 col-form-label">
                                         <div class="icheck-primary d-inline">
                                             <input type="radio" id="datatype_yes{{rtuParameterData[item_parameter]['id']}}" name="datatype" value="1"
-                                            {% if rtuParameterData[item_parameter]['datatype'] == 1 %} checked {% endif %}>
+                                            {% if rtuParameterData[item_parameter]['datatype'] == 0 %} checked {% endif %}>
                                             <label for="datatype_yes{{rtuParameterData[item_parameter]['id']}}">Integer</label>
                                         </div>
                                         &nbsp;
                                         <div class="icheck-primary d-inline">
                                             <input type="radio" id="datatype_no{{rtuParameterData[item_parameter]['id']}}" name="datatype" value="0"
-                                            {% if rtuParameterData[item_parameter]['datatype'] == 0 %} checked {% endif %}>
+                                            {% if rtuParameterData[item_parameter]['datatype'] == 1 %} checked {% endif %}>
                                             <label for="datatype_no{{rtuParameterData[item_parameter]['id']}}">String</label>
                                         </div>
                                     </div>
