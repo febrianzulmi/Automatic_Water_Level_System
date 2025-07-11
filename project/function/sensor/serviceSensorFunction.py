@@ -40,7 +40,7 @@ class serviceSensor():
         shutil.copy(basePath + "/platform/storage/sensor/sensor.py", fileSensorPath)
         shutil.copy(basePath + "/platform/storage/sensor/check_sensor.py", fileCheckSensorPath)
         fileSensorData = file_read(fileSensorPath)
-        fileSensorData[0] = 'groupId = ' + str(number) + '\n'
+        fileSensorData[0] = 'group_id = ' + str(number) + '\n'
         file_write(fileSensorPath, fileSensorData)
         fileCheckSensorData = file_read(fileCheckSensorPath)
         fileCheckSensorData[0] = 'group_id = ' + str(number) + '\n'
