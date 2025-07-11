@@ -61,7 +61,7 @@
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Type</label>
                             <div class="col-sm-3">
-                                <select name="type" class="form-control" required autocomplete="off">
+                                <select id="add-type" name="type" class="form-control" required autocomplete="off">
                                     <option value="0">Read Only</option>
                                     <option value="1">Write Only</option>
                                     <option value="2">Read & Write</option>
@@ -70,8 +70,8 @@
                             <div class="col-sm-2"></div>
                             <label class="col-sm-2 col-form-label">Type Control</label>
                             <div class="col-sm-3">
-                                <select name="type_control" class="form-control" required autocomplete="off">
-                                    <option value="0">No Control</option>
+                                <select id="add-type-control" name="type_control" class="form-control" required autocomplete="off">
+                                    <option id="add-nocontrol" value="0">No Control</option>
                                     <option value="1">True/False Value</option>
                                     <option value="2">Custom Value</option>
                                 </select>
@@ -80,7 +80,7 @@
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Monitoring</label>
                             <div class="col-sm-3">
-                                <select name="monitor" class="form-control" required autocomplete="off">
+                                <select id="add-monitoring" name="monitor" class="form-control" required autocomplete="off">
                                     <option value="0">Disabled</option>
                                     {% for i in range(monitorInterval|length) %}
                                     <option value="{{ monitorInterval[i]['id'] }}">{{
@@ -95,7 +95,7 @@
                             <div class="col-sm-2"></div>
                             <label class="col-sm-2 col-form-label">Internal Log</label>
                             <div class="col-sm-3">
-                                <select name="log" class="form-control" required autocomplete="off">
+                                <select id="add-log" name="log" class="form-control" required autocomplete="off">
                                     <option value="0">Disabled</option>
                                     {% for i in range(logInterval|length) %}
                                     <option value="{{ logInterval[i]['id'] }}">{{
@@ -111,7 +111,7 @@
                         <div class="form-group row align-items-center">
                             <label class="col-sm-2 col-form-label">Unit</label>
                             <div class="col-sm-3">
-                                <input type="text" class="form-control" name="unit" required autocomplete="off">
+                                <input id="add-unit" type="text" class="form-control" name="unit" required autocomplete="off" disabl>
                             </div>
                             <div class="col-sm-2"></div>
                             <label class="col-sm-2 col-form-label">State</label>
@@ -120,6 +120,113 @@
                                 data-bootstrap-switch data-off-color="danger" data-on-color="success">
                             </div>
                         </div>
+
+                        <script>
+                            const add_type = document.getElementById("add-type")
+                            const add_nocontrol = document.getElementById("add-nocontrol")
+                            const add_type_control = document.getElementById("add-type-control")
+                            const add_unit = document.getElementById("add-unit")
+                            const add_monitoring = document.getElementById("add-monitoring")
+                            const add_log = document.getElementById("add-log")
+                            const add_integer = document.getElementById("datatype_yes")
+                            const add_string = document.getElementById("datatype_no")
+
+                            
+                            function addCheckInitialStatus(){
+                                if (add_type.value === "0"){
+                                    add_type_control.value = "0";
+                                    add_type_control.disabled = true;
+                                    add_nocontrol.style.display = "flex";
+                                    add_unit.readOnly = false;
+                                    add_unit.value = "";
+                                    add_monitoring.value = "0";
+                                    add_monitoring.disabled = false;
+                                    add_log.value = "0";
+                                    add_log.disabled = false;
+                                    add_integer.checked = false;
+                                    add_integer.disabled = false;
+                                    add_string.checked = false;
+                                    add_string.disabled = false;
+                                } else if(add_type.value === "2"){
+                                    add_type_control.value = "1";
+                                    add_type_control.disabled = false;
+                                    add_nocontrol.style.display = "none";
+                                    add_unit.readOnly = false;
+                                    add_unit.value = "";
+                                    add_monitoring.value = "0";
+                                    add_monitoring.disabled = false;
+                                    add_log.value = "0";
+                                    add_log.disabled = false;
+                                    add_integer.checked = false;
+                                    add_integer.disabled = false;
+                                    add_string.checked = false;
+                                    add_string.disabled = false;
+                                } else {
+                                    add_type_control.value = "1";
+                                    add_type_control.disabled = false;
+                                    add_nocontrol.style.display = "none";
+                                    add_unit.readOnly = true;
+                                    add_unit.value = "#";
+                                    add_monitoring.value = "0";
+                                    add_monitoring.disabled = true;
+                                    add_log.value = "0";
+                                    add_log.disabled = true;
+                                    add_integer.checked = true;
+                                    add_integer.disabled = true;
+                                    add_string.checked = false;
+                                    add_string.disabled = true;
+                                }
+                            }
+
+                            add_type.addEventListener("change", function (){
+                                if (add_type.value === "0"){
+                                    add_type_control.value = "0";
+                                    add_type_control.disabled = true;
+                                    add_nocontrol.style.display = "flex";
+                                    add_unit.readOnly = false;
+                                    add_unit.value = "";
+                                    add_monitoring.value = "0";
+                                    add_monitoring.disabled = false;
+                                    add_log.value = "0";
+                                    add_log.disabled = false;
+                                    add_integer.checked = false;
+                                    add_integer.disabled = false;
+                                    add_string.checked = false;
+                                    add_string.disabled = false;
+                                } else if(add_type.value === "2"){
+                                    add_type_control.value = "1";
+                                    add_type_control.disabled = false;
+                                    add_nocontrol.style.display = "none";
+                                    add_unit.readOnly = false;
+                                    add_unit.value = "";
+                                    add_monitoring.value = "0";
+                                    add_monitoring.disabled = false;
+                                    add_log.value = "0";
+                                    add_log.disabled = false;
+                                    add_integer.checked = false;
+                                    add_integer.disabled = false;
+                                    add_string.checked = false;
+                                    add_string.disabled = false;
+                                } else {
+                                    add_type_control.value = "1";
+                                    add_type_control.disabled = false;
+                                    add_nocontrol.style.display = "none";
+                                    add_unit.readOnly = true;
+                                    add_unit.value = "#";
+                                    add_monitoring.value = "0";
+                                    add_monitoring.disabled = true;
+                                    add_log.value = "0";
+                                    add_log.disabled = true;
+                                    add_integer.checked = true;
+                                    add_integer.disabled = true;
+                                    add_string.checked = false;
+                                    add_string.disabled = true;
+                                }
+                            });
+
+                            document.addEventListener("DOMContentLoaded", addCheckInitialStatus)
+                        </script>
+
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -284,7 +391,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label">Type</label>
                                     <div class="col-sm-3">
-                                        <select name="type" class="form-control" required autocomplete="off">
+                                        <select id="update-type{{ rtuParameterData[item_parameter]['id'] }}" name="type" class="form-control" required autocomplete="off">
                                             <option value="0" {% if rtuParameterData[item_parameter]['type'] == 0 %}
                                             selected {% endif %}>Read Only</option>
                                             <option value="1" {% if rtuParameterData[item_parameter]['type'] == 1 %}
@@ -296,8 +403,8 @@
                                     <div class="col-sm-2"></div>
                                     <label class="col-sm-2 col-form-label">Type Control</label>
                                     <div class="col-sm-3">
-                                        <select name="type_control" class="form-control" required autocomplete="off">
-                                            <option value="0" {% if rtuParameterData[item_parameter]['type_control'] == 0 %}
+                                        <select id="update-type-control{{ rtuParameterData[item_parameter]['id'] }}" name="type_control" class="form-control" required autocomplete="off">
+                                            <option id="update-nocontrol{{ rtuParameterData[item_parameter]['id'] }}" value="0" {% if rtuParameterData[item_parameter]['type_control'] == 0 %}
                                             selected {% endif %}>No Control</option>
                                             <option value="1" {% if rtuParameterData[item_parameter]['type_control'] == 1 %}
                                             selected {% endif %}>True/False Value</option>
@@ -309,7 +416,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label">Monitoring</label>
                                     <div class="col-sm-3">
-                                        <select name="monitor" class="form-control" required autocomplete="off">
+                                        <select id="update-monitoring{{ rtuParameterData[item_parameter]['id'] }}" name="monitor" class="form-control" required autocomplete="off">
                                             <option value="0" {% if rtuParameterData[item_parameter]['monitoring'] == '0' %}
                                             selected {% endif %}>Disabled</option>
                                             {% for i in range(monitorInterval|length) %}
@@ -327,7 +434,7 @@
                                     <div class="col-sm-2"></div>
                                     <label class="col-sm-2 col-form-label">Internal Log</label>
                                     <div class="col-sm-3">
-                                        <select name="log" class="form-control" required autocomplete="off">
+                                        <select id="update-log{{ rtuParameterData[item_parameter]['id'] }}" name="log" class="form-control" required autocomplete="off">
                                             <option value="0" {% if rtuParameterData[item_parameter]['log'] == '0' %}
                                             selected {% endif %}>Disabled</option>
                                             {% for i in range(logInterval|length) %}
@@ -346,7 +453,7 @@
                                 <div class="form-group row align-items-center">
                                     <label class="col-sm-2 col-form-label">Unit</label>
                                     <div class="col-sm-3">
-                                        <input type="text" class="form-control" name="unit" required autocomplete="off"
+                                        <input id="update-unit{{ rtuParameterData[item_parameter]['id'] }}" type="text" class="form-control" name="unit" required autocomplete="off"
                                         value="{{rtuParameterData[item_parameter]['unit']}}">
                                     </div>
                                     <div class="col-sm-2"></div>
@@ -362,6 +469,85 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <script>
+                                (function() {
+                                    'use strict';
+                                    const id = "{{ rtuParameterData[item_parameter]['id'] }}";
+                                    const type = document.getElementById("update-type" + id);
+                                    const noControlOption = document.getElementById("update-nocontrol" + id);
+                                    const typeControl = document.getElementById("update-type-control" + id);
+                                    const unit = document.getElementById("update-unit" + id);
+                                    const monitoring = document.getElementById("update-monitoring" + id);
+                                    const log = document.getElementById("update-log" + id);
+                                    const integer = document.getElementById("datatype_yes" + id);
+                                    const string = document.getElementById("datatype_no" + id);
+
+                                    function updateState(isInitialLoad) {
+                                        typeControl.disabled = false;
+                                        noControlOption.style.display = 'flex';
+                                        unit.readOnly = false;
+                                        monitoring.disabled = false;
+                                        log.disabled = false;
+                                        integer.disabled = false;
+                                        string.disabled = false;
+                                        
+                                        if (type.value === "0") {
+                                            typeControl.value = "0";
+                                            typeControl.disabled = true;
+                                            noControlOption.style.display = "flex";
+
+                                            if (isInitialLoad) {
+                                                unit.value = "{{ rtuParameterData[item_parameter]['unit'] }}";
+                                                monitoring.value = "{{ rtuParameterData[item_parameter]['monitoring'] }}";
+                                                log.value = "{{ rtuParameterData[item_parameter]['log'] }}";
+                                            }
+
+                                        } else if (type.value === "1") {
+                                            typeControl.value = "1";
+                                            noControlOption.style.display = 'none';
+                                            unit.readOnly = true;
+                                            monitoring.disabled = true;
+                                            log.disabled = true;
+                                            integer.disabled = true;
+                                            string.disabled = true;
+
+                                            if (isInitialLoad) {
+                                                unit.value = "{{ rtuParameterData[item_parameter]['unit'] }}";
+                                                monitoring.value = "{{ rtuParameterData[item_parameter]['monitoring'] }}";
+                                                log.value = "{{ rtuParameterData[item_parameter]['log'] }}";
+                                                integer.checked = true;
+                                            } else {
+                                                unit.value = "#";
+                                                monitoring.value = "0";
+                                                log.value = "0";
+                                                integer.checked = true;
+                                            }
+
+                                        } else { // Read & Write (value === "2")
+                                            typeControl.value = "1";
+                                            noControlOption.style.display = 'none';
+                                            if (isInitialLoad) {
+                                                unit.value = "{{ rtuParameterData[item_parameter]['unit'] }}";
+                                                monitoring.value = "{{ rtuParameterData[item_parameter]['monitoring'] }}";
+                                                log.value = "{{ rtuParameterData[item_parameter]['log'] }}";
+                                            }
+                                        }
+                                    }
+
+                                    
+                                    type.addEventListener("change", function() {
+                                        updateState(false); // It's not the initial load anymore
+                                    });
+
+                                    
+                                    document.addEventListener("DOMContentLoaded", function() {
+                                        updateState(true); // This is the initial load
+                                    });
+
+                                })(); 
+                            </script>
+
                             <div class="modal-footer justify-content-between">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">
                                     Cancel
@@ -414,5 +600,7 @@
         </tbody>
     </table>
 </div>
+
+
 
 {% endblock %}
