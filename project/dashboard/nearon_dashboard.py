@@ -803,7 +803,8 @@ def settingActuatorPage():
             last_number = request.form.get('last_number')
             service_id = request.form.get('service_id')
             state = request.form.get(f'update_state{id}')
-            result = dashboardFunction.SettingActuator.Group.update(number, name, interval, unit, id, last_number, service_id, state)
+            last_name = request.form.get('last_name')
+            result = dashboardFunction.SettingActuator.Group.update(number, name, interval, unit, id, last_number, last_name, service_id, state)
             return redirect(url_for('settingActuatorPage', tab=tab, result=result))
          elif action == 'groupActuatorDelete':
             id = request.form.get('id')

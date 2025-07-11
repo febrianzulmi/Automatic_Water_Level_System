@@ -81,8 +81,6 @@ class settingSensor():
                 elif last_name.lower() == "rtu" and name.lower() != "rtu":
                     SensorListDB.deleteByGroupId(id)
 
-                print("masuk iff 3")
-
                 if str(state) == "1":
                     if last_number != number:
                         SensorFunction.serviceSensor.renameSensorFile(last_number, number, service_id)

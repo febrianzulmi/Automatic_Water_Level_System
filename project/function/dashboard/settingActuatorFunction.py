@@ -6,6 +6,7 @@ from query_project_db import ActuatorListDB, ActuatorGroupDB, ActuatorParameterL
 sys.path.append('/home/connex/project/function')
 from generalFunction import generalFunction
 from actuatorFunction import ActuatorFunction
+from rtuFunction import RtuFunction
 
 
 class SettingActuator():
@@ -18,6 +19,10 @@ class SettingActuator():
                     return json.dumps(result)
                 id = generalFunction.GenerateId.generateIdNearon("actuator", "actuator-group")
                 state = ActuatorGroupDB.insert(id, number, name, interval, unit, '0')
+
+                if name.lower() == "rtu":
+                    RtuFunction.createActuatorList()
+
                 if str(state) == '1':
                     service_id = ActuatorFunction.ServiceActuator.createActuatorFile(number)
                     ActuatorGroupDB.updateService(service_id, id)
@@ -28,13 +33,22 @@ class SettingActuator():
                 result = {"state": "0", "message": f"Failed Add Actuator Group {name}. There was an issue - {e}"}
             return json.dumps(result)
         
-        def update(number, name, interval, unit, id, last_number, service_id, state_group):
+        def update(number, name, interval, unit, id, last_number, last_name, service_id, state_group):
             try:
                 is_number_exist = ActuatorGroupDB.selectByNumber(number)
                 if is_number_exist and number != last_number:
                     result = {"state": "2", "message": f"Actuator Group with number {number} is already exist!"}
                     return json.dumps(result)
                 state = ActuatorGroupDB.update(number, name, interval, unit, state_group, id)
+                if last_name.lower() != "rtu" and name.lower() == "rtu":
+                    sensordetail = ActuatorListDB.selectByActuatorGroupFull(id)
+                    if sensordetail:
+                        ActuatorListDB.deleteByGroupId(id)
+                    RtuFunction.createActuatorList()
+                
+                elif last_name.lower() == "rtu" and name.lower() != "rtu":
+                    ActuatorListDB.deleteByGroupId(id)
+
                 if str(state) == '1':
                     if number != last_number:
                         service_id = ActuatorFunction.ServiceActuator.renameActuatorFile(last_number, number, service_id)
