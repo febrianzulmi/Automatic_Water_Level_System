@@ -9,6 +9,7 @@ sys.path.append('/home/connex/project/function')
 from sensorFunction import SensorFunction
 from serviceProjectFunction import ServiceProjectFunction
 from generalFunction import generalFunction
+from rtuFunction import RtuFunction
 sys.path.append("/home/connex/project/function/sensor")
 from oidSensorFunction import OidSensorFunction
 sys.path.append("/home/connex/library")
@@ -34,6 +35,8 @@ class settingSensor():
                 else :
                     sensor_group_id = generalFunction.GenerateId.generateIdNearon("sensor", "sensor-group")
                     state = SensorGroupDB.insert(sensor_group_id, number, oid_group, name, intervals, unit, frekuensi, 0, enterAlarm, exitAlarm, errorAlarm)
+                    if name.lower() == "rtu":
+                        RtuFunction.createSensorList()
                     if str(state) == '1':
                         serviceId = SensorFunction.serviceSensor.createSensorFile(number)
                         SensorGroupDB.updateService(serviceId, sensor_group_id)
@@ -68,6 +71,18 @@ class settingSensor():
                         return json.dumps(result)
                 
                 state = SensorGroupDB.update(number, oid, name, interval, unit, frekuensi, service_id, id, enterAlarm, exitAlarm, errorAlarm, stateSensor)
+                
+                if last_name.lower() != "rtu" and name.lower() == "rtu":
+                    sensordetail = SensorListDB.selectByGroup(id)
+                    if sensordetail:
+                        SensorListDB.deleteByGroupId(id)
+                    RtuFunction.createSensorList()
+
+                elif last_name.lower() == "rtu" and name.lower() != "rtu":
+                    SensorListDB.deleteByGroupId(id)
+
+                print("masuk iff 3")
+
                 if str(state) == "1":
                     if last_number != number:
                         SensorFunction.serviceSensor.renameSensorFile(last_number, number, service_id)
