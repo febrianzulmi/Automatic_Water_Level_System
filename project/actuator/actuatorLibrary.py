@@ -39,9 +39,9 @@ class ActuatorRTU():
                                 address = int(parameter_list[actuator_data[x]["actuator_custom_id"]]["address"])
                                 divider = float(parameter_list[actuator_data[x]["actuator_custom_id"]]["divider"])
                                 if address > 40000:
-                                    result = rtu_object.write_register(address=address-40001, value=int(actuator_run["value"][x]) * divider, unit=slave_id)
+                                    result = rtu_object.write_register(address=address-40001, value=int(int(actuator_run["value"][x]) * divider), unit=slave_id)
                                 else:
-                                    result = rtu_object.write_coil(address=address-1, value=int(actuator_run["value"][x]) * divider, unit=slave_id)
+                                    result = rtu_object.write_coil(address=address-1, value=int(int(actuator_run["value"][x]) * divider), unit=slave_id)
                                 if result.isError() == False:
                                     result_state, result_value = True, result.value
                                     result_action["message"].append("Success")
