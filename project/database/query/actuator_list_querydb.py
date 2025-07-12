@@ -32,7 +32,17 @@ class ActuatorListDB():
                 actuatorGroupDB on actuatorListDB.actuator_group_id=actuatorGroupDB.id ORDER by actuatorGroupDB.number ASC, actuatorListDB.created_at ASC"""
         fetchall = sql.selectNoInput(connection, query)
         return fetchall
-
+    
+    
+    def selectByStateFull(group_state, list_state):
+        connection = sql.connect(host, database, username, password)
+        query = """SELECT actuatorGroupDB.name as actuator_group_name, actuatorGroupDB.number as actuator_group_number, actuatorListDB.* FROM actuatorListDB join 
+                actuatorGroupDB on actuatorListDB.actuator_group_id=actuatorGroupDB.id where actuatorGroupDB.state=%s AND actuatorListDB.state=%s ORDER by 
+                actuatorGroupDB.number ASC, actuatorListDB.created_at ASC"""
+        value = (group_state, list_state)
+        fetchall = sql.selectWithInput(connection, query, value)
+        return fetchall
+    
 
     def selectByActId(actuator_custom_id):
         connection = sql.connect(host, database, username, password)
@@ -101,7 +111,7 @@ class ActuatorListDB():
         value = (number,)
         fetchall = sql.selectWithInput(connection, query, value)
         return fetchall
-
+    
     def selectByActuatorGroupNumberState(number, list_state, group_state):
         connection = sql.connect(host, database, username, password)
         query = """
