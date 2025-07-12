@@ -7,21 +7,19 @@
 					<li class="nav-item">
 						<a class="nav-link {% if 'sensor-management' in tab %}{{ 'active' }}{% endif %}" id="custom-tabs-one-sensor-management-tab" data-toggle="pill" href="#custom-tabs-one-sensor-management" role="tab" aria-controls="custom-tabs-one-sensor-management" aria-selected="true">Sensor Management</a>
 					</li>
-					<li class="nav-item">
+					<!-- <li class="nav-item">
 						<a class="nav-link {% if 'sensor-port-config' in tab %}{{ 'active' }}{% endif %}" id="custom-tabs-one-sensor-port-config-tab" data-toggle="pill" href="#custom-tabs-one-sensor-port-config" role="tab" aria-controls="custom-tabs-one-sensor-port-config" aria-selected="true">Sensor Port</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link {% if 'sensor-config' in tab %}{{ 'active' }}{% endif %}"
 							id="custom-tabs-one-sensor-config-tab" data-toggle="pill" href="#custom-tabs-one-sensor-config"
 							role="tab" aria-controls="custom-tabs-one-sensor-config" aria-selected="true">Sensor SHT20</a>
-					</li>
+					</li> -->
 				</ul>
 			</div>
 			<div class="card-body">
 				<div class="tab-content" id="custom-tabs-one-tabContent">
 					{% include "setting/sensor/sensor_management.html" %}
-					{% include "setting/sensor/sensor_port_config.html" %}
-					{% include "setting/sensor/sensor_sht20.html" %}
 				</div>
 			</div>
 		</div>
