@@ -492,7 +492,6 @@ def settingServerPage():
          result = dashboardFunction.settingServer.mqtt.deleteTopic(id)
          return redirect(url_for('settingServerPage', tab=tab, result=result))               
    serverData = serverFunction.getServerData()
-   print(F"Server Data: {serverData}")
    if int(sessionData['state']) == 0:
       flash('Please Login to Access the Page')  
       return redirect(url_for('login'))  
@@ -645,7 +644,6 @@ def settingSensorPage():
                   os.system(script)
 
             result = dashboardFunction.settingSensor.list.update(sensor_id, oid, group_id, name, calibrate, formula, oid_tipe, monitor, log, alarm, min, max, alarm_type, stateSensorList, id)
-            print("Update Results:", result)
             return redirect(url_for('settingSensorPage', tab=tab, result=result, groupID=groupID))
          elif action == 'sensorListDelete' :
             id = request.form.get('id')
@@ -1169,7 +1167,7 @@ def settingRtu():
          last_name = request.form.get("last_name")
          last_address = request.form.get("last_address")
          last_custom_id = request.form.get("last_custom_id")
-
+         
          result = dashboardFunction.SettingRtu.Parameter.update(id, name, custom_id, address, length, datatype, divider, type,
                                                                 type_control, unit, monitor, log, state, last_name, last_custom_id, last_address)
 
@@ -1800,7 +1798,7 @@ def check_actuator():
     rule = str(request.url_rule)
     actuator_list_id, action = '', ''
     result = '-'
-    actuators = ActuatorListDB.selectFull()
+    actuators = ActuatorListDB.selectByStateFull("1","1")
     if request.method == 'POST':
         actuator_list_id = request.form.get('actuator')
         actuator_group_number = request.form.get('actuator_group_number')
