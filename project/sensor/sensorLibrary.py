@@ -1204,7 +1204,9 @@ class SensorRTU:
                                         menit = (value % 3600) // 60
                                         detik = value % 60
                                         value = f"{jam:02}:{menit:02}:{detik:02}"
-                                    else: value = read.registers[0] / divider
+                                    else: 
+                                        value = read.registers[0] / divider
+                                        value = round(value)
                                 state = True
                                 sensor_count += 1
                             else:
