@@ -54,7 +54,7 @@ class serviceSensor():
         filename_sensor = f'actuator{number}'
         service_file_path = f'/lib/systemd/system/{filename_sensor}.service'
         sensor_file_path = base_path + f'/project/sensor/sensor{number}.py'
-        check_sensor_file_path = base_path + f'/project/sensor/check_actuator{number}.py'
+        check_sensor_file_path = base_path + f'/project/sensor/check_sensor{number}.py'
             
         services.delete(service_id)
         os.system(f"sudo systemctl stop {filename_sensor}")
