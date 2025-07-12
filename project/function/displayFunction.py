@@ -107,6 +107,8 @@ class DisplayFunction():
                 page_id = 4
             elif 0x05 in response:
                 page_id = 5
+            elif 0x06 in response:
+                page_id = 6
             
             if page_id is not None and page_id != active_page:
                 active_page = page_id
@@ -142,6 +144,8 @@ class DisplayFunction():
                     await DisplayFunction.RtuSensorPage_2.content(loop, ser, global_variable)
                 elif active_page == 5:
                     await DisplayFunction.RtuSensorPage_3.content(loop, ser, global_variable)
+                elif active_page == 6:
+                    await DisplayFunction.RtuSensorPage_4.content(loop, ser, global_variable)
                 
                 await asyncio.sleep(0.5)
 
@@ -227,7 +231,6 @@ class DisplayFunction():
             return result
 
 
-    # Update untuk RTU Sensor Page
     class RtuSensorPage_1():
         async def content(loop, ser, global_variable):
             timestamp = times.getDatetime()
@@ -235,12 +238,12 @@ class DisplayFunction():
             global_variable["logger"].debug(f"{timestamp} - {logService}")
             rtu_sensor_data = await DisplayFunction.RtuSensorPage_1.getSystemInfo(loop, ser, global_variable)
             command = []
-            command.append('rtu1.valsupply.txt=\"' + str(rtu_sensor_data['supplyVoltageRtu1']) + ' V\"')
-            command.append('rtu1.vallock.txt=\"' + str(rtu_sensor_data['lockoutStateRtu1']) + '\"')
-            command.append('rtu1.valmotor.txt=\"' + str(rtu_sensor_data['motorRunStateRtu1']) + '\"')
-            command.append('rtu1.valmanual.txt=\"' + str(rtu_sensor_data['controlModeManualRtu1']) + '\"')
-            command.append('rtu1.valhand.txt=\"' + str(rtu_sensor_data['controlModeHandRtu1']) + '\"')
-            command.append('rtu1.valauto.txt=\"' + str(rtu_sensor_data['controlModeAutoRtu1']) + '\"')
+            command.append('rtu1.supplyVoltRtu1.txt=\"' + str(rtu_sensor_data['supplyVoltRtu1']) + ' V\"')
+            command.append('rtu1.mtrStateRtu1.txt=\"' + str(rtu_sensor_data['motorRunStateRtu1']) + '\"')
+            command.append('rtu1.runFreqRtu1.txt=\"' + str(rtu_sensor_data['runningFreqRtu1']) + '\"')
+            command.append('rtu1.intkPressRtu1.txt=\"' + str(rtu_sensor_data['intakePressRtu1']) + '\"')
+            command.append('rtu1.motorTempRtu1.txt=\"' + str(rtu_sensor_data['motorTempRtu1']) + '\"')
+            command.append('rtu1.ltchdAlrm0Rtu1.txt=\"' + str(rtu_sensor_data['latchedAlarm0Rtu1']) + '\"')
             await DisplayFunction.MainFunction.send_command(loop, ser, command, global_variable)
             SystemServiceDB.updateStatusByName(logService, timestamp, "nearon_display")
 
@@ -258,11 +261,11 @@ class DisplayFunction():
                                                                                service_condition['log'], service_condition['state'], global_variable)
             
             if state_rtu == 0:
-                sensor_data['supplyVoltageRtu1'], sensor_data['lockoutStateRtu1'], sensor_data['motorRunStateRtu1'] = 0, 0, 0
-                sensor_data['controlModeManualRtu1'], sensor_data['controlModeHandRtu1'], sensor_data['controlModeAutoRtu1'] =  0, 0, 0
+                sensor_data['supplyVoltRtu1'], sensor_data['motorRunStateRtu1'], sensor_data['runningFreqRtu1'] = 0, 0, 0
+                sensor_data['intakePressRtu1'], sensor_data['motorTempRtu1'], sensor_data['latchedAlarm0Rtu1'] =  0, 0, 0
             elif state_rtu == 2:
-                sensor_data['supplyVoltageRtu1'], sensor_data['lockoutStateRtu1'], sensor_data['motorRunStateRtu1'] = 'N/A', 'N/A', 'N/A'
-                sensor_data['controlModeManualRtu1'], sensor_data['controlModeHandRtu1'], sensor_data['controlModeAutoRtu1'] = 'N/A', 'N/A', 'N/A'
+                sensor_data['supplyVoltRtu1'], sensor_data['motorRunStateRtu1'], sensor_data['runningFreqRtu1'] = 'N/A', 'N/A', 'N/A'
+                sensor_data['intakePressRtu1'], sensor_data['motorTempRtu1'], sensor_data['latchedAlarm0Rtu1'] = 'N/A', 'N/A', 'N/A'
             return sensor_data
     
     
@@ -273,12 +276,12 @@ class DisplayFunction():
             global_variable["logger"].debug(f"{timestamp} - {logService}")
             rtu_sensor_data = await DisplayFunction.RtuSensorPage_2.getSystemInfo(loop, ser, global_variable)
             command = []
-            command.append('rtu2.vallatch0.txt=\"' + str(rtu_sensor_data['latchAlarm0Rtu1']) + '\"')
-            command.append('rtu2.vallatch1.txt=\"' + str(rtu_sensor_data['latchAlarm1Rtu1']) + '\"')
-            command.append('rtu2.vallatch2.txt=\"' + str(rtu_sensor_data['latchAlarm2Rtu1']) + '\"')
-            command.append('rtu2.vallatch3.txt=\"' + str(rtu_sensor_data['latchAlarm3Rtu1']) + '\"')
-            command.append('rtu2.valalarm0.txt=\"' + str(rtu_sensor_data['alarms0Rtu1']) + '\"')
-            command.append('rtu2.valalarm1.txt=\"' + str(rtu_sensor_data['alarms1Rtu1']) + '\"')
+            command.append('rtu2.supplyVoltRtu2.txt=\"' + str(rtu_sensor_data['supplyVoltRtu2']) + ' V\"')
+            command.append('rtu2.mtrStateRtu2.txt=\"' + str(rtu_sensor_data['motorRunStateRtu2']) + '\"')
+            command.append('rtu2.runFreqRtu2.txt=\"' + str(rtu_sensor_data['runningFreqRtu2']) + '\"')
+            command.append('rtu2.intkPressRtu2.txt=\"' + str(rtu_sensor_data['intakePressRtu2']) + '\"')
+            command.append('rtu2.motorTempRtu2.txt=\"' + str(rtu_sensor_data['motorTempRtu2']) + '\"')
+            command.append('rtu2.ltchdAlrm0Rtu2.txt=\"' + str(rtu_sensor_data['latchedAlarm0Rtu2']) + '\"')
             await DisplayFunction.MainFunction.send_command(loop, ser, command, global_variable)
             SystemServiceDB.updateStatusByName(logService, timestamp, "nearon_display")
 
@@ -296,11 +299,11 @@ class DisplayFunction():
                                                                                service_condition['log'], service_condition['state'], global_variable)
             
             if state_rtu == 0:
-                sensor_data['latchAlarm0Rtu1'], sensor_data['latchAlarm1Rtu1'], sensor_data['latchAlarm2Rtu1'] = 0, 0, 0
-                sensor_data['latchAlarm3Rtu1'], sensor_data['alarms0Rtu1'], sensor_data['alarms1Rtu1'] =  0, 0, 0
+                sensor_data['supplyVoltRtu2'], sensor_data['motorRunStateRtu2'], sensor_data['runningFreqRtu2'] = 0, 0, 0
+                sensor_data['intakePressRtu2'], sensor_data['motorTempRtu2'], sensor_data['latchedAlarm0Rtu2'] =  0, 0, 0
             elif state_rtu == 2:
-                sensor_data['latchAlarm0Rtu1'], sensor_data['latchAlarm1Rtu1'], sensor_data['latchAlarm2Rtu1'] = 'N/A', 'N/A', 'N/A'
-                sensor_data['latchAlarm3Rtu1'], sensor_data['alarms0Rtu1'], sensor_data['alarms1Rtu1'] = 'N/A', 'N/A', 'N/A'
+                sensor_data['supplyVoltRtu2'], sensor_data['motorRunStateRtu2'], sensor_data['runningFreqRtu2'] = 'N/A', 'N/A', 'N/A'
+                sensor_data['intakePressRtu2'], sensor_data['motorTempRtu2'], sensor_data['latchedAlarm0Rtu2'] = 'N/A', 'N/A', 'N/A'
             return sensor_data
     
     
@@ -311,11 +314,12 @@ class DisplayFunction():
             global_variable["logger"].debug(f"{timestamp} - {logService}")
             rtu_sensor_data = await DisplayFunction.RtuSensorPage_3.getSystemInfo(loop, ser, global_variable)
             command = []
-            command.append('rtu3.valalarm2.txt=\"' + str(rtu_sensor_data['alarms2Rtu1']) + '\"')
-            command.append('rtu3.valalarm3.txt=\"' + str(rtu_sensor_data['alarms3Rtu1']) + '\"')
-            command.append('rtu3.valstart.txt=\"' + str(rtu_sensor_data['totalStartRtu1']) + '\"')
-            command.append('rtu3.valrun.txt=\"' + str(rtu_sensor_data['currentRunTimeRtu1']) + '\"')
-            command.append('rtu3.valoff.txt=\"' + str(rtu_sensor_data['currentOffTimeRtu1']) + '\"')
+            command.append('rtu3.supplyVoltRtu3.txt=\"' + str(rtu_sensor_data['supplyVoltRtu3']) + ' V\"')
+            command.append('rtu3.mtrStateRtu3.txt=\"' + str(rtu_sensor_data['motorRunStateRtu3']) + '\"')
+            command.append('rtu3.runFreqRtu3.txt=\"' + str(rtu_sensor_data['runningFreqRtu3']) + '\"')
+            command.append('rtu3.intkPressRtu3.txt=\"' + str(rtu_sensor_data['intakePressRtu3']) + '\"')
+            command.append('rtu3.motorTempRtu3.txt=\"' + str(rtu_sensor_data['motorTempRtu3']) + '\"')
+            command.append('rtu3.ltchdAlrm0Rtu3.txt=\"' + str(rtu_sensor_data['latchedAlarm0Rtu3']) + '\"')
             await DisplayFunction.MainFunction.send_command(loop, ser, command, global_variable)
             SystemServiceDB.updateStatusByName(logService, timestamp, "nearon_display")
 
@@ -333,13 +337,50 @@ class DisplayFunction():
                                                                                service_condition['log'], service_condition['state'], global_variable)
             
             if state_rtu == 0:
-                sensor_data['latchAlarm0Rtu1'], sensor_data['latchAlarm1Rtu1'], sensor_data['totalStartRtu1'] = 0, 0, 0
-                sensor_data['currentRunTimeRtu1'], sensor_data['currentOffTimeRtu1'] =  0, 0
+                sensor_data['supplyVoltRtu3'], sensor_data['motorRunStateRtu3'], sensor_data['runningFreqRtu3'] = 0, 0, 0
+                sensor_data['intakePressRtu3'], sensor_data['motorTempRtu3'], sensor_data['latchedAlarm0Rtu3'] =  0, 0, 0
             elif state_rtu == 2:
-                sensor_data['latchAlarm0Rtu1'], sensor_data['latchAlarm1Rtu1'], sensor_data['totalStartRtu1'] = 'N/A', 'N/A', 'N/A'
-                sensor_data['currentRunTimeRtu1'], sensor_data['currentOffTimeRtu1'] = 'N/A', 'N/A'
+                sensor_data['supplyVoltRtu3'], sensor_data['motorRunStateRtu3'], sensor_data['runningFreqRtu3'] = 'N/A', 'N/A', 'N/A'
+                sensor_data['intakePressRtu3'], sensor_data['motorTempRtu3'], sensor_data['latchedAlarm0Rtu3'] = 'N/A', 'N/A'
             return sensor_data
     
+
+    class RtuSensorPage_4():
+        async def content(loop, ser, global_variable):
+            timestamp = times.getDatetime()
+            logService = "RTU Sensor Page 4"
+            global_variable["logger"].debug(f"{timestamp} - {logService}")
+            rtu_sensor_data = await DisplayFunction.RtuSensorPage_4.getSystemInfo(loop, ser, global_variable)
+            command = []
+            command.append('rtu4.supplyVoltRtu4.txt=\"' + str(rtu_sensor_data['supplyVoltRtu4']) + ' V\"')
+            command.append('rtu4.mtrStateRtu4.txt=\"' + str(rtu_sensor_data['motorRunStateRtu4']) + '\"')
+            command.append('rtu4.runFreqRtu4.txt=\"' + str(rtu_sensor_data['runningFreqRtu4']) + '\"')
+            command.append('rtu4.intkPressRtu4.txt=\"' + str(rtu_sensor_data['intakePressRtu4']) + '\"')
+            command.append('rtu4.motorTempRtu4.txt=\"' + str(rtu_sensor_data['motorTempRtu4']) + '\"')
+            command.append('rtu4.ltchdAlrm0Rtu4.txt=\"' + str(rtu_sensor_data['latchedAlarm0Rtu4']) + '\"')
+            await DisplayFunction.MainFunction.send_command(loop, ser, command, global_variable)
+            SystemServiceDB.updateStatusByName(logService, timestamp, "nearon_display")
+
+    
+        async def getSystemInfo(loop, ser, global_variable):
+            system_info = SensorListDB.selectByGroupNumberFull("1")
+            sensor_data = {}
+            if system_info:
+                sensor_data = {}
+                for row in system_info:
+                    sensor_data[row['sensor_id']] = row['value']
+            service_condition = ServiceProjectFunction.getServiceInfo("sensor1")
+
+            state_rtu = await  DisplayFunction.MainFunction.stateProcessSensor(loop, ser, "rtu4.statertu4", "rtu4.lastrtu4", service_condition['last_update'], 
+                                                                               service_condition['log'], service_condition['state'], global_variable)
+            
+            if state_rtu == 0:
+                sensor_data['supplyVoltRtu4'], sensor_data['motorRunStateRtu4'], sensor_data['runningFreqRtu4'] = 0, 0, 0
+                sensor_data['intakePressRtu4'], sensor_data['motorTempRtu4'], sensor_data['latchedAlarm0Rtu4'] =  0, 0, 0
+            elif state_rtu == 2:
+                sensor_data['supplyVoltRtu4'], sensor_data['motorRunStateRtu4'], sensor_data['runningFreqRtu4'] = 'N/A', 'N/A', 'N/A'
+                sensor_data['intakePressRtu4'], sensor_data['motorTempRtu4'], sensor_data['latchedAlarm0Rtu4'] = 'N/A', 'N/A'
+            return sensor_data
     
     async def update_page(loop, ser, page_id, global_variable):
         if page_id == 1:  # Home Page
@@ -350,6 +391,8 @@ class DisplayFunction():
             await DisplayFunction.RtuSensorPage_2.content(loop, ser, global_variable)
         elif page_id == 5:  # RTU Sensor Page 3
             await DisplayFunction.RtuSensorPage_3.content(loop, ser, global_variable)
+        elif page_id == 6:  # RTU Sensor Page 4
+            await DisplayFunction.RtuSensorPage_4.content(loop, ser, global_variable)
 
 # import sys
 # import time
