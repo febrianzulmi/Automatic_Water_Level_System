@@ -112,7 +112,7 @@ class dashboardHome():
 
     def actuatorDataInfo(serviceData):
         actuatorDataResult = []
-        actuatorList = ActuatorListDB.selectFull()
+        actuatorList = ActuatorListDB.selectByStateFull("1", "1")
         if len(actuatorList) > 0:
             for x in range(len(actuatorList)):
                 actuatorData = {}
