@@ -383,6 +383,8 @@ class synchronizeFunction():
                             actuator_schedule = 0 
                             ActuatorScheduleDB.deleteByActId(actuator_data[y]["id"])
                         updateDB = ActuatorListDB.updateParam(actuator_name, actuator_value, timestamp, actuator_schedule, actuator_data[y]["id"])
+                        if actuator_data[y]["last_server_value"] == None:
+                            updateLastValueServer = ActuatorListDB.updateLastServer(actuator_value, timestamp, actuator_data[y]["id"])
                         break
             
             log_service = f"Success Sync {actuator_sync} of {len(actuator_data)} Actuator Data"  
