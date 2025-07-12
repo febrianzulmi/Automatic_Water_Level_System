@@ -34,7 +34,7 @@ def main():
     timestamp = now2.strftime("%Y-%m-%d %H:%M:%S")
     now2 = int((now2.minute*60)+now2.second)
 
-    actuator_data = ActuatorListDB.selectByActuatorGroupNumberFull(number)
+    actuator_data = ActuatorListDB.selectByActuatorGroupNumberState(number, "1", "1")
     if len(actuator_data) > 0:
         if first == 0:
             status_actuator = ActuatorFunction.checkSyncValueFunction(actuator_data, timestamp, actionActuator, global_variable)
