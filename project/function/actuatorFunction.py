@@ -58,9 +58,9 @@ class ActuatorFunction():
                     global_variable["logger"].debug(f"  o Result Message : {status_actuator['message'][x]}")    
                     if status_actuator["state"][x] == True:
                         control = "1x Action"
-                        ActuatorListDB.updateAction(actuator_run["value"][x], 0, timestamp, actuator_data[x]["id"])
+                        ActuatorListDB.updateAction(actuator_run["value"][x], 1, timestamp, actuator_data[x]["id"])
                         ActuatorListDB.updateLastServer(actuator_run["value"][x], timestamp, actuator_data[x]["id"])
-                        LogActuatorDB.insert(actuator_data[x]["id"], actuator_run["value"][x], 0, timestamp)
+                        LogActuatorDB.insert(actuator_data[x]["id"], actuator_run["value"][x], 1, timestamp)
                         notificationFunction.generateNotificationActuator(actuator_data[x]["id"], 1, actuator_run["value"][x], timestamp, control)
         else:
             status_actuator = {"state": [], "value": [], "summary": "No Triggered Actuator by Server Remote", "message": [], "": 0}

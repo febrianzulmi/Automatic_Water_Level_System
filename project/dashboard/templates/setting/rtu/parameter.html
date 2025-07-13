@@ -298,7 +298,8 @@
                 </td>
                 <td>{% if rtuParameterData[item_parameter]["type_control"]|string == "0" %}{{ "No Control" }}
                     {% elif rtuParameterData[item_parameter]["type_control"]|string == "1" %}{{ "True/False Value" }}
-                    {% else %}{{ "Custom Value" }}{% endif %}
+                    {% elif rtuParameterData[item_parameter]["type_control"]|string == "2" %}{{ "Custom Value" }}
+                    {% else %}{{ "N/A" }}{% endif %}
                 </td>
                 {% if rtuParameterData[item_parameter]["state"] == "1" %}
                     <td style="font-weight: bold; color: green;">{{ "Enable" }}</td>
