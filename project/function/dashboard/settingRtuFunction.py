@@ -230,6 +230,15 @@ class SettingRtu():
                 
                 else:
                     if not state: state = "0"
+
+                    if type_parameter == 0 :
+                        type_control = 0
+                
+                    elif type_parameter == 1:
+                        monitoring = 0
+                        log = 0
+                        unit = '#'
+                        datatype = 0
                     
                     rtu_parameter_id = generalFunction.GenerateId.generateIdNearon("rtu", "rtu-parameter")
                     status = RtuParameterDB.insert(rtu_parameter_id, name, custom_id, address, length, datatype, divider, 
@@ -310,6 +319,15 @@ class SettingRtu():
                     return json.dumps(result)
                     
                 else:
+                    if str(type_parameter) == '0' :
+                        type_control = 0
+                
+                    elif str(type_parameter) == '1':
+                        monitoring = 0
+                        log = 0
+                        unit = '#'
+                        datatype = 0
+
                     status = RtuParameterDB.updateById(id, name, custom_id, address, length, datatype, divider,
                                                         type_parameter, type_control, unit, monitoring, log, state)
 
