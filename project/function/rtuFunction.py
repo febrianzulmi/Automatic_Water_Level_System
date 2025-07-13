@@ -23,7 +23,7 @@ class RtuFunction:
             for item_parameter in range(len(rtu_parameter)):
                 if rtu_parameter[item_parameter]["type"] == 0 or rtu_parameter[item_parameter]["type"] == 2:
                     id_sensor = generalFunction.GenerateId.generateIdNearon("sensor", "sensor-list")
-                    sensor_name = f"{rtu_parameter[item_parameter]['name']} {rtu_device[item_device]['name']}"
+                    sensor_name = f"{rtu_parameter[item_parameter]['name']} - {rtu_device[item_device]['name']}"
                     sensor_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{rtu_device[item_device]['number']}"
                     state_sensor = '1' if (rtu_device[item_device]['state'] == '1' and rtu_parameter[item_parameter]['state'] == '1') else '0'
                     datatype = rtu_parameter[item_parameter]["datatype"]
@@ -56,7 +56,7 @@ class RtuFunction:
             for item_parameter in range(len(rtu_parameter)):
                 if rtu_parameter[item_parameter]["type"] == 1 or rtu_parameter[item_parameter]["type"] == 2:
                     id_actuator = generalFunction.GenerateId.generateIdNearon("actuator", "actuator-list")
-                    actuator_name = f"{rtu_parameter[item_parameter]['name']} {rtu_device[item_device]['name']}"
+                    actuator_name = f"{rtu_parameter[item_parameter]['name']} - {rtu_device[item_device]['name']}"
                     actuator_custom_id = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{rtu_device[item_device]['number']}"
                     type_actuator = int(rtu_parameter[item_parameter]['type_control']) - 1
                     state_actuator = '1' if (rtu_device[item_device]['state'] == '1' and rtu_parameter[item_parameter]['state'] == '1') else '0'

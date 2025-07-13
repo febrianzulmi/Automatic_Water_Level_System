@@ -38,7 +38,7 @@ class SettingRtu():
                         oid_number = len(SensorListDB.selectByGroupFull(sensor_group_id)) + 1
                         
                         for item_parameter in range(len(rtu_parameter)):
-                            name_data = f"{rtu_parameter[item_parameter]['name']} {name}"
+                            name_data = f"{rtu_parameter[item_parameter]['name']} - {name}"
                             custom_id_data = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{number}"
                             state_data = '1' if (rtu_parameter[item_parameter]['state'] == '1' and state == '1') else '0'
 
@@ -124,7 +124,7 @@ class SettingRtu():
                         oid_number = len(sensor_list) + 1
 
                         for item_parameter in range(len(rtu_parameter)):
-                            name_data = f"{rtu_parameter[item_parameter]['name']} {name}"
+                            name_data = f"{rtu_parameter[item_parameter]['name']} - {name}"
                             custom_id_data = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{number}"
                             last_custom_id_data = f"{rtu_parameter[item_parameter]['custom_id']}Rtu{last_number}"
                             state_data = '1' if (rtu_parameter[item_parameter]['state'] == '1' and state == '1') else '0'
@@ -190,7 +190,7 @@ class SettingRtu():
                         ####################################### Sync Sensor and Actuator #######################################
                         rtu_parameter = RtuParameterDB.select()
                         for item_parameter in range(len(rtu_parameter)):
-                            fullname = f"{rtu_parameter[item_parameter]['name']} {name}"
+                            fullname = f"{rtu_parameter[item_parameter]['name']} - {name}"
                             SensorListDB.deleteByName(fullname)
                             ActuatorListDB.deleteByName(fullname)
                         
@@ -252,7 +252,7 @@ class SettingRtu():
                         oid_number = len(SensorListDB.selectByGroupFull(sensor_group_id)) + 1
                         
                         for item_device in range(len(rtu_device)):
-                            name_data = f"{name} {rtu_device[item_device]['name']}"
+                            name_data = f"{name} - {rtu_device[item_device]['name']}"
                             custom_id_data = f"{custom_id}Rtu{rtu_device[item_device]['number']}"
                             state_data = '1' if (rtu_device[item_device]['state'] == '1' and state == '1') else '0'
 
@@ -341,7 +341,7 @@ class SettingRtu():
                         oid_number = len(sensor_list) + 1
 
                         for item_device in range(len(rtu_device)):
-                            name_data = f"{name} {rtu_device[item_device]['name']}"
+                            name_data = f"{name} - {rtu_device[item_device]['name']}"
                             custom_id_data = f"{custom_id}Rtu{rtu_device[item_device]['number']}"
                             last_custom_id_data = f"{last_custom_id}Rtu{rtu_device[item_device]['number']}"
                             state_data = '1' if (rtu_device[item_device]['state'] == '1' and state == '1') else '0'
@@ -440,7 +440,7 @@ class SettingRtu():
                     ####################################### Sync Sensor and Actuator #######################################
                     rtu_device = RtuDeviceDB.select()
                     for item_device in range(len(rtu_device)):
-                        fullname = f"{name} {rtu_device[item_device]['name']}"
+                        fullname = f"{name} - {rtu_device[item_device]['name']}"
                         SensorListDB.deleteByName(fullname)
                         ActuatorListDB.deleteByName(fullname)
                     
