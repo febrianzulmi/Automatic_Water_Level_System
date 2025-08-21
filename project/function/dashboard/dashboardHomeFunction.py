@@ -226,10 +226,7 @@ class dashboardHome():
                         if str(sensorDatabase[i]['value']) == '1': sensorDatabase[i]['value'] = 'Open'
                         elif str(sensorDatabase[i]['value']) == '0': sensorDatabase[i]['value'] = 'Close'
                         else: sensorDatabase[i]['value'] = 'N/A'
-                    if 'water' in sensorDatabase[i]['name'].lower():
-                        if str(sensorDatabase[i]['value']) == '1': sensorDatabase[i]['value'] = 'No Detect'
-                        elif str(sensorDatabase[i]['value']) == '0': sensorDatabase[i]['value'] = 'Detect'
-                        else: sensorDatabase[i]['value'] = 'N/A'
+
                     if 'stateac' in sensorDatabase[i]['sensor_id'].lower():
                         if str(sensorDatabase[i]['value']) == '1': sensorDatabase[i]['value'] = 'On'
                         elif str(sensorDatabase[i]['value']) == '0': sensorDatabase[i]['value'] = 'Off'

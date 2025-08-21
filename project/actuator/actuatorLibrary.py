@@ -2,7 +2,7 @@ import json
 import re
 import sys
 import time
-
+import RPi.GPIO as GPIO
 from pymodbus.client.sync import ModbusSerialClient as ModbusClient
 import requests
 
@@ -107,3 +107,52 @@ def actuatorAC(actuator_custom_id, value):
 
    status = str(status) + " | " + str(num) + "x Action"   
    return status
+
+class ActuatorGPIO():
+    def run(global_variable, actuator_run, actuator_data):
+        parameter_list = ActuatorFunction.getParameterListActuator(global_variable["number"])
+        result_action = {"state": [], "value": [], "summary": "", "message": []}
+        
+        if len(actuator_data) > 0:
+            try:
+                # Setup GPIO mode
+                GPIO.setmode(GPIO.BCM)
+                GPIO.setwarnings(False)
+                
+                success_run = 0
+                for x in range(len(actuator_data)):
+                    try:
+                        if actuator_run["action"][x] == True:
+                            actuator_custom_id = actuator_data[x]["actuator_custom_id"]
+                            pin = int(parameter_list[actuator_data[x]["actuator_custom_id"]]["pin"])
+                            
+                            # Setup pin as output
+                            GPIO.setup(pin, GPIO.OUT)
+                            
+                            # Set pin value (0 for OFF, 1 for ON)
+                            value = int(actuator_run["value"][x])
+                            GPIO.output(pin, value)
+                            
+                            result_state, result_value = True, value
+                            result_action["message"].append("Success")
+                            success_run += 1
+                        else:
+                            result_state, result_value = False, None
+                            result_action["message"].append("Skip Run")
+                    except Exception as e:
+                        result_state, result_value = False, None
+                        result_action["message"].append(str(e))
+                    result_action["state"].append(result_state)
+                    result_action["value"].append(result_value)
+                
+                result_action["summary"] = f"Success Run {success_run} of {actuator_run['count']} Actuator from {len(actuator_data)} Actuator"
+                
+            except Exception as e:
+                result_action["state"].append(False)
+                result_action["value"].append(None)
+                result_action["message"].append(f"GPIO Error: {str(e)}")
+                result_action["summary"] = f"GPIO Error: {str(e)}"
+        else:
+            result_action["summary"] = "No Actuator Data"
+        
+        return result_action

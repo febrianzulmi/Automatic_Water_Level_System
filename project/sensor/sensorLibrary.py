@@ -3,6 +3,11 @@ from math import sqrt
 import re
 import sys
 import time
+import os
+import glob
+import subprocess
+import math
+import numpy as np
 
 from gpiozero import MCP3008
 import minimalmodbus
@@ -13,6 +18,14 @@ from pymodbus.client.sync import ModbusSerialClient as ModbusClient
 import requests
 import RPi.GPIO as GPIO
 import serial
+
+# Add ADS1115 import for water quality sensors
+try:
+    import Adafruit_ADS1x15.ADS1x15 as ADS1x15
+    ADS1115_AVAILABLE = True
+except ImportError:
+    ADS1115_AVAILABLE = False
+    print("Warning: Adafruit_ADS1x15 not available. Water quality sensors will not work.")
 
 sys.path.append('/home/connex/project/database')
 from query_project_db import SensorListDB, SensorGroupDB, EnvironmentDeviceDB, PowerDeviceDB,  SensorPortConfigDB, RtuDeviceDB
@@ -94,6 +107,23 @@ class Environment:
                 return {"value": -1, "state": False, "port": port["name"], "message": F"Error Door {port['name']} {e}"}
 
 
+        def readWaterLevel(self, port):
+            try:
+                instrument = minimalmodbus.Instrument(self.parameterGroupSensor['portSerial'], int(port["modbus_id"]))
+                instrument.mode = minimalmodbus.MODE_RTU
+                instrument.serial.baudrate = 9600
+                instrument.serial.bytesize = 8
+                instrument.serial.parity = serial.PARITY_NONE
+                instrument.serial.stopbits = 1
+                instrument.serial.timeout = 0.2
+                instrument.close_port_after_each_call = True
+                instrument.clear_buffers_before_each_transaction = True
+                result = instrument.read_registers(4, 1, 3)  # Read register 4 with function code 03
+                water_level = result[0]  
+                return {"value": water_level, "state": True, "port": port["name"], "message": "Success Sampling Water Level Sensor"}
+            except Exception as e:
+                port['name'] = port['name'].replace("port_", "Port ")
+                return {"value": 0.00, "state": False, "port": port["name"], "message": F"Error Water Level {port['name']} {e}"}
     def main(self):
         self.groupData = SensorGroupDB.selectOne(self.groupId)
 
@@ -102,6 +132,7 @@ class Environment:
                 "1": Environment.SensorHandler.readSHT20,
                 "2": Environment.SensorHandler.readSmoke,
                 "3": Environment.SensorHandler.readDoor,
+                "4": Environment.SensorHandler.readWaterLevel,
             }
 
             results = []
@@ -333,6 +364,150 @@ class Power:
             sensorResult = {"value": self.sensorValue, "message": sensorMessage, "state": self.sensorState}
             return sensorResult
 
+class ACLoadOutput():
+    def main(groupId, dataSensor):
+        groupId = groupId
+        dataSensor = dataSensor
+        groupData = SensorGroupDB.selectOne(groupId)
+        parameterGroupSensor = CollectDataSensorFunction.getParameterGroupSensor(groupId)
+        parameterListSensor = CollectDataSensorFunction.getParameterListSensor(groupId)
+        sensorValue, sensorState = handleSensorValue(dataSensor)
+        ads1 = ADS1x15.ADS1115(address=0x48, busnum=1)
+        ads2 = ADS1x15.ADS1115(address=0x49, busnum=1)
+        acLoadOutput = {'acLoadOutput1': {}, 'acLoadOutput2': {}, 'acLoadOutput3': {}, 'acLoadOutput4': {}, 'acLoadOutput5': {}, 'acLoadOutput6': {}, 'acLoadOutput7': {}, 'acLoadOutput8': {}}
+        samples = []
+        num_samples = 50  
+
+        # Debug: Print available keys in parameterListSensor
+        print(f"Available keys in parameterListSensor: {list(parameterListSensor.keys())}")
+        
+        # Debug: Print the actual data structure
+        for key, value in parameterListSensor.items():
+            print(f"Key: '{key}', Value: {value}")
+        
+        # Clean parameterListSensor keys by removing any whitespace characters
+        cleaned_parameterListSensor = {}
+        for key, value in parameterListSensor.items():
+            cleaned_key = key.strip()  # Remove leading/trailing whitespace including tabs
+            cleaned_parameterListSensor[cleaned_key] = value
+        
+        for i in range(1, 9):
+            load_key = f'acLoadOutput{i}'
+            sensor_key = f'acLoadCurrent{i}'
+            
+            # Check if sensor_key exists in cleaned parameterListSensor
+            if sensor_key not in cleaned_parameterListSensor:
+                print(f"Warning: {sensor_key} not found in parameterListSensor")
+                acLoadOutput[load_key] = {
+                    'specification': 6.0,  # Default value
+                    'port': 0,  # Default value
+                    'status': 'on'  # Default value
+                }
+            else:
+                try:
+                    # Debug: Print the sensor data structure
+                    # print(f"Processing {sensor_key}: {cleaned_parameterListSensor[sensor_key]}")
+                    
+                    # Safely extract values with defaults
+                    sensor_data = cleaned_parameterListSensor[sensor_key]
+                    
+                    # Try to get specification, default to 5.0 if not available or invalid
+                    try:
+                        spec_value = sensor_data.get('specification', '5.0')
+                        if isinstance(spec_value, str) and spec_value.lower() in ['on', 'off']:
+                            specification = 5.0  # Default if status value is in specification field
+                        else:
+                            specification = float(spec_value)
+                    except (ValueError, TypeError):
+                        specification = 5.0
+                    
+                    # Try to get port, default to 0 if not available or invalid
+                    try:
+                        port_value = sensor_data.get('port', '0')
+                        port = int(port_value)
+                    except (ValueError, TypeError):
+                        port = 0
+                    
+                    # Try to get status, default to 'on' if not available
+                    status = str(sensor_data.get('status', 'on'))
+                    
+                    acLoadOutput[load_key] = {
+                        'specification': specification,
+                        'port': port,
+                        'status': status
+                    }
+                    
+                    # print(f"Parsed {load_key}: spec={specification}, port={port}, status={status}")
+                    
+                except Exception as e:
+                    print(f"Error parsing {sensor_key}: {e}")
+                    acLoadOutput[load_key] = {
+                        'specification': 5.0,  # Default value
+                        'port': 0,  # Default value
+                        'status': 'on'  # Default value
+                    }
+
+        sensorMessage = ''
+        if dataSensor['numSensor'] > 0:
+            try:
+                acLoadCurrents = []
+                for i in range(1, 9):
+                    samples = []
+                    load_key = f'acLoadOutput{i}'
+                    if acLoadOutput[load_key]['status'] == 'on':
+                        ads_used = ads1 if i <= 4 else ads2
+                        port = acLoadOutput[load_key]['port']
+                        sensitivity = acLoadOutput[load_key]['specification']
+                        if sensitivity == 5:
+                            sensitivity = sensitivity + 1.5
+
+                        elif sensitivity == 10:
+                            sensitivity = sensitivity + 3
+
+                        for _ in range(num_samples):
+                            voltage = ACLoadOutput.read_voltage(ads_used, int(port))
+                            samples.append(voltage)
+                            time.sleep(0.001)
+                        mean_voltage = np.mean(samples)
+                        centered_samples = [v - mean_voltage for v in samples]
+                        rms_voltage = ACLoadOutput.calculate_rms(centered_samples)
+                        acLoadCurrent = round(float(rms_voltage * sensitivity), 2)
+                        if mean_voltage <= 1:
+                            acLoadCurrent = 0.00
+                            
+                    else:
+                        acLoadCurrent = 0.0
+
+                    acLoadCurrents.append(acLoadCurrent)
+                sensorValue = acLoadCurrents
+                sensorMessage = f"{dataSensor['numSensor']} Sensors Success Sampling"
+            
+            except Exception as e:
+                sensorState = [False] * 8
+                sensorMessage = f"{dataSensor['numSensor']} Sensors Failed Sampling - {str(e)}"
+
+        else:
+            sensorMessage = f"No List Sensors Registered on Group Sensor {groupData[0]['name']}"
+
+        return {"value": sensorValue, "message": sensorMessage, "state": sensorState}
+
+    @staticmethod
+    def read_voltage(ads, channel):
+        # Gain 1 corresponds to ±4.096V range
+        raw = ads.read_adc(channel, gain=1)
+        
+        # Convert raw ADC value to voltage manually
+        # For ADS1115 with gain=1, the voltage range is ±4.096V
+        # ADS1115 is 16-bit, so range is -32768 to 32767
+        voltage = (raw / 32767.0) * 4.096
+        
+        return voltage
+
+    @staticmethod
+    def calculate_rms(values):
+        squares = [v**2 for v in values]
+        mean = np.mean(squares)
+        return np.sqrt(mean)
 
 class EnvironmentExt:
     def __init__(self, group_id, data_sensor):
@@ -1158,11 +1333,31 @@ class SensorRTU:
         self.parameterGroupSensor = CollectDataSensorFunction.getParameterGroupSensor(self.groupId)
         self.parameterListSensor = CollectDataSensorFunction.getParameterListSensor(self.groupId)
         self.sensorValue, self.sensorState = handleSensorValue(dataSensor)
-        self.port = generalFunction.checkUSBDevice(str(self.parameterGroupSensor["port"]))
-        self.port = self.port[1]
-        if self.port != "N/A":
-            self.port = "/dev/" + self.port
-        self.baudrate = int(self.parameterGroupSensor['baudrate'])
+        
+        # Handle port parameter with direct validation
+        port_param = self.parameterGroupSensor.get("port", "")
+        print("Parameter Group Sensor:", self.parameterGroupSensor)
+        print("Port parameter:", port_param)
+        
+        # Check if port exists directly
+        if port_param and port_param != "":
+            # Try to use the port directly if it's a valid ttyUSB/ttyACM device
+            if "ttyUSB" in port_param or "ttyACM" in port_param:
+                self.port = "/dev/" + port_param
+                print("Using port directly:", self.port)
+            else:
+                # Fallback to checkUSBDevice function
+                usb_result = generalFunction.checkUSBDevice(str(port_param))
+                self.port = usb_result[1]
+                print("Port after checkUSBDevice:", self.port)
+                if self.port != "N/A":
+                    self.port = "/dev/" + self.port
+        else:
+            self.port = "N/A"
+            print("Port parameter is empty or not found")
+        
+        # Handle baudrate parameter
+        self.baudrate = int(self.parameterGroupSensor.get('baudrate', 9600))
 
     def main(self):
         if self.dataSensor['numSensor'] > 0:
@@ -1181,19 +1376,30 @@ class SensorRTU:
                             address = int(self.parameterListSensor[sensor_id]["address"])
                             count = int(self.parameterListSensor[sensor_id]["length"])
                             divider = float(self.parameterListSensor[sensor_id]["divider"])
-                            if address > 0 and address < 20000:
-                                if address > 10000 : 
-                                    address = address - 10001
-                                else: 
-                                    address = address - 1
+                            # Handle different register formats
+                            if address >= 40000:
+                                # Holding registers (4xxxx) - format like 40005
+                                address = address - 40001
+                                read = rtu_object.read_holding_registers(address=address, count=count, unit=slave_id)
+                                type = "value"
+                            elif address >= 30000 and address < 40000:
+                                # Input registers (3xxxx)
+                                address = address - 30001
+                                read = rtu_object.read_input_registers(address=address, count=count, unit=slave_id)
+                                type = "value"
+                            elif address >= 10000 and address < 20000:
+                                # Coils (0xxxx)
+                                address = address - 10001
+                                read = rtu_object.read_coils(address=address, count=count, unit=slave_id)
+                                type = "state"
+                            elif address > 0 and address < 10000:
+                                # Discrete inputs (1xxxx)
+                                address = address - 1
                                 read = rtu_object.read_discrete_inputs(address=address, count=count, unit=slave_id)
                                 type = "state"
                             else:
-                                if address > 30000 and address < 40000: 
-                                    address = address - 30001
-                                elif address > 40000: 
-                                    address = address - 40001
-                                read = rtu_object.read_input_registers(address=address, count=count, unit=slave_id)
+                                # Default to holding registers for any other address
+                                read = rtu_object.read_holding_registers(address=address, count=count, unit=slave_id)
                                 type = "value"
                             if read.isError() == False:
                                 if type == "state" : value = read.bits[0]
@@ -1206,16 +1412,16 @@ class SensorRTU:
                                         value = f"{jam:02}:{menit:02}:{detik:02}"
                                     else: 
                                         value = read.registers[0] / divider
-                                        value = round(value)
+                                        value = round(value)  # Keep as float with 2 decimal places
                                 state = True
                                 sensor_count += 1
                             else:
-                                value = 0
+                                value = 0  # Use float for consistency
                                 state = False
                             self.sensorValue[x] = value
                             self.sensorState[x] = state
                         except Exception as e:
-                            self.sensorValue[x] = 0
+                            self.sensorValue[x] = 0  # Use float for consistency
                             self.sensorState[x] = False
                     
                     if sensor_count == 0: sensorMessage = f"{sensor_count} Sensors Failed Sampling"
