@@ -137,10 +137,10 @@ class notificationFunction():
             elif str(value) == "0": value = "0 (No Detect)" 
             else: value = "-1 (N/A)" 
         
-        elif "water" in name_sensor.lower():
-            if str(value) == "1": value = "1 (No Detect)"
-            elif str(value) == "0": value = "0 (Detect)"
-            else: value = "-1 (N/A)"   
+        # elif "water" in name_sensor.lower():
+        #     if str(value) == "1": value = "1 (No Detect)"
+        #     elif str(value) == "0": value = "0 (Detect)"
+        #     else: value = "-1 (N/A)"   
         
         if unit != "":
             if unit == "%": value = f"{value}{unit}"
