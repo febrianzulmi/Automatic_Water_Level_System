@@ -2,6 +2,23 @@
 """
 Script monitoring water level dengan sinkronisasi API
 Menggunakan function dari actuatorLibrary + API endpoint
+
+FITUR KEAMANAN:
+- Auto matikan waterPump actuator ketika water level tinggi
+- Auto matikan rotaryLamp (GPIO pin 0) ketika water level tinggi
+- Kontrol otomatis berdasarkan threshold dari database
+- Notifikasi otomatis saat water level tinggi
+- Safety lock: actuator tidak bisa dinyalakan manual saat water level tinggi
+- Update status sensor monitoring via API (Alarm Max/Normal)
+
+ACTUATOR YANG DIKONTROL:
+1. waterPump: GPIO pin yang dikonfigurasi (default: pin 7)
+2. rotaryLamp: GPIO pin 0 (fixed)
+
+KEAMANAN:
+- Hanya berfungsi ketika alarm status = "ACTIVE"
+- Threshold diambil dari database sensorListDB
+- Kontrol via GPIO + sinkronisasi dengan API server
 """
 
 import sys
@@ -9,6 +26,7 @@ import time
 import threading
 import minimalmodbus
 import serial
+import datetime
 
 # Tambahkan path untuk import
 sys.path.append('/home/connex/project/actuator')
@@ -58,7 +76,7 @@ def read_water_level_safety():
 
 
 class WaterLevelMonitor:
-    def __init__(self, actuator_custom_id="waterPump", pin=7, check_interval=5):
+    def __init__(self, actuator_custom_id="waterPump", pin=7, check_interval=2):
         # Parameter dari actuatorLibrary
         self.actuator_custom_id = actuator_custom_id
         self.pin = pin
@@ -103,12 +121,13 @@ class WaterLevelMonitor:
         print("🚰 Water Level Monitor initialized")
         print(f"🎯 Actuator: {self.actuator_custom_id}")
         print(f"📌 GPIO Pin: {self.pin}")
+        print(f"💡 Rotary Lamp Pin: 0")
         print(f"⏱️  Check interval: {self.check_interval} detik")
         print(f"🚨 Safety threshold: {self.safety_threshold} cm (dari database)")
         print(f"🚨 Alarm status: {self.alarm_status} (dari database)")
         print("🔔 Notification: Auto kirim notifikasi jika water level > threshold")
         print("🎯 Fokus: Sync dengan actuatorLibrary + hit API endpoint")
-        print("🔄 Responsive: Auto matikan actuator jika water level > threshold dan alarm aktif")
+        print("🔄 Responsive: Auto matikan actuator + rotary lamp jika water level > threshold dan alarm aktif")
     
     def get_actuator_info(self, force_refresh=False):
         """
@@ -264,6 +283,14 @@ class WaterLevelMonitor:
                         
                         print(f"✅ Actuator dimatikan via GPIO pin {self.pin}")
                         
+                        # Matikan rotaryLamp via GPIO pin 0
+                        try:
+                            GPIO.setup(0, GPIO.OUT)
+                            GPIO.output(0, GPIO.LOW)
+                            print("✅ Rotary lamp dimatikan via GPIO pin 0")
+                        except Exception as e:
+                            print(f"⚠️  Gagal mematikan rotary lamp: {e}")
+                        
                         # Matikan actuator via API - PASTIKAN EKSEKUSI
                         print("🔗 Matikan actuator via API...")
                         if self.api_client.update_water_pump_actuator(False):
@@ -273,12 +300,30 @@ class WaterLevelMonitor:
                             self.get_actuator_info(force_refresh=True)
                         else:
                             print("⚠️  API gagal, tapi actuator sudah dimatikan via GPIO")
+
+                        # Matikan rotary lamp via API juga
+                        print("🔗 Matikan rotary lamp via API...")
+                        if self.api_client.update_rotary_lamp_actuator(False):
+                            print("✅ API berhasil - rotary lamp dimatikan di server")
+                        else:
+                            print("⚠️  API gagal mematikan rotary lamp, tapi sudah OFF via GPIO")
                     else:
                         print(f"✅ Actuator sudah OFF - memastikan sinkronisasi dengan server (water level: {water_level:.1f} cm ≥ {self.safety_threshold} cm)")
                         
                         # Meskipun actuator sudah OFF, pastikan sinkronisasi dengan server
                         # untuk memastikan dashboard tidak bisa mengaktifkan actuator
                         print("🔗 Memastikan actuator tetap OFF di server...")
+                        
+                        # Pastikan rotaryLamp juga OFF
+                        try:
+                            import RPi.GPIO as GPIO
+                            GPIO.setmode(GPIO.BCM)
+                            GPIO.setup(0, GPIO.OUT)
+                            GPIO.output(0, GPIO.LOW)
+                            print("✅ Rotary lamp dipastikan OFF via GPIO pin 0")
+                        except Exception as e:
+                            print(f"⚠️  Gagal memastikan rotary lamp OFF: {e}")
+                        
                         if self.api_client.update_water_pump_actuator(False):
                             print("✅ API berhasil - actuator dipastikan OFF di server")
                             
@@ -286,6 +331,13 @@ class WaterLevelMonitor:
                             self.get_actuator_info(force_refresh=True)
                         else:
                             print("⚠️  API gagal, tapi actuator sudah OFF")
+
+                        # Pastikan rotary lamp OFF di server juga
+                        print("🔗 Memastikan rotary lamp OFF di server...")
+                        if self.api_client.update_rotary_lamp_actuator(False):
+                            print("✅ API berhasil - rotary lamp dipastikan OFF di server")
+                        else:
+                            print("⚠️  API gagal memastikan rotary lamp OFF di server")
                     
                     # Kirim notifikasi hanya sekali saat pertama kali terdeteksi
                     if not self.notification_sent:
@@ -295,6 +347,10 @@ class WaterLevelMonitor:
                         print("🔔 Notifikasi water level tinggi telah dikirim")
                     else:
                         print("🔒 Actuator tetap OFF - water level masih tinggi, tidak boleh dinyalakan")
+                    
+                    # Update sensor monitoring status ke Alarm Max
+                    print("📊 Update sensor monitoring status ke Alarm Max...")
+                    self.update_sensor_monitoring_status(water_level, is_alarm_active=True)
                 else:
                     # WATER LEVEL AMAN + ALARM ACTIVE = ACTUATOR BISA DIOPERASIKAN MANUAL
                     if self.notification_sent:
@@ -303,6 +359,10 @@ class WaterLevelMonitor:
                         print("🔄 Notification flag direset - water level kembali aman")
                     
                     print(f"✅ Water level aman: {water_level:.1f} cm < {self.safety_threshold} cm - actuator bisa dioperasikan manual")
+                    
+                    # Update sensor monitoring status ke Normal
+                    print("📊 Update sensor monitoring status ke Normal...")
+                    self.update_sensor_monitoring_status(water_level, is_alarm_active=False)
             else:
                 # ALARM INACTIVE = ACTUATOR BISA DIOPERASIKAN MANUAL
                 if self.notification_sent:
@@ -312,6 +372,10 @@ class WaterLevelMonitor:
                 print(f"✅ Alarm INACTIVE - actuator bisa dioperasikan manual dari dashboard")
                 print(f"💡 Water level: {water_level:.1f} cm, threshold: {self.safety_threshold} cm")
                 
+                # Update sensor monitoring status ke Normal (karena alarm INACTIVE)
+                print("📊 Update sensor monitoring status ke Normal (alarm INACTIVE)...")
+                self.update_sensor_monitoring_status(water_level, is_alarm_active=False)
+                
         except Exception as e:
             print(f"❌ Error dalam check dan control actuator: {e}")
             print("🔒 Flag notifikasi tidak diubah karena error")
@@ -319,6 +383,7 @@ class WaterLevelMonitor:
     def start_monitoring(self):
         """
         Mulai monitoring water level menggunakan function dari actuatorLibrary + API endpoint
+        dengan timing yang dioptimasi untuk minimal delay
         """
         if self.is_monitoring:
             print("⚠️  Monitoring sudah berjalan")
@@ -332,13 +397,21 @@ class WaterLevelMonitor:
             
             print(f"🚰 Memulai monitoring water level untuk {self.actuator_custom_id}")
             print("🔄 Mode: Responsive - auto matikan actuator jika water level > threshold")
+            print(f"⏱️  Interval: {self.check_interval} detik (dengan timing optimization)")
             
             # Login sekali di awal
             print("🔐 Login ke API Synapsis...")
             if not self.api_client.login():
                 print("❌ Gagal login, monitoring akan berjalan tanpa API sync")
             
+            # Timing tracking untuk optimasi
+            last_loop_start = time.time()
+            loop_count = 0
+            
             while self.is_monitoring:
+                loop_start = time.time()
+                loop_count += 1
+                
                 try:
                     # Refresh threshold dan alarm status secara berkala (setiap 2 detik)
                     self.update_safety_threshold()
@@ -353,14 +426,36 @@ class WaterLevelMonitor:
                         # Cek dan kontrol actuator berdasarkan water level
                         self.check_and_control_actuator(water_level)
                         
+                        # Pastikan rotaryLamp OFF jika water level tinggi
+                        if water_level >= self.safety_threshold and self.alarm_status == "ACTIVE":
+                            self.turn_off_rotary_lamp()
                     else:
                         print(f"⚠️  Tidak bisa membaca water level")
                     
-                    # Gunakan interval yang sama dengan actuatorLibrary
-                    time.sleep(self.check_interval)
+                    # Calculate processing time dan compensate untuk timing yang akurat
+                    processing_time = time.time() - loop_start
                     
+                    if loop_count > 1:  # Skip first loop
+                        actual_interval = loop_start - last_loop_start
+                        if abs(actual_interval - self.check_interval) > 0.1:
+                            print(f"⚠️  Timing delay: {actual_interval:.2f}s (target: {self.check_interval}s)")
+                        else:
+                            print(f"✅ Timing akurat: {actual_interval:.2f}s")
+                    
+                    # Calculate sleep time to compensate for processing delay
+                    sleep_time = max(0, self.check_interval - processing_time)
+                    
+                    if sleep_time > 0:
+                        time.sleep(sleep_time)
+                    else:
+                        print(f"🚨 Processing terlalu lama: {processing_time:.2f}s > {self.check_interval}s")
+                        # Skip sleep jika processing terlalu lama
+                    
+                    last_loop_start = loop_start
+                
                 except Exception as e:
                     print(f"❌ Error monitoring water level: {e}")
+                    # Fallback ke sleep normal jika ada error
                     time.sleep(self.check_interval)
         
         # Start monitoring dalam thread terpisah
@@ -401,6 +496,7 @@ class WaterLevelMonitor:
             "is_monitoring": self.is_monitoring,
             "actuator_custom_id": self.actuator_custom_id,
             "pin": self.pin,
+            "rotary_lamp_pin": 0,
             "water_level": water_level,
             "safety_threshold": self.safety_threshold,
             "alarm_status": self.alarm_status,
@@ -540,12 +636,147 @@ class WaterLevelMonitor:
             print(f"❌ Error mengirim notifikasi: {e}")
             return False
 
+    def turn_off_rotary_lamp(self):
+        """
+        Matikan rotary lamp via GPIO pin 0
+        """
+        try:
+            import RPi.GPIO as GPIO
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(0, GPIO.OUT)
+            GPIO.output(0, GPIO.LOW)
+            print("✅ Rotary lamp dimatikan via GPIO pin 0")
+            return True
+        except Exception as e:
+            print(f"⚠️  Gagal mematikan rotary lamp: {e}")
+            return False
+    
     def reset_notification_flag(self):
         """
         Reset notification flag - untuk testing atau manual reset
         """
         self.notification_sent = False
         print("🔄 Notification flag berhasil direset")
+
+    def get_current_timestamp(self):
+        """
+        Get current timestamp dalam UTC-7 (WIB) dengan format realtime
+        """
+        try:
+            # Coba gunakan library times terlebih dahulu
+            return times.getDatetime()
+        except:
+            # Fallback ke datetime standard dengan UTC-7
+            # UTC-7 = WIB (Waktu Indonesia Barat)
+            utc_time = datetime.datetime.utcnow()
+            wib_time = utc_time + datetime.timedelta(hours=7)
+            return wib_time.strftime("%Y-%m-%d %H:%M:%S")
+
+    def get_realtime_timestamp(self):
+        """
+        Get timestamp realtime dalam WIB - selalu fresh dan akurat
+        """
+        # Gunakan waktu lokal server yang sudah dalam format WIB
+        # Ini menghindari masalah konversi timezone dan memberikan waktu yang akurat
+        try:
+            # Method 1: Gunakan waktu lokal server (asumsi server sudah dalam WIB)
+            local_time = datetime.datetime.now()
+            return local_time.strftime("%Y-%m-%d %H:%M:%S")
+        except:
+            # Method 2: Fallback ke UTC+7 jika ada masalah
+            try:
+                utc_time = datetime.datetime.now(datetime.timezone.utc)
+                wib_time = utc_time + datetime.timedelta(hours=7)
+                return wib_time.strftime("%Y-%m-%d %H:%M:%S")
+            except:
+                # Method 3: Fallback ke method lama
+                utc_time = datetime.datetime.utcnow()
+                wib_time = utc_time + datetime.timedelta(hours=7)
+                return wib_time.strftime("%Y-%m-%d %H:%M:%S")
+
+    def update_sensor_monitoring_status(self, water_level, is_alarm_active=False):
+        """
+        Update status sensor monitoring via API ketika alarm aktif dan water level di atas threshold
+        
+        Format data yang dikirim sesuai dengan curl:
+        {
+            "node_id": "b949aecbf0f34bb48b94a7be960b78ce",
+            "status": "3", // 3 = Alarm Max, 1 = Normal
+            "data": {
+                "waterLevelRtu1": {water_level}
+            },
+            "timestamp": "2025-07-03 19:45:30"
+        }
+        
+        Status:
+        - "3" = Alarm Max (water level tinggi + alarm ACTIVE)
+        - "1" = Normal (water level aman atau alarm INACTIVE)
+        """
+        try:
+            if not self.api_client.is_logged_in():
+                if not self.api_client.login():
+                    print("❌ Gagal login untuk update sensor monitoring status")
+                    return False
+            
+            # Tentukan status berdasarkan water level dan alarm
+            if is_alarm_active and water_level is not None and water_level >= self.safety_threshold:
+                # Water level tinggi + alarm aktif = Alarm Max
+                status = "3"
+                status_description = "Alarm Max"
+                print(f"🚨 Update sensor monitoring status: {status_description} (water level: {water_level:.1f} cm ≥ {self.safety_threshold} cm)")
+            else:
+                # Water level normal atau alarm tidak aktif = Normal
+                status = "1"
+                status_description = "Normal"
+                print(f"✅ Update sensor monitoring status: {status_description} (water level: {water_level:.1f} cm < {self.safety_threshold} cm)")
+            
+            # Data untuk API (tanpa timestamp - server akan generate otomatis)
+            monitoring_data = {
+                "node_id": "b949aecbf0f34bb48b94a7be960b78ce",
+                "status": status,
+                "data": {
+                    "waterLevelRtu1": water_level if water_level is not None else 0
+                }
+            }
+            
+            print(f"📤 Mengirim data monitoring ke API:")
+            print(f"   🆔 Node ID: {monitoring_data['node_id']}")
+            print(f"   🚨 Status: {status} ({status_description})")
+            print(f"   📊 Water Level: {monitoring_data['data']['waterLevelRtu1']} cm")
+            print(f"   ⏰ Timestamp: Server generate otomatis")
+            
+            # Hit API endpoint untuk update sensor monitoring status
+            response = self.api_client.update_sensor_monitoring_status(monitoring_data)
+            
+            # Handle response yang bisa berupa dict atau boolean
+            if response:
+                if isinstance(response, dict):
+                    # Response berupa dict dengan field status
+                    if response.get('status'):
+                        print(f"✅ Berhasil update sensor monitoring status: {status_description}")
+                        return True
+                    else:
+                        print(f"⚠️  Gagal update sensor monitoring status: {response.get('message', 'Unknown error')}")
+                        return False
+                elif isinstance(response, bool):
+                    # Response berupa boolean (legacy)
+                    if response:
+                        print(f"✅ Berhasil update sensor monitoring status: {status_description}")
+                        return True
+                    else:
+                        print(f"⚠️  Gagal update sensor monitoring status: Unknown error")
+                        return False
+                else:
+                    # Response type tidak dikenal
+                    print(f"⚠️  Response type tidak dikenal: {type(response)}")
+                    return False
+            else:
+                print(f"⚠️  Tidak ada response dari API")
+                return False
+                
+        except Exception as e:
+            print(f"❌ Error update sensor monitoring status: {e}")
+            return False
 
 
 def main():
@@ -563,7 +794,7 @@ def main():
         monitor = WaterLevelMonitor(
             actuator_custom_id="waterPump",
             pin=7,
-            check_interval=5
+            check_interval=2  # ← Ubah ke 2 detik untuk alarm setiap 2 detik
         )
         
         # Test API connection terlebih dahulu
@@ -1376,6 +1607,98 @@ def test_actuator_safety_lock():
         return False
 
 
+def test_rotary_lamp_control():
+    """
+    Test kontrol rotary lamp ketika water level tinggi
+    """
+    print("🧪 Test kontrol rotary lamp ketika water level tinggi...")
+    
+    try:
+        # Buat monitor
+        monitor = WaterLevelMonitor()
+        
+        print(f"📊 Safety threshold: {monitor.safety_threshold} cm")
+        print(f"📊 Alarm status: {monitor.alarm_status}")
+        
+        # Test 1: Test method turn_off_rotary_lamp
+        print("\n🔍 Test 1: Test method turn_off_rotary_lamp...")
+        result = monitor.turn_off_rotary_lamp()
+        print(f"✅ Result: {result}")
+        
+        # Test 2: Simulasi water level tinggi dengan alarm ACTIVE
+        print("\n🔍 Test 2: Simulasi water level tinggi dengan alarm ACTIVE...")
+        water_level_high = 15.0
+        print(f"📊 Simulasi water level tinggi: {water_level_high:.1f} cm")
+        
+        # Test control logic yang akan mematikan rotary lamp
+        monitor.check_and_control_actuator(water_level_high)
+        
+        # Test 3: Simulasi water level normal
+        print("\n🔍 Test 3: Simulasi water level normal...")
+        water_level_normal = 8.0
+        monitor.check_and_control_actuator(water_level_normal)
+        
+        print("\n✅ Test rotary lamp control selesai!")
+        print("🎯 Fitur utama:")
+        print("   1. Rotary lamp dimatikan ketika water level tinggi + alarm ACTIVE")
+        print("   2. Rotary lamp tetap OFF sampai water level kembali aman")
+        print("   3. Kontrol otomatis via GPIO pin 0")
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error test rotary lamp control: {e}")
+        return False
+
+
+def test_sensor_monitoring_status_update():
+    """
+    Test update sensor monitoring status ketika alarm aktif dan water level di atas threshold
+    """
+    print("🧪 Test update sensor monitoring status...")
+    
+    try:
+        # Buat monitor
+        monitor = WaterLevelMonitor()
+        
+        print(f"📊 Safety threshold: {monitor.safety_threshold} cm")
+        print(f"📊 Alarm status: {monitor.alarm_status}")
+        
+        # Test 1: Simulasi water level tinggi dengan alarm ACTIVE
+        print("\n🔍 Test 1: Simulasi water level tinggi dengan alarm ACTIVE...")
+        water_level_high = 15.0
+        print(f"📊 Simulasi water level tinggi: {water_level_high:.1f} cm")
+        
+        # Test control logic yang akan update status ke Alarm Max
+        monitor.check_and_control_actuator(water_level_high)
+        
+        # Test 2: Simulasi water level normal
+        print("\n🔍 Test 2: Simulasi water level normal...")
+        water_level_normal = 8.0
+        monitor.check_and_control_actuator(water_level_normal)
+        
+        # Test 3: Test method update_sensor_monitoring_status langsung
+        print("\n🔍 Test 3: Test method update_sensor_monitoring_status langsung...")
+        result = monitor.update_sensor_monitoring_status(water_level_high, is_alarm_active=True)
+        print(f"✅ Result update status Alarm Max: {result}")
+        
+        result2 = monitor.update_sensor_monitoring_status(water_level_normal, is_alarm_active=False)
+        print(f"✅ Result update status Normal: {result2}")
+        
+        print("\n✅ Test sensor monitoring status update selesai!")
+        print("🎯 Fitur utama:")
+        print("   1. Status diupdate ke '3' (Alarm Max) ketika water level tinggi + alarm ACTIVE")
+        print("   2. Status diupdate ke '1' (Normal) ketika water level aman atau alarm INACTIVE")
+        print("   3. Data dikirim ke API endpoint monitoring-data")
+        print("   4. Format data sesuai dengan curl yang diberikan")
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error test sensor monitoring status update: {e}")
+        return False
+
+
 if __name__ == "__main__":
     import argparse
     
@@ -1399,9 +1722,11 @@ if __name__ == "__main__":
     parser.add_argument("--notification-persistence", action="store_true", help="Test ketahanan notification flag ketika sensor error")
     parser.add_argument("--notification-alarm", action="store_true", help="Test notification dengan alarm status yang berbeda")
     parser.add_argument("--actuator-safety-lock", action="store_true", help="Test fitur safety lock: Actuator tidak boleh dinyalakan ketika water level tinggi")
+    parser.add_argument("--rotary-lamp", action="store_true", help="Test kontrol rotary lamp ketika water level tinggi")
+    parser.add_argument("--sensor-monitoring", action="store_true", help="Test update sensor monitoring status")
     parser.add_argument("--actuator", type=str, default="waterPump", help="Actuator custom ID")
     parser.add_argument("--pin", type=int, default=7, help="GPIO pin")
-    parser.add_argument("--interval", type=int, default=5, help="Check interval (detik)")
+    parser.add_argument("--interval", type=int, default=2, help="Check interval (detik)")
     
     args = parser.parse_args()
     
@@ -1443,6 +1768,10 @@ if __name__ == "__main__":
         test_notification_with_alarm_status()
     elif args.actuator_safety_lock:
         test_actuator_safety_lock()
+    elif args.rotary_lamp:
+        test_rotary_lamp_control()
+    elif args.sensor_monitoring:
+        test_sensor_monitoring_status_update()
     else:
         # Buat monitor dengan parameter dari actuatorLibrary
         monitor = WaterLevelMonitor(
@@ -1454,6 +1783,7 @@ if __name__ == "__main__":
         print(f"🚰 Water Level Monitor - Sync actuatorLibrary + API")
         print(f"🎯 Actuator: {args.actuator}")
         print(f"📌 GPIO Pin: {args.pin}")
+        print(f"💡 Rotary Lamp Pin: 0")
         print(f"🚨 Safety threshold: {monitor.safety_threshold} cm (dari database)")
         print(f"🚨 Alarm status: {monitor.alarm_status} (dari database)")
         print(f"🔔 Notification: Auto kirim notifikasi jika water level > threshold")

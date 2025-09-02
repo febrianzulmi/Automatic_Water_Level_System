@@ -9,6 +9,7 @@ import json
 import time
 import sys
 import os
+import datetime
 
 # Tambahkan path untuk import
 sys.path.append('/home/connex/library')
@@ -19,6 +20,8 @@ class SynapsisAPIClient:
         # Konfigurasi API
         self.LOGIN_URL = "https://dev-api-nearon.synapsis.id/v1/auth/login/connex"
         self.ACTUATOR_URL = "https://dev-nearon.synapsis.id/api/projectnode/nodes/b949aecbf0f34bb48b94a7be960b78ce/actuators/5a6bc3a3efdc427ab9df7bfb3c82092e/value"
+        self.ROTARY_LAMP_URL = "https://dev-nearon.synapsis.id/api/projectnode/nodes/b949aecbf0f34bb48b94a7be960b78ce/actuators/84869332cff445f8b5eb85f1b21ba376/value"
+        self.SENSOR_MONITORING_URL = "https://dev-api-nearon.synapsis.id/v1/projectnode/nodes/b949aecbf0f34bb48b94a7be960b78ce/sensors/monitoring-data"
         
         # Node ID yang valid (sama dengan actuator)
         self.NODE_ID = "b949aecbf0f34bb48b94a7be960b78ce"
@@ -198,6 +201,52 @@ class SynapsisAPIClient:
         except Exception as e:
             print(f"❌ Error update actuator: {e}")
             return False
+
+    def update_rotary_lamp_actuator(self, value):
+        """
+        Update status actuator rotary lamp via API
+        """
+        try:
+            # Pastikan sudah login
+            if self.token is None:
+                print("🔐 Token tidak ada, melakukan login...")
+                if not self.login():
+                    return False
+            
+            headers = {
+                'Content-Type': 'application/json',
+                'Cookie': f'token={self.token}'
+            }
+            data = {"value": str(value).lower()}
+            
+            print(f"💡 Update rotary lamp: {self.ROTARY_LAMP_URL}")
+            print(f"📦 Payload: {data}")
+            
+            response = self.session.put(
+                self.ROTARY_LAMP_URL,
+                headers=headers,
+                json=data,
+                timeout=10
+            )
+            
+            print(f"📊 Response Status: {response.status_code}")
+            
+            if response.status_code == 200:
+                print(f"✅ API update berhasil - Rotary lamp: {value}")
+                print(f"📄 Response: {response.text}")
+                return True
+            else:
+                print(f"❌ API update gagal - Status: {response.status_code}")
+                print(f"❌ Response: {response.text}")
+                if response.status_code == 401:
+                    print("🔄 Token expired, mencoba login ulang...")
+                    self.token = None
+                    if self.login():
+                        return self.update_rotary_lamp_actuator(value)
+                return False
+        except Exception as e:
+            print(f"❌ Error update rotary lamp actuator: {e}")
+            return False
     
     def send_notification(self, subject, message, level=1, notification_type="web", node_id=None):
         """
@@ -324,7 +373,111 @@ class SynapsisAPIClient:
         except Exception as e:
             print(f"❌ Error safety trigger: {e}")
             return False
+
+    def update_sensor_monitoring_status(self, monitoring_data):
+        """
+        Update status sensor monitoring via API
+        Endpoint: https://dev-api-nearon.synapsis.id/v1/projectnode/nodes/{node_id}/sensors/monitoring-data
+        """
+        try:
+            # Pastikan sudah login
+            if self.token is None:
+                print("🔐 Token tidak ada, melakukan login...")
+                if not self.login():
+                    return False
+            
+            # Headers untuk sensor monitoring update
+            headers = {
+                'Content-Type': 'application/json',
+                'Cookie': f'token={self.token}'
+            }
+            
+            print(f"📊 Update sensor monitoring: {self.SENSOR_MONITORING_URL}")
+            print(f"📦 Payload: {monitoring_data}")
+            
+            # Kirim request POST
+            response = self.session.post(
+                self.SENSOR_MONITORING_URL,
+                headers=headers,
+                json=monitoring_data,
+                timeout=10
+            )
+            
+            print(f"📊 Response Status: {response.status_code}")
+            
+            if response.status_code == 200:
+                print(f"✅ API update berhasil - Sensor monitoring status: {monitoring_data.get('status')}")
+                print(f"📄 Response: {response.text}")
+                
+                # Parse response JSON untuk return data yang lengkap
+                try:
+                    response_data = response.json()
+                    return response_data
+                except:
+                    # Jika gagal parse JSON, return dict dengan status success
+                    return {
+                        "status": True,
+                        "message": "API update berhasil",
+                        "response_text": response.text
+                    }
+            else:
+                print(f"❌ API update gagal - Status: {response.status_code}")
+                print(f"❌ Response: {response.text}")
+                
+                # Jika token expired, coba login ulang
+                if response.status_code == 401:
+                    print("🔄 Token expired, mencoba login ulang...")
+                    self.token = None
+                    if self.login():
+                        return self.update_sensor_monitoring_status(monitoring_data)
+                
+                # Return dict dengan status error
+                return {
+                    "status": False,
+                    "message": f"API update gagal - Status: {response.status_code}",
+                    "response_text": response.text
+                }
+                
+        except Exception as e:
+            print(f"❌ Error update sensor monitoring: {e}")
+            return False
     
+    def get_current_timestamp(self):
+        """
+        Get current timestamp dalam UTC-7 (WIB) dengan format realtime
+        """
+        try:
+            # Coba gunakan library times terlebih dahulu
+            return times.getDatetime()
+        except:
+            # Fallback ke datetime standard dengan UTC-7
+            # UTC-7 = WIB (Waktu Indonesia Barat)
+            utc_time = datetime.datetime.utcnow()
+            wib_time = utc_time + datetime.timedelta(hours=7)
+            return wib_time.strftime("%Y-%m-%d %H:%M:%S")
+
+    def get_realtime_timestamp(self):
+        """
+        Get timestamp realtime dalam WIB - selalu fresh dan akurat
+        """
+        # Gunakan waktu lokal server yang sudah dalam format WIB
+        # Ini menghindari masalah konversi timezone dan memberikan waktu yang akurat
+        try:
+            # Method 1: Gunakan waktu lokal server (asumsi server sudah dalam WIB)
+            local_time = datetime.datetime.now()
+            return local_time.strftime("%Y-%m-%d %H:%M:%S")
+        except:
+            # Method 2: Fallback ke UTC+7 jika ada masalah
+            try:
+                utc_time = datetime.datetime.now(datetime.timezone.utc)
+                wib_time = utc_time + datetime.timedelta(hours=7)
+                return wib_time.strftime("%Y-%m-%d %H:%M:%S")
+            except:
+                # Method 3: Fallback ke method lama
+                utc_time = datetime.datetime.utcnow()
+                wib_time = utc_time + datetime.timedelta(hours=7)
+                return wib_time.strftime("%Y-%m-%d %H:%M:%S")
+
     def test_connection(self):
         """
         Test koneksi API
@@ -485,6 +638,40 @@ def test_get_actuator_info():
         return False
 
 
+def test_sensor_monitoring_status():
+    """
+    Test update sensor monitoring status
+    """
+    print("🧪 Testing update sensor monitoring status...")
+    
+    client = SynapsisAPIClient()
+    
+    if client.login():
+        # Test data monitoring (tanpa timestamp - server akan generate otomatis)
+        monitoring_data = {
+            "node_id": "b949aecbf0f34bb48b94a7be960b78ce",
+            "status": "3",  # Alarm Max
+            "data": {
+                "waterLevelRtu1": 15.5
+            }
+        }
+        
+        print(f"📊 Test data: {monitoring_data}")
+        
+        # Test update sensor monitoring status
+        result = client.update_sensor_monitoring_status(monitoring_data)
+        
+        if result:
+            print("✅ Update sensor monitoring status berhasil")
+            return True
+        else:
+            print("❌ Update sensor monitoring status gagal")
+            return False
+    else:
+        print("❌ Login gagal")
+        return False
+
+
 if __name__ == "__main__":
     print("🚰 Synapsis API Client Test")
     print("=" * 50)
@@ -493,10 +680,13 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="Synapsis API Client Test")
     parser.add_argument("--actuator-info", action="store_true", help="Test get actuator info")
+    parser.add_argument("--sensor-monitoring", action="store_true", help="Test update sensor monitoring status")
     
     args = parser.parse_args()
     
     if args.actuator_info:
         test_get_actuator_info()
+    elif args.sensor_monitoring:
+        test_sensor_monitoring_status()
     else:
         test_api_client()

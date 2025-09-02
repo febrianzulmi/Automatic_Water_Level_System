@@ -28,6 +28,7 @@ class monitoringFunction():
             deviceSetting = dbFunction.getDeviceSetting()
             serverConfig = serverFunction.getServerConfig()
             dataPack = packData.dataPack(deviceSetting['uid'], sensorData['sensorId'], sensorData['sensorValue'], sensorData['numSensor'], timestampUTC, 9) 
+            
             protocolMonitoring = projectData['protocol'] # 1: HTTP, 2: MQTT, 3: SNMP
             colorLogService = ''
         
@@ -65,7 +66,10 @@ class monitoringFunction():
                 logService = f"{sensorData['numSensor']} Sensors Failed Routine Monitoring Interval ({intervalData[num]} Seconds) - Protocol N/A"
                 colorLogService = f"\033[31m{logService} at {timestamp}\033[00m" 
         
-            globalVariable["logger"].debug(f"{colorLogService}\n")        
+            globalVariable["logger"].debug(f"{colorLogService}\n")   
+
+            
+
         
         else:
             logService = f"No Sensor with Routine Monitoring Interval {intervalData[num]} Seconds"

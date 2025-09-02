@@ -164,7 +164,7 @@ CREATE TABLE `info` (
 
 LOCK TABLES `info` WRITE;
 /*!40000 ALTER TABLE `info` DISABLE KEYS */;
-INSERT INTO `info` VALUES (1,'temp','26'),(2,'humidity','95'),(3,'cpu_temp','39.4'),(4,'cpu_usage','58.6 %'),(5,'memory','19% (721/3844 MB)'),(6,'storage','18% (5.1/29 GB)'),(7,'uptime','0 hour  00 minute  41 seconds'),(8,'boot_time','2025-09-01 11:14:55'),(9,'fan','6');
+INSERT INTO `info` VALUES (1,'temp','31'),(2,'humidity','61'),(3,'cpu_temp','47.2'),(4,'cpu_usage','99.4 %'),(5,'memory','12% (446/3844 MB)'),(6,'storage','17% (4.8/29 GB)'),(7,'uptime','0 hour  00 minute  38 seconds'),(8,'boot_time','2025-09-01 19:12:51'),(9,'fan','40');
 /*!40000 ALTER TABLE `info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -338,7 +338,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (5,'super','pbkdf2:sha256:50000$SfPXHgAW$7f52ff8caa7fcb29598eaaea5aaaaab0b8c1ac2751becb8fd4dca8de535b9810',1,0,'2025-08-26 14:38:31',0,'2025-08-29 17:13:01','2021-08-28 13:31:42'),(6,'admin','pbkdf2:sha256:50000$kOhHyFxh$bba765d99350895bc214fa4fd68c03959d04127b8ce7e6fbf3c80b1ad4c5b00e',0,0,'2024-08-07 17:14:18',0,'2025-01-20 17:01:29','2021-08-28 13:32:15');
+INSERT INTO `user` VALUES (5,'super','pbkdf2:sha256:50000$SfPXHgAW$7f52ff8caa7fcb29598eaaea5aaaaab0b8c1ac2751becb8fd4dca8de535b9810',1,0,'2025-09-01 12:50:42',0,'2025-09-01 11:24:01','2021-08-28 13:31:42'),(6,'admin','pbkdf2:sha256:50000$kOhHyFxh$bba765d99350895bc214fa4fd68c03959d04127b8ce7e6fbf3c80b1ad4c5b00e',0,0,'2024-08-07 17:14:18',0,'2025-01-20 17:01:29','2021-08-28 13:32:15');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -379,4 +379,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-09-01 11:15:39
+-- Dump completed on 2025-09-02 10:18:12
