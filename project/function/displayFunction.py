@@ -399,6 +399,7 @@ class DisplayFunction():
             command.append('acload.acLoadCurrent3.txt=\"' + str(acload_output_data['acLoadCurrent3']) + ' A\"')
             command.append('acload.acLoadCurrent4.txt=\"' + str(acload_output_data['acLoadCurrent4']) + ' A\"')
             command.append('acload.acLoadCurrent5.txt=\"' + str(acload_output_data['acLoadCurrent5']) + ' A\"')
+            command.append('acload.acLoadCurrent6.txt=\"' + str(acload_output_data['acLoadCurrent6']) + ' A\"')
 
 
             await DisplayFunction.MainFunction.send_command(loop, ser, command, global_variable)
@@ -419,11 +420,11 @@ class DisplayFunction():
                                                                                    service_condition['log'], service_condition['state'], global_variable)
                 if state_ac == 0:
                     sensor_data['acLoadCurrent1'], sensor_data['acLoadCurrent2'], sensor_data['acLoadCurrent3'] = 0, 0, 0
-                    sensor_data['acLoadCurrent4'], sensor_data['acLoadCurrent5'] =  0, 0
+                    sensor_data['acLoadCurrent4'], sensor_data['acLoadCurrent5'], sensor_data['acLoadCurrent6'] =  0, 0, 0
             
                 elif state_ac == 2:
                     sensor_data['acLoadCurrent1'], sensor_data['acLoadCurrent2'], sensor_data['acLoadCurrent3'] = 'N/A', 'N/A', 'N/A'
-                    sensor_data['acLoadCurrent4'], sensor_data['acLoadCurrent5'] = 'N/A', 'N/A'
+                    sensor_data['acLoadCurrent4'], sensor_data['acLoadCurrent5'], sensor_data['acLoadCurrent6'] = 'N/A', 'N/A', 'N/A'
                     
             else:
                 # Jika ser None, gunakan nilai default
@@ -432,6 +433,7 @@ class DisplayFunction():
                 sensor_data['acLoadCurrent3'] = sensor_data.get('acLoadCurrent3', 0)
                 sensor_data['acLoadCurrent4'] = sensor_data.get('acLoadCurrent4', 0)
                 sensor_data['acLoadCurrent5'] = sensor_data.get('acLoadCurrent5', 0)
+                sensor_data['acLoadCurrent6'] = sensor_data.get('acLoadCurrent6', 0)
 
                 
             return sensor_data

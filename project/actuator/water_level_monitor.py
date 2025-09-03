@@ -125,9 +125,13 @@ class WaterLevelMonitor:
         print(f"⏱️  Check interval: {self.check_interval} detik")
         print(f"🚨 Safety threshold: {self.safety_threshold} cm (dari database)")
         print(f"🚨 Alarm status: {self.alarm_status} (dari database)")
-        print("🔔 Notification: Auto kirim notifikasi jika water level > threshold")
+        print("🔔 Notification: Auto kirim notifikasi jika water level > threshold (hanya sekali)")
+        print("🎛️  Actuator Control: Auto stop waterPump sekali, lalu kontrol manual via dashboard")
+        print("💡 Rotary Lamp: Auto ON saat water level tinggi, Auto OFF saat water level aman (sekali saja)")
+        print("🔄 Trigger: Hanya sekali ketika water level melewati threshold")
+        print("📊 Monitoring: Update status sensor monitoring via API")
         print("🎯 Fokus: Sync dengan actuatorLibrary + hit API endpoint")
-        print("🔄 Responsive: Auto matikan actuator + rotary lamp jika water level > threshold dan alarm aktif")
+        print("🔄 Mode: Auto Stop Once + Auto Rotary Lamp + Manual Control")
     
     def get_actuator_info(self, force_refresh=False):
         """
@@ -223,12 +227,11 @@ class WaterLevelMonitor:
     
     def check_and_control_actuator(self, water_level):
         """
-        Cek status actuator dan kontrol berdasarkan water level
-        Menggunakan function safety check dari actuatorLibrary
+        Cek status actuator dan monitoring water level
+        Hanya trigger sekali ketika water level melewati threshold
+        Tidak ada kontrol otomatis actuator - hanya monitoring dan notifikasi
         """
         try:
-
-            
             # Dapatkan info actuator dari database lokal (prioritas) atau API (fallback)
             actuator_info = self.get_actuator_info()
             
@@ -268,106 +271,172 @@ class WaterLevelMonitor:
             # Cek alarm status
             print(f"🔍 Alarm status: {self.alarm_status}")
             
-            # Logic notification dan kontrol actuator berdasarkan alarm status
+            # Logic notification dan monitoring berdasarkan alarm status
             if self.alarm_status == "ACTIVE":
                 if not is_safe:
-                    # WATER LEVEL TINGGI + ALARM ACTIVE = ACTUATOR HARUS OFF
-                    if is_actuator_on:
-                        print(f"🔴 Actuator sedang ON tapi water level tinggi ({water_level:.1f} cm ≥ {self.safety_threshold} cm) - MATIKAN OTOMATIS!")
+                    # WATER LEVEL TINGGI + ALARM ACTIVE = KONTROL OTOMATIS WATERPUMP HANYA SEKALI
+                    print(f"🚨 Water level tinggi terdeteksi: {water_level:.1f} cm ≥ {self.safety_threshold} cm")
+                    
+                    # Kontrol otomatis waterPump hanya sekali saat pertama kali terdeteksi
+                    if not hasattr(self, 'waterpump_auto_stopped'):
+                        print("🔴 WaterPump akan dimatikan otomatis untuk pertama kali...")
                         
                         # Matikan actuator via GPIO
-                        import RPi.GPIO as GPIO
-                        GPIO.setmode(GPIO.BCM)
-                        GPIO.setup(self.pin, GPIO.OUT)
-                        GPIO.output(self.pin, GPIO.LOW)
-                        
-                        print(f"✅ Actuator dimatikan via GPIO pin {self.pin}")
-                        
-                        # Matikan rotaryLamp via GPIO pin 0
-                        try:
-                            GPIO.setup(0, GPIO.OUT)
-                            GPIO.output(0, GPIO.LOW)
-                            print("✅ Rotary lamp dimatikan via GPIO pin 0")
-                        except Exception as e:
-                            print(f"⚠️  Gagal mematikan rotary lamp: {e}")
-                        
-                        # Matikan actuator via API - PASTIKAN EKSEKUSI
-                        print("🔗 Matikan actuator via API...")
-                        if self.api_client.update_water_pump_actuator(False):
-                            print("✅ API berhasil - actuator dimatikan di server")
-                            
-                            # Refresh cache actuator info
-                            self.get_actuator_info(force_refresh=True)
-                        else:
-                            print("⚠️  API gagal, tapi actuator sudah dimatikan via GPIO")
-
-                        # Matikan rotary lamp via API juga
-                        print("🔗 Matikan rotary lamp via API...")
-                        if self.api_client.update_rotary_lamp_actuator(False):
-                            print("✅ API berhasil - rotary lamp dimatikan di server")
-                        else:
-                            print("⚠️  API gagal mematikan rotary lamp, tapi sudah OFF via GPIO")
-                    else:
-                        print(f"✅ Actuator sudah OFF - memastikan sinkronisasi dengan server (water level: {water_level:.1f} cm ≥ {self.safety_threshold} cm)")
-                        
-                        # Meskipun actuator sudah OFF, pastikan sinkronisasi dengan server
-                        # untuk memastikan dashboard tidak bisa mengaktifkan actuator
-                        print("🔗 Memastikan actuator tetap OFF di server...")
-                        
-                        # Pastikan rotaryLamp juga OFF
                         try:
                             import RPi.GPIO as GPIO
                             GPIO.setmode(GPIO.BCM)
-                            GPIO.setup(0, GPIO.OUT)
-                            GPIO.output(0, GPIO.LOW)
-                            print("✅ Rotary lamp dipastikan OFF via GPIO pin 0")
+                            GPIO.setup(self.pin, GPIO.OUT)
+                            GPIO.output(self.pin, GPIO.LOW)
+                            print(f"✅ Actuator dimatikan via GPIO pin {self.pin}")
                         except Exception as e:
-                            print(f"⚠️  Gagal memastikan rotary lamp OFF: {e}")
+                            print(f"⚠️  Gagal mematikan actuator via GPIO: {e}")
                         
+                        # Matikan actuator via API
+                        print("🔗 Matikan actuator via API...")
                         if self.api_client.update_water_pump_actuator(False):
-                            print("✅ API berhasil - actuator dipastikan OFF di server")
-                            
-                            # Refresh cache actuator info
-                            self.get_actuator_info(force_refresh=True)
+                            print("✅ API berhasil - actuator dimatikan di server")
                         else:
-                            print("⚠️  API gagal, tapi actuator sudah OFF")
-
-                        # Pastikan rotary lamp OFF di server juga
-                        print("🔗 Memastikan rotary lamp OFF di server...")
-                        if self.api_client.update_rotary_lamp_actuator(False):
-                            print("✅ API berhasil - rotary lamp dipastikan OFF di server")
-                        else:
-                            print("⚠️  API gagal memastikan rotary lamp OFF di server")
+                            print("⚠️  API gagal mematikan actuator")
+                        
+                        # Set flag bahwa waterPump sudah dimatikan otomatis
+                        self.waterpump_auto_stopped = True
+                        print("🔒 WaterPump sudah dimatikan otomatis - sekarang bisa dikontrol manual via dashboard")
+                    else:
+                        print("🔒 WaterPump sudah dimatikan otomatis sebelumnya - sekarang bisa dikontrol manual via dashboard")
                     
                     # Kirim notifikasi hanya sekali saat pertama kali terdeteksi
                     if not self.notification_sent:
-                        print("🔔 Mengirim notifikasi setelah actuator dimatikan...")
+                        print("🔔 Mengirim notifikasi water level tinggi...")
                         self.send_water_level_notification(water_level, self.safety_threshold, is_high_level=True)
                         self.notification_sent = True
                         print("🔔 Notifikasi water level tinggi telah dikirim")
                     else:
-                        print("🔒 Actuator tetap OFF - water level masih tinggi, tidak boleh dinyalakan")
+                        print("🔒 Notifikasi sudah dikirim sebelumnya - water level masih tinggi")
                     
                     # Update sensor monitoring status ke Alarm Max
                     print("📊 Update sensor monitoring status ke Alarm Max...")
                     self.update_sensor_monitoring_status(water_level, is_alarm_active=True)
+                    
+                    # Reset rotary lamp auto off flag ketika water level tinggi lagi
+                    if hasattr(self, 'rotary_lamp_auto_off'):
+                        delattr(self, 'rotary_lamp_auto_off')
+                        print("🔄 Rotary lamp auto off flag direset - water level tinggi lagi")
+                    
+                    # Aktifkan rotaryLamp via GPIO pin 0 (alarm visual) - hanya sekali
+                    if not hasattr(self, 'rotary_lamp_activated'):
+                        try:
+                            import RPi.GPIO as GPIO
+                            GPIO.setmode(GPIO.BCM)
+                            GPIO.setup(0, GPIO.OUT)
+                            GPIO.output(0, GPIO.HIGH)  # HIGH = ON untuk rotary lamp
+                            print("✅ Rotary lamp diaktifkan via GPIO pin 0 (alarm visual)")
+                            
+                            # Aktifkan rotary lamp via API juga
+                            print("🔗 Aktifkan rotary lamp via API...")
+                            if self.api_client.update_rotary_lamp_actuator(True):
+                                print("✅ API berhasil - rotary lamp diaktifkan di server")
+                            else:
+                                print("⚠️  API gagal mengaktifkan rotary lamp, tapi sudah ON via GPIO")
+                            
+                            # Set flag bahwa rotary lamp sudah diaktifkan
+                            self.rotary_lamp_activated = True
+                        except Exception as e:
+                            print(f"⚠️  Gagal mengaktifkan rotary lamp: {e}")
+                    else:
+                        print("✅ Rotary lamp sudah diaktifkan sebelumnya")
+                        
                 else:
-                    # WATER LEVEL AMAN + ALARM ACTIVE = ACTUATOR BISA DIOPERASIKAN MANUAL
+                    # WATER LEVEL AMAN + ALARM ACTIVE = AUTO MATIKAN ROTARY LAMP SEKALI
                     if self.notification_sent:
                         # Reset notification flag jika water level kembali aman
                         self.notification_sent = False
                         print("🔄 Notification flag direset - water level kembali aman")
                     
-                    print(f"✅ Water level aman: {water_level:.1f} cm < {self.safety_threshold} cm - actuator bisa dioperasikan manual")
+                    # Auto matikan rotaryLamp hanya sekali saat water level kembali aman
+                    if not hasattr(self, 'rotary_lamp_auto_off'):
+                        print("💡 Water level aman - rotaryLamp akan dimatikan otomatis untuk pertama kali...")
+                        
+                        # Matikan rotaryLamp via GPIO
+                        try:
+                            import RPi.GPIO as GPIO
+                            GPIO.setmode(GPIO.BCM)
+                            GPIO.setup(0, GPIO.OUT)
+                            GPIO.output(0, GPIO.LOW)  # LOW = OFF untuk rotary lamp
+                            print("✅ Rotary lamp dimatikan via GPIO pin 0")
+                        except Exception as e:
+                            print(f"⚠️  Gagal mematikan rotary lamp via GPIO: {e}")
+                        
+                        # Matikan rotary lamp via API
+                        print("🔗 Matikan rotary lamp via API...")
+                        if self.api_client.update_rotary_lamp_actuator(False):
+                            print("✅ API berhasil - rotary lamp dimatikan di server")
+                        else:
+                            print("⚠️  API gagal mematikan rotary lamp")
+                        
+                        # Set flag bahwa rotary lamp sudah dimatikan otomatis
+                        self.rotary_lamp_auto_off = True
+                        print("🔒 Rotary lamp sudah dimatikan otomatis - sekarang bisa dikontrol manual via dashboard")
+                    else:
+                        print("🔒 Rotary lamp sudah dimatikan otomatis sebelumnya - sekarang bisa dikontrol manual via dashboard")
+                    
+                    # Reset rotary lamp activated flag jika ada
+                    if hasattr(self, 'rotary_lamp_activated'):
+                        delattr(self, 'rotary_lamp_activated')
+                        print("🔄 Rotary lamp activated flag direset")
+                    
+                    # Reset waterPump auto stop flag jika ada
+                    if hasattr(self, 'waterpump_auto_stopped'):
+                        delattr(self, 'waterpump_auto_stopped')
+                        print("🔄 WaterPump auto stop flag direset")
+                    
+                    print(f"✅ Water level aman: {water_level:.1f} cm < {self.safety_threshold} cm")
+                    print("💡 Actuator bisa dioperasikan manual via dashboard")
                     
                     # Update sensor monitoring status ke Normal
                     print("📊 Update sensor monitoring status ke Normal...")
                     self.update_sensor_monitoring_status(water_level, is_alarm_active=False)
             else:
-                # ALARM INACTIVE = ACTUATOR BISA DIOPERASIKAN MANUAL
+                # ALARM INACTIVE = AUTO MATIKAN ROTARY LAMP SEKALI
                 if self.notification_sent:
                     self.notification_sent = False
                     print("🔄 Notification flag direset - alarm INACTIVE")
+                
+                # Auto matikan rotaryLamp hanya sekali saat alarm INACTIVE
+                if not hasattr(self, 'rotary_lamp_auto_off'):
+                    print("💡 Alarm INACTIVE - rotaryLamp akan dimatikan otomatis untuk pertama kali...")
+                    
+                    # Matikan rotaryLamp via GPIO
+                    try:
+                        import RPi.GPIO as GPIO
+                        GPIO.setmode(GPIO.BCM)
+                        GPIO.setup(0, GPIO.OUT)
+                        GPIO.output(0, GPIO.LOW)  # LOW = OFF untuk rotary lamp
+                        print("✅ Rotary lamp dimatikan via GPIO pin 0")
+                    except Exception as e:
+                        print(f"⚠️  Gagal mematikan rotary lamp via GPIO: {e}")
+                    
+                    # Matikan rotary lamp via API
+                    print("🔗 Matikan rotary lamp via API...")
+                    if self.api_client.update_rotary_lamp_actuator(False):
+                        print("✅ API berhasil - rotary lamp dimatikan di server")
+                    else:
+                        print("⚠️  API gagal mematikan rotary lamp")
+                    
+                    # Set flag bahwa rotary lamp sudah dimatikan otomatis
+                    self.rotary_lamp_auto_off = True
+                    print("🔒 Rotary lamp sudah dimatikan otomatis - sekarang bisa dikontrol manual via dashboard")
+                else:
+                    print("🔒 Rotary lamp sudah dimatikan otomatis sebelumnya - sekarang bisa dikontrol manual via dashboard")
+                
+                # Reset rotary lamp activated flag jika ada
+                if hasattr(self, 'rotary_lamp_activated'):
+                    delattr(self, 'rotary_lamp_activated')
+                    print("🔄 Rotary lamp activated flag direset - alarm INACTIVE")
+                
+                # Reset waterPump auto stop flag jika ada
+                if hasattr(self, 'waterpump_auto_stopped'):
+                    delattr(self, 'waterpump_auto_stopped')
+                    print("🔄 WaterPump auto stop flag direset - alarm INACTIVE")
                 
                 print(f"✅ Alarm INACTIVE - actuator bisa dioperasikan manual dari dashboard")
                 print(f"💡 Water level: {water_level:.1f} cm, threshold: {self.safety_threshold} cm")
@@ -396,7 +465,7 @@ class WaterLevelMonitor:
             import RPi.GPIO as GPIO
             
             print(f"🚰 Memulai monitoring water level untuk {self.actuator_custom_id}")
-            print("🔄 Mode: Responsive - auto matikan actuator jika water level > threshold")
+            print("🔄 Mode: Auto Stop Once + Auto Rotary Lamp + Manual Control")
             print(f"⏱️  Interval: {self.check_interval} detik (dengan timing optimization)")
             
             # Login sekali di awal
@@ -423,12 +492,12 @@ class WaterLevelMonitor:
                     if water_level is not None:
                         print(f"📊 Water level: {water_level:.1f} cm")
                         
-                        # Cek dan kontrol actuator berdasarkan water level
+                        # Cek dan monitoring water level (tidak ada kontrol otomatis actuator)
                         self.check_and_control_actuator(water_level)
                         
-                        # Pastikan rotaryLamp OFF jika water level tinggi
-                        if water_level >= self.safety_threshold and self.alarm_status == "ACTIVE":
-                            self.turn_off_rotary_lamp()
+                        # Hapus kontrol otomatis rotary lamp - hanya monitoring
+                        # Rotary lamp akan dikontrol manual via dashboard
+                        print("💡 Rotary lamp dikontrol manual via dashboard")
                     else:
                         print(f"⚠️  Tidak bisa membaca water level")
                     
@@ -461,7 +530,7 @@ class WaterLevelMonitor:
         # Start monitoring dalam thread terpisah
         self.monitor_thread = threading.Thread(target=monitor_loop, daemon=True)
         self.monitor_thread.start()
-        print("✅ Monitoring started dengan mode responsive")
+        print("✅ Monitoring started dengan mode auto stop once + auto rotary lamp + manual control")
     
     def stop_monitoring(self):
         """
@@ -503,7 +572,7 @@ class WaterLevelMonitor:
             "notification_sent": self.notification_sent,
             "check_interval": self.check_interval,
             "actuator_info": actuator_info,
-            "mode": "responsive_auto_control",
+            "mode": "monitoring_only",
             "last_water_level": self.last_water_level
         }
 
@@ -636,6 +705,21 @@ class WaterLevelMonitor:
             print(f"❌ Error mengirim notifikasi: {e}")
             return False
 
+    def turn_on_rotary_lamp(self):
+        """
+        Aktifkan rotary lamp via GPIO pin 0 (alarm visual)
+        """
+        try:
+            import RPi.GPIO as GPIO
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(0, GPIO.OUT)
+            GPIO.output(0, GPIO.HIGH)  # HIGH = ON untuk rotary lamp
+            print("✅ Rotary lamp diaktifkan via GPIO pin 0 (alarm visual)")
+            return True
+        except Exception as e:
+            print(f"⚠️  Gagal mengaktifkan rotary lamp: {e}")
+            return False
+
     def turn_off_rotary_lamp(self):
         """
         Matikan rotary lamp via GPIO pin 0
@@ -644,7 +728,7 @@ class WaterLevelMonitor:
             import RPi.GPIO as GPIO
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(0, GPIO.OUT)
-            GPIO.output(0, GPIO.LOW)
+            GPIO.output(0, GPIO.LOW)  # LOW = OFF untuk rotary lamp
             print("✅ Rotary lamp dimatikan via GPIO pin 0")
             return True
         except Exception as e:
@@ -1786,7 +1870,15 @@ if __name__ == "__main__":
         print(f"💡 Rotary Lamp Pin: 0")
         print(f"🚨 Safety threshold: {monitor.safety_threshold} cm (dari database)")
         print(f"🚨 Alarm status: {monitor.alarm_status} (dari database)")
-        print(f"🔔 Notification: Auto kirim notifikasi jika water level > threshold")
+        print(f"🔔 Notification: Auto kirim notifikasi jika water level > threshold (hanya sekali)")
+        print(f"🎛️  Actuator Control: Auto stop waterPump sekali, lalu kontrol manual via dashboard")
+        print(f"💡 Rotary Lamp: Auto ON saat water level tinggi, Auto OFF saat water level aman (sekali saja)")
+        print(f"🔄 Mode: Auto Stop Once + Auto Rotary Lamp + Manual Control")
+        print(f"🔒 Safety: WaterPump auto stop sekali, lalu kontrol manual via dashboard")
+        print(f"📊 Monitoring: Update status sensor monitoring via API")
+        print(f"🎯 Fokus: Sync dengan actuatorLibrary + hit API endpoint")
+        print(f"🔄 Trigger: Hanya sekali ketika water level melewati threshold")
+        print(f"🎯 Dashboard: Actuator waterPump dikontrol manual via dashboard")
         print(f"⏱️  Check interval: {args.interval} detik")
         
         # Test API connection

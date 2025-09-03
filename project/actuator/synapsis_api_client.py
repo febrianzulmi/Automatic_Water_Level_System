@@ -327,8 +327,8 @@ class SynapsisAPIClient:
             # percentage = (water_level / safety_threshold) * 100
             
             # Subject dan message
-            subject = "🚨 Water Level Critical: Hampir Melebihi Batas Aman"
-            message = f"Ketinggian air telah mencapai 85% dari kapasitas. Segera lakukan tindakan pencegahan untuk menghindari kemungkinan bahaya lain"
+            subject = "🚨 Water Level Critical: Approaching Safety Limit"
+            message = f"The water level has reached 85% of its maximum capacity. Please initiate preventive measures immediately to mitigate potential risks."
             
             # Node ID (gunakan yang sama dengan actuator)
             node_id = self.NODE_ID

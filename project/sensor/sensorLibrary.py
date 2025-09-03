@@ -1440,3 +1440,155 @@ class SensorRTU:
         return sensorResult
         
         
+
+class Weather:
+    def __init__(self, groupId, dataSensor):
+        self.groupId = groupId
+        self.dataSensor = dataSensor
+        self.groupData = SensorGroupDB.selectOne(self.groupId)
+        self.parameterGroupSensor = CollectDataSensorFunction.getParameterGroupSensor(self.groupId)
+        self.parameterListSensor = CollectDataSensorFunction.getParameterListSensor(self.groupId)
+        self.sensorValue, self.sensorState = handleSensorValue(self.dataSensor)
+        
+        # Konfigurasi default untuk weather station
+        self.port = self.parameterGroupSensor.get('port', '/dev/ttyUSB0')
+        self.baudrate = int(self.parameterGroupSensor.get('baudrate', 4800))
+        self.slaveId = int(self.parameterGroupSensor.get('slaveId', 2))
+        
+        # Register addresses untuk weather station
+        self.windSpeed = 0x1F4
+        self.windStrength = 0x1F5
+        self.windDirection1 = 0x1F6
+        self.windDirection2 = 0x1F7
+        self.humidity = 0x1F8
+        self.temperature = 0x1F9
+        self.pm25 = 0x1FB
+        self.pm10 = 0x1FC
+        self.atmosphericPressure = 0x1FD
+        self.illuminanceLow = 0x1FE
+        self.illuminanceHigh = 0x1FF
+        self.illuminance = 0x200
+        self.rainfall = 0x201
+        
+        # Inisialisasi koneksi Modbus
+        self.weatherObject = None
+        self.connect()
+
+    def connect(self):
+        """Fungsi untuk membuat koneksi ke weather station"""
+        try:
+            self.weatherObject = ModbusClient(method="rtu", port=self.port, baudrate=self.baudrate, timeout=2, retries=3)
+            self.weatherObject.connect()
+            return True
+        except Exception as e:
+            print(f"Error koneksi ke weather station: {e}")
+            return False
+
+    def read_register_safe(self, address, multiplier=1, unit=None, description=""):
+        """Fungsi aman untuk membaca register dengan error handling"""
+        if unit is None:
+            unit = self.slaveId
+            
+        try:
+            if self.weatherObject and self.weatherObject.is_socket_open():
+                response = self.weatherObject.read_holding_registers(address=address, count=1, unit=unit)
+                if hasattr(response, 'registers') and response.registers:
+                    value = response.registers[0] * multiplier
+                    return value, True
+                else:
+                    print(f"Error membaca {description}: Response tidak valid")
+                    return 0, False
+            else:
+                print(f"Error membaca {description}: Koneksi tidak tersedia")
+                return 0, False
+        except Exception as e:
+            print(f"Error membaca {description}: {e}")
+            return 0, False
+
+    def main(self):
+        """Fungsi utama untuk membaca semua sensor weather"""
+        if self.dataSensor['numSensor'] > 0:
+            results = []
+            state = []
+            success_count = 0
+            failed_count = 0
+            error_messages = []
+
+            # Mapping sensor ID ke register dan multiplier
+            sensor_mapping = {
+                "windSpeed": (self.windSpeed, 0.01, "Wind Speed"),
+                "windStrength": (self.windStrength, 1, "Wind Strength"),
+                "windDirection1": (self.windDirection1, 1, "Wind Direction (0-7)"),
+                "windDirection2": (self.windDirection2, 1, "Wind Direction (0-360)"),
+                "humidity": (self.humidity, 0.1, "Humidity"),
+                "temperature": (self.temperature, 0.1, "Temperature"),
+                "pm25": (self.pm25, 1, "PM2.5"),
+                "pm10": (self.pm10, 1, "PM1.0"),
+                "atmosphericPressure": (self.atmosphericPressure, 0.1, "Atmospheric Pressure"),
+                "illuminance": (self.illuminance, 100, "Illuminance"),
+                "rainfall": (self.rainfall, 0.1, "Rainfall")
+            }
+
+            # Baca setiap sensor yang terdaftar
+            for sensor_id in self.dataSensor["sensorId"]:
+                if sensor_id in sensor_mapping:
+                    address, multiplier, description = sensor_mapping[sensor_id]
+                    value, success = self.read_register_safe(address, multiplier, description=description)
+                    
+                    if success:
+                        # Format nilai sesuai dengan tipe sensor
+                        if "windSpeed" in sensor_id:
+                            value = round(value, 2)
+                        elif "humidity" in sensor_id or "temperature" in sensor_id:
+                            value = round(value, 2)
+                        elif "atmosphericPressure" in sensor_id:
+                            value = round(value, 2)
+                        elif "rainfall" in sensor_id:
+                            value = round(value, 2)
+                        
+                        results.append(value)
+                        state.append(True)
+                        success_count += 1
+                    else:
+                        results.append(0.00)
+                        state.append(False)
+                        failed_count += 1
+                        error_messages.append(f"{description} Error")
+                else:
+                    # Sensor tidak dikenal
+                    results.append(0.00)
+                    state.append(False)
+                    failed_count += 1
+                    error_messages.append(f"Unknown sensor: {sensor_id}")
+
+            self.sensorValue = results
+            self.sensorState = state
+
+            # Buat pesan status
+            if failed_count == 0:
+                sensorMessage = f"{success_count} Sensors Success Sampling"
+            else:
+                error_details = ", ".join(error_messages)
+                if failed_count == self.dataSensor['numSensor']:
+                    sensorMessage = f"{failed_count} Sensors Failed Sampling ({error_details})"
+                else:
+                    sensorMessage = f"{self.dataSensor['numSensor']-failed_count} of {self.dataSensor['numSensor']} Sensors Success Sampling | {error_details}"
+
+            sensorResult = {"value": self.sensorValue, "message": sensorMessage, "state": self.sensorState}
+            return sensorResult
+        else:
+            self.sensorState = []
+            self.sensorValue = []
+            sensorMessage = f"No List Sensors Registered on Group Sensor {str(self.groupData[0]['name'])}"
+            sensorResult = {"value": self.sensorValue, "message": sensorMessage, "state": self.sensorState}
+            return sensorResult
+
+    def __del__(self):
+        """Cleanup saat object dihapus"""
+        if self.weatherObject:
+            try:
+                self.weatherObject.close()
+            except:
+                pass
+        
+        
