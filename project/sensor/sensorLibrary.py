@@ -28,7 +28,7 @@ except ImportError:
     print("Warning: Adafruit_ADS1x15 not available. Water quality sensors will not work.")
 
 sys.path.append('/home/connex/project/database')
-from query_project_db import SensorListDB, SensorGroupDB, EnvironmentDeviceDB, PowerDeviceDB,  SensorPortConfigDB, RtuDeviceDB
+from query_project_db import SensorListDB, SensorGroupDB, EnvironmentDeviceDB, PowerDeviceDB,  SensorPortConfigDB, RtuDeviceDB, LogSensorDB
 sys.path.append('/home/connex/library')
 from SynapsisLibrary import times
 sys.path.append("/home/connex/project/function")
@@ -1473,6 +1473,10 @@ class Weather:
         # Inisialisasi koneksi Modbus
         self.weatherObject = None
         self.connect()
+        
+        # Ambil daftar sensor untuk group ini
+        self.sensor_list = SensorListDB.selectByGroupFull(self.groupId)
+        self.sensor_id_map = {sensor['sensor_id']: sensor['id'] for sensor in self.sensor_list}
 
     def connect(self):
         """Fungsi untuk membuat koneksi ke weather station"""
@@ -1483,6 +1487,84 @@ class Weather:
         except Exception as e:
             print(f"Error koneksi ke weather station: {e}")
             return False
+
+    def _fallback_to_last_data(self):
+        """Fungsi fallback ketika weather station tidak bisa diakses sama sekali"""
+        print("Menggunakan fallback: mengambil semua data terakhir yang valid dari database")
+        results = []
+        state = []
+        success_count = 0
+        failed_count = 0
+        error_messages = []
+        
+        for sensor_id in self.dataSensor["sensorId"]:
+            last_valid_value, has_last_data = self.get_last_valid_data(sensor_id, max_age_hours=48)  # Lebih longgar untuk fallback
+            if has_last_data:
+                results.append(last_valid_value)
+                state.append(False)  # State False karena menggunakan data lama
+                success_count += 1
+                error_messages.append(f"{sensor_id} - Using last valid data: {last_valid_value}")
+            else:
+                results.append(0.00)
+                state.append(False)
+                failed_count += 1
+                error_messages.append(f"{sensor_id} - No valid data available")
+        
+        self.sensorValue = results
+        self.sensorState = state
+        
+        if failed_count == 0:
+            sensorMessage = f"{success_count} Sensors Success Sampling (Fallback Mode - Using Last Valid Data)"
+        else:
+            error_details = ", ".join(error_messages)
+            sensorMessage = f"{success_count} Sensors Success Sampling (Fallback Mode) | {failed_count} Sensors Failed - {error_details}"
+        
+        # Fallback mode tidak bisa update ke log monitoring karena menggunakan data lama
+        sensorResult = {
+            "value": self.sensorValue, 
+            "message": sensorMessage, 
+            "state": self.sensorState,
+            "can_update_log": False  # Fallback mode tidak bisa update log
+        }
+        return sensorResult
+
+    def get_last_valid_data(self, sensor_id, max_age_hours=24):
+        """Fungsi untuk mengambil data terakhir yang valid dari database log monitoring"""
+        try:
+            if sensor_id in self.sensor_id_map:
+                sensor_db_id = self.sensor_id_map[sensor_id]
+                # Ambil data terakhir dari log monitoring (tipe 9 = routine monitoring)
+                last_data = LogSensorDB.selectLastOne(sensor_db_id)
+                if last_data and len(last_data) > 0:
+                    last_value = float(last_data[0]['data'])
+                    last_timestamp = last_data[0]['timestamp']
+                    
+                    # Cek apakah data masih fresh (dalam 24 jam terakhir)
+                    from datetime import datetime, timedelta
+                    try:
+                        last_time = datetime.strptime(last_timestamp, '%Y-%m-%d %H:%M:%S')
+                        current_time = datetime.now()
+                        age_hours = (current_time - last_time).total_seconds() / 3600
+                        
+                        if age_hours <= max_age_hours:
+                            print(f"Data terakhir untuk {sensor_id}: {last_value} (timestamp: {last_timestamp}, umur: {age_hours:.1f} jam)")
+                            return last_value, True
+                        else:
+                            print(f"Data untuk {sensor_id} terlalu lama: {age_hours:.1f} jam (max: {max_age_hours} jam)")
+                            return 0.00, False
+                    except Exception as time_error:
+                        print(f"Error parsing timestamp untuk {sensor_id}: {time_error}")
+                        # Jika ada error parsing timestamp, gunakan data anyway
+                        return last_value, True
+                else:
+                    print(f"Tidak ada data terakhir untuk {sensor_id}")
+                    return 0.00, False
+            else:
+                print(f"Sensor {sensor_id} tidak ditemukan dalam mapping database")
+                return 0.00, False
+        except Exception as e:
+            print(f"Error mengambil data terakhir untuk {sensor_id}: {e}")
+            return 0.00, False
 
     def read_register_safe(self, address, multiplier=1, unit=None, description=""):
         """Fungsi aman untuk membaca register dengan error handling"""
@@ -1508,11 +1590,20 @@ class Weather:
     def main(self):
         """Fungsi utama untuk membaca semua sensor weather"""
         if self.dataSensor['numSensor'] > 0:
+            # Cek status koneksi terlebih dahulu
+            if not self.weatherObject or not self.weatherObject.is_socket_open():
+                print("Warning: Weather station tidak terhubung, mencoba reconnect...")
+                if not self.connect():
+                    print("Error: Gagal reconnect ke weather station")
+                    # Jika tidak bisa connect sama sekali, gunakan semua data terakhir yang valid
+                    return self._fallback_to_last_data()
+            
             results = []
             state = []
             success_count = 0
             failed_count = 0
             error_messages = []
+            all_sensors_success = True  # Flag untuk mengecek apakah semua sensor berhasil
 
             # Mapping sensor ID ke register dan multiplier
             sensor_mapping = {
@@ -1550,15 +1641,26 @@ class Weather:
                         state.append(True)
                         success_count += 1
                     else:
-                        results.append(0.00)
-                        state.append(False)
-                        failed_count += 1
-                        error_messages.append(f"{description} Error")
+                        # Jika sensor gagal terbaca, ambil data terakhir yang valid dari database
+                        last_valid_value, has_last_data = self.get_last_valid_data(sensor_id, max_age_hours=24)
+                        if has_last_data:
+                            results.append(last_valid_value)
+                            state.append(False)  # State tetap False karena menggunakan data lama
+                            failed_count += 1
+                            all_sensors_success = False  # Set flag ke False
+                            error_messages.append(f"{description} Error - Using last valid data: {last_valid_value}")
+                        else:
+                            results.append(0.00)
+                            state.append(False)
+                            failed_count += 1
+                            all_sensors_success = False  # Set flag ke False
+                            error_messages.append(f"{description} Error - No valid data available")
                 else:
                     # Sensor tidak dikenal
                     results.append(0.00)
                     state.append(False)
                     failed_count += 1
+                    all_sensors_success = False  # Set flag ke False
                     error_messages.append(f"Unknown sensor: {sensor_id}")
 
             self.sensorValue = results
@@ -1574,14 +1676,57 @@ class Weather:
                 else:
                     sensorMessage = f"{self.dataSensor['numSensor']-failed_count} of {self.dataSensor['numSensor']} Sensors Success Sampling | {error_details}"
 
-            sensorResult = {"value": self.sensorValue, "message": sensorMessage, "state": self.sensorState}
+            # Tambahkan informasi kesehatan data
+            data_health_info = self._check_data_health()
+            if data_health_info:
+                sensorMessage += f" | {data_health_info}"
+            
+            # Tambahkan flag untuk menandai apakah data bisa diupdate ke log monitoring
+            sensorResult = {
+                "value": self.sensorValue, 
+                "message": sensorMessage, 
+                "state": self.sensorState,
+                "can_update_log": all_sensors_success  # Flag baru untuk menentukan apakah bisa update log
+            }
             return sensorResult
         else:
             self.sensorState = []
             self.sensorValue = []
             sensorMessage = f"No List Sensors Registered on Group Sensor {str(self.groupData[0]['name'])}"
-            sensorResult = {"value": self.sensorValue, "message": sensorMessage, "state": self.sensorState}
+            sensorResult = {
+                "value": self.sensorValue, 
+                "message": sensorMessage, 
+                "state": self.sensorState,
+                "can_update_log": False  # Tidak ada sensor, tidak bisa update log
+            }
             return sensorResult
+
+    def _check_data_health(self):
+        """Fungsi untuk mengecek kesehatan data dan memberikan rekomendasi"""
+        try:
+            stale_data_count = 0
+            total_sensors = len(self.dataSensor["sensorId"])
+            
+            for i, sensor_id in enumerate(self.dataSensor["sensorId"]):
+                if self.sensorState[i] == False:  # Jika menggunakan data lama
+                    # Cek umur data
+                    last_valid_value, has_last_data = self.get_last_valid_data(sensor_id, max_age_hours=24)
+                    if has_last_data:
+                        # Data ada tapi sudah lama
+                        stale_data_count += 1
+            
+            if stale_data_count > 0:
+                if stale_data_count == total_sensors:
+                    return f"WARNING: Semua sensor menggunakan data lama (lebih dari 24 jam)"
+                elif stale_data_count > total_sensors // 2:
+                    return f"WARNING: {stale_data_count}/{total_sensors} sensor menggunakan data lama"
+                else:
+                    return f"INFO: {stale_data_count}/{total_sensors} sensor menggunakan data lama"
+            
+            return ""
+        except Exception as e:
+            print(f"Error dalam pengecekan kesehatan data: {e}")
+            return ""
 
     def __del__(self):
         """Cleanup saat object dihapus"""

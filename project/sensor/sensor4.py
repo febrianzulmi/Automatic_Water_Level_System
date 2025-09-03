@@ -62,19 +62,48 @@ def main():
     
     sensor_result = readSensor()
     calibration_value = CalibrateSensorFunction.calculateCalibration(data_sensor, sensor_result["value"])
-    alarm_data, summary_sensor = SensorFunction.alarmSensorFunction.checkAlarm(data_sensor, calibration_value, sensor_result, alarm_data, "Serial", timestamp)
-    sensor_pack = packData.sensorPack(data_sensor["sensorId"], calibration_value, data_sensor["numSensor"])
-    sensor_variable["logger"].debug(f"Sensor Data : {sensor_pack}")
     
-    if "Success" in sensor_result["message"] and "Failed" not in sensor_result["message"] and "Error" not in sensor_result["message"]:
-        sensor_variable["logger"].debug(f"Status Read Sensor : \033[32m{sensor_result['message']}\033[00m")
-        sensor_variable["logger"].debug(f"Summary Sensor : {summary_sensor['logColored']}")
+    # Cek apakah data bisa diupdate ke log monitoring
+    can_update_log = sensor_result.get("can_update_log", True)  # Default True untuk backward compatibility
+    
+    if can_update_log:
+        # Update ke database hanya jika semua sensor berhasil sampling
+        alarm_data, summary_sensor = SensorFunction.alarmSensorFunction.checkAlarm(data_sensor, calibration_value, sensor_result, alarm_data, "Serial", timestamp)
+        sensor_pack = packData.sensorPack(data_sensor["sensorId"], calibration_value, data_sensor["numSensor"])
+        sensor_variable["logger"].debug(f"Sensor Data : {sensor_pack}")
+        sensor_variable["logger"].debug("✓ Data berhasil diupdate ke log monitoring")
     else:
-        if "Success" in sensor_result["message"] and "Failed" in sensor_result["message"] or "Error" in sensor_result["message"]:
-            sensor_variable["logger"].debug(f"Status Read Sensor : \033[93m{str(sensor_result['message'])}\033[00m")
+        # Jika ada sensor yang failed, tidak update ke database
+        sensor_variable["logger"].debug("⚠ Data tidak diupdate ke log monitoring (menggunakan fallback data)")
+        # Buat summary sensor tanpa update database
+        summary_sensor = {"logColored": "Fallback Mode - No Database Update"}
+        sensor_pack = "Fallback Data - Not Updated to DB"
+        sensor_variable["logger"].debug(f"Fallback Data: {sensor_result['value']}")
+    
+    # Log status sensor dengan informasi database update
+    if can_update_log:
+        if "Success" in sensor_result["message"] and "Failed" not in sensor_result["message"] and "Error" not in sensor_result["message"]:
+            sensor_variable["logger"].debug(f"Status Read Sensor : \033[32m{sensor_result['message']}\033[00m")
+            sensor_variable["logger"].debug(f"Summary Sensor : {summary_sensor['logColored']}")
+            sensor_variable["logger"].debug("✅ Database Update: SUCCESS")
         else:
-            sensor_variable["logger"].debug(f"Status Read Sensor : \033[31m{str(sensor_result['message'])}\033[00m")
+            if "Success" in sensor_result["message"] and ("Failed" in sensor_result["message"] or "Error" in sensor_result["message"]):
+                sensor_variable["logger"].debug(f"Status Read Sensor : \033[93m{str(sensor_result['message'])}\033[00m")
+            else:
+                sensor_variable["logger"].debug(f"Status Read Sensor : \033[31m{str(sensor_result['message'])}\033[00m")
+            sensor_variable["logger"].debug(f"Summary Sensor : \033[93m{summary_sensor['logColored']}\033[00m")
+            sensor_variable["logger"].debug("✅ Database Update: SUCCESS")
+    else:
+        # Fallback mode - tidak update database
+        if "Success" in sensor_result["message"] and "Failed" not in sensor_result["message"] and "Error" not in sensor_result["message"]:
+            sensor_variable["logger"].debug(f"Status Read Sensor : \033[32m{sensor_result['message']}\033[00m")
+        else:
+            if "Success" in sensor_result["message"] and ("Failed" in sensor_result["message"] or "Error" in sensor_result["message"]):
+                sensor_variable["logger"].debug(f"Status Read Sensor : \033[93m{str(sensor_result['message'])}\033[00m")
+            else:
+                sensor_variable["logger"].debug(f"Status Read Sensor : \033[31m{str(sensor_result['message'])}\033[00m")
         sensor_variable["logger"].debug(f"Summary Sensor : \033[93m{summary_sensor['logColored']}\033[00m")
+        sensor_variable["logger"].debug("⚠️  Database Update: SKIPPED (Fallback Mode)")
     
     SystemServiceDB.updateStatusByName(sensor_result["message"], timestamp, sensor_variable["serviceName"])
     sensor_variable["logger"].debug(f"---------------------------------\n")
