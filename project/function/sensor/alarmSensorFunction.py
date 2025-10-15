@@ -382,7 +382,9 @@ class alarmSensorFunction():
                     notificationFunction.generateNotificationSensor(dataSensor['sensorId'][i], dataSensor['sensorName'][i], value, alarmConfig, condition, dataSensor['sensorUnit'][i], notifData['firstAlarm'][i], notifData['feature_setting'])
                 if int(notifData['feature_setting']['log']) == 1:
                     LogSensorDB.insert(dataSensor['id'][i], value, conditionNumber, notifData['firstAlarm'][i])
-                if int(notifData['feature_setting']['alarmMonitor']) == 1:
+                # Kirim alarm monitoring hanya jika mode bukan 'routine'
+                alarm_mode = str(notifData['feature_setting'].get('alarmMonitorMode', 'direct')).lower()
+                if alarm_mode != 'routine' and int(notifData['feature_setting']['alarmMonitor']) == 1:
                     notifData = alarmSensorFunction.handlePackAlarmMonitoring(i, condition, notifData, value, dataSensor)
                 ##### SEND ALARM DATA & NOTIFICATION ####
             else:

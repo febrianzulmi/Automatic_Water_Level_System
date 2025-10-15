@@ -18,6 +18,80 @@ from sensorFunction import SensorFunction
 
 
 class monitoringFunction():
+    def logNotifMonitorData(condition, notifData, timestamp):
+        timestampFirst = ''
+        if condition == 'Normal':
+            sensorPack = packData.sensorPack(notifData['normalSensorID'], notifData['normalSensorValue'], len(notifData['normalSensorID']))
+            if len(notifData.get('normalSensorTimestamp', [])) > 0:
+                timestampFirst = notifData['normalSensorTimestamp'][0]
+            conditionNum = 1
+        elif condition == 'Alarm Min':
+            sensorPack = packData.sensorPack(notifData['minSensorID'], notifData['minSensorValue'], len(notifData['minSensorID']))
+            if len(notifData.get('minSensorTimestamp', [])) > 0:
+                timestampFirst = notifData['minSensorTimestamp'][0]
+            conditionNum = 2
+        elif condition == 'Alarm Max':
+            sensorPack = packData.sensorPack(notifData['maxSensorID'], notifData['maxSensorValue'], len(notifData['maxSensorID']))
+            if len(notifData.get('maxSensorTimestamp', [])) > 0:
+                timestampFirst = notifData['maxSensorTimestamp'][0]
+            conditionNum = 3
+        elif condition == 'Alarm Error':
+            sensorPack = packData.sensorPack(notifData['errorSensorID'], notifData['errorSensorValue'], len(notifData['errorSensorID']))
+            if len(notifData.get('errorSensorTimestamp', [])) > 0:
+                timestampFirst = notifData['errorSensorTimestamp'][0]
+            conditionNum = 4
+        else:
+            return notifData
+        if timestampFirst == '':
+            timestampFirst = timestamp
+        statusCode, statusBuffer, typeMonitor, attempt = "-", 3, conditionNum, 0
+        LogMonitoringDB.insert(json.dumps(sensorPack), statusCode, statusBuffer, timestampFirst, typeMonitor, attempt)
+        return notifData
+
+    def sendAllSensorStatusLevel(notifData, dataSensor, timestamp):
+        normalSensors, minSensors, maxSensors, errorSensors = [], [], [], []
+        for i in range(dataSensor['numSensor']):
+            sensorId = dataSensor['sensorId'][i]
+            sensorValue = dataSensor['sensorValue'][i]
+            condition = notifData['condition'][i]
+            if condition in ['Normal', 'Alarm Inactive']:
+                normalSensors.append({'id': sensorId, 'value': sensorValue, 'timestamp': timestamp})
+            elif condition in ['Alarm Min', 'Alarm Min Tolerance']:
+                minSensors.append({'id': sensorId, 'value': sensorValue, 'timestamp': timestamp})
+            elif condition in ['Alarm Max', 'Alarm Max Tolerance']:
+                maxSensors.append({'id': sensorId, 'value': sensorValue, 'timestamp': timestamp})
+            elif condition in ['Alarm Error', 'Alarm Error Tolerance']:
+                errorSensors.append({'id': sensorId, 'value': sensorValue, 'timestamp': timestamp})
+
+        if len(normalSensors) > 0:
+            notifData['normalSensorID'] = [s['id'] for s in normalSensors]
+            notifData['normalSensorValue'] = [s['value'] for s in normalSensors]
+            notifData['normalSensorTimestamp'] = [s['timestamp'] for s in normalSensors]
+            notifData = monitoringFunction.logNotifMonitorData('Normal', notifData, timestamp)
+            notifData['normalSensorID'], notifData['normalSensorValue'], notifData['normalSensorTimestamp'] = [], [], []
+
+        if len(minSensors) > 0:
+            notifData['minSensorID'] = [s['id'] for s in minSensors]
+            notifData['minSensorValue'] = [s['value'] for s in minSensors]
+            notifData['minSensorTimestamp'] = [s['timestamp'] for s in minSensors]
+            notifData = monitoringFunction.logNotifMonitorData('Alarm Min', notifData, timestamp)
+            notifData['minSensorID'], notifData['minSensorValue'], notifData['minSensorTimestamp'] = [], [], []
+
+        if len(maxSensors) > 0:
+            notifData['maxSensorID'] = [s['id'] for s in maxSensors]
+            notifData['maxSensorValue'] = [s['value'] for s in maxSensors]
+            notifData['maxSensorTimestamp'] = [s['timestamp'] for s in maxSensors]
+            notifData = monitoringFunction.logNotifMonitorData('Alarm Max', notifData, timestamp)
+            notifData['maxSensorID'], notifData['maxSensorValue'], notifData['maxSensorTimestamp'] = [], [], []
+
+        if len(errorSensors) > 0:
+            notifData['errorSensorID'] = [s['id'] for s in errorSensors]
+            notifData['errorSensorValue'] = [s['value'] for s in errorSensors]
+            notifData['errorSensorTimestamp'] = [s['timestamp'] for s in errorSensors]
+            notifData = monitoringFunction.logNotifMonitorData('Alarm Error', notifData, timestamp)
+            notifData['errorSensorID'], notifData['errorSensorValue'], notifData['errorSensorTimestamp'] = [], [], []
+
+        return notifData
     def runMonitoring(num, intervalId, intervalData, globalVariable):
         projectData = generalFunction.getProjectSetting()
         timestamp = times.getDatetime()
@@ -27,10 +101,47 @@ class monitoringFunction():
         if sensorData['numSensor'] > 0:
             deviceSetting = dbFunction.getDeviceSetting()
             serverConfig = serverFunction.getServerConfig()
-            dataPack = packData.dataPack(deviceSetting['uid'], sensorData['sensorId'], sensorData['sensorValue'], sensorData['numSensor'], timestampUTC, 9) 
+            # Pisahkan juga berdasarkan kondisi jika tersedia
+            alarmNormalId, alarmNormalValue = [], []
+            alarmMinId, alarmMinValue = [], []
+            alarmMaxId, alarmMaxValue = [], []
+            routineId, routineValue = [], []
+            if 'sensorCondition' in sensorData:
+                for x in range(sensorData['numSensor']):
+                    if sensorData['sensorCondition'][x] != 'Alarm Inactive':
+                        if sensorData['sensorCondition'][x] == 'Normal':
+                            alarmNormalValue.append(sensorData['sensorValue'][x])
+                            alarmNormalId.append(sensorData['sensorId'][x])
+                        elif sensorData['sensorCondition'][x] == 'Alarm Min':
+                            alarmMinValue.append(sensorData['sensorValue'][x])
+                            alarmMinId.append(sensorData['sensorId'][x])
+                        elif sensorData['sensorCondition'][x] == 'Alarm Max':
+                            alarmMaxValue.append(sensorData['sensorValue'][x])
+                            alarmMaxId.append(sensorData['sensorId'][x])
+                    else:
+                        routineId.append(sensorData['sensorId'][x])
+                        routineValue.append(sensorData['sensorValue'][x])
+            else:
+                routineId = sensorData['sensorId']
+                routineValue = sensorData['sensorValue']
             
             protocolMonitoring = projectData['protocol'] # 1: HTTP, 2: MQTT, 3: SNMP
+
+            # Mode pengiriman alarm agar tidak duplikat dengan service sensor
+            feature_setting = dbFunction.getFeatureSetting()
+            alarm_mode = str(feature_setting.get('alarmMonitorMode', 'routine')).lower()
             colorLogService = ''
+
+            # Bangun paket ROUTINE hanya berisi sensor non-aktif alarm
+            if 'sensorCondition' in sensorData:
+                routine_pack_ids = routineId
+                routine_pack_values = routineValue
+                routine_pack_size = len(routineId)
+            else:
+                routine_pack_ids = sensorData['sensorId']
+                routine_pack_values = sensorData['sensorValue']
+                routine_pack_size = sensorData['numSensor']
+            dataPack = packData.dataPack(deviceSetting['uid'], routine_pack_ids, routine_pack_values, routine_pack_size, timestampUTC, 9)
         
             if str(protocolMonitoring) == "1":
                 resultMonitoring = httpProtocolFunction.runPostMethod(serverConfig['http'], "receiver", dataPack)
@@ -38,14 +149,26 @@ class monitoringFunction():
                 if resultMonitoring['state'] == "Success":               
                     statusBuffer, typeMonitor, attempt = 1, 9, 1
                     LogMonitoringDB.insert(json.dumps(dataPack['data']), resultMonitoring['state_code'], statusBuffer, timestamp, typeMonitor, attempt)
-                    logService = f"{sensorData['numSensor']} Sensors {resultMonitoring['state']} Routine Monitoring Interval ({intervalData[num]} Seconds)"
+                    logService = f"{routine_pack_size} Sensors {resultMonitoring['state']} Routine Monitoring Interval ({intervalData[num]} Seconds)"
                     colorLogService = f"\033[92m{logService} at {timestamp}\033[00m"
         
                 else:
                     statusBuffer, typeMonitor, attempt = 0, 9, 1
                     LogMonitoringDB.insert(json.dumps(dataPack['data']), resultMonitoring['state_code'], statusBuffer, timestamp, typeMonitor, attempt)
-                    logService = f"{sensorData['numSensor']} Sensors {resultMonitoring['state']} Routine Monitoring Interval ({intervalData[num]} Seconds) - {resultMonitoring['log']}"
+                    logService = f"{routine_pack_size} Sensors {resultMonitoring['state']} Routine Monitoring Interval ({intervalData[num]} Seconds) - {resultMonitoring['log']}"
                     colorLogService = f"\033[31m{logService} at {timestamp}\033[00m"
+
+                # Kirim kategori Normal/Min/Max bersama routine hanya jika mode 'routine'
+                if alarm_mode == 'routine':
+                    if len(alarmNormalId) > 0:
+                        alarmNormalPack = packData.dataPack(deviceSetting['uid'], alarmNormalId, alarmNormalValue, len(alarmNormalId), timestampUTC, 1)
+                        httpProtocolFunction.runPostMethod(serverConfig['http'], 'receiver', alarmNormalPack)
+                    if len(alarmMaxId) > 0:
+                        alarmMaxPack = packData.dataPack(deviceSetting['uid'], alarmMaxId, alarmMaxValue, len(alarmMaxId), timestampUTC, 3)
+                        httpProtocolFunction.runPostMethod(serverConfig['http'], 'receiver', alarmMaxPack)
+                    if len(alarmMinId) > 0:
+                        alarmMinPack = packData.dataPack(deviceSetting['uid'], alarmMinId, alarmMinValue, len(alarmMinId), timestampUTC, 2)
+                        httpProtocolFunction.runPostMethod(serverConfig['http'], 'receiver', alarmMinPack)
         
             elif str(protocolMonitoring) == "2":
                 resultMonitoring = mqttProtocolFunction.runPublish(serverConfig['mqtt'], "data", dataPack, globalVariable)

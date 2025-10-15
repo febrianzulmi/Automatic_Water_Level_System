@@ -73,16 +73,6 @@ class ActuatorRTU():
         # print(result_action)
         return result_action
 
-
-
-
-
-
-
-
-
-
-
 def actuatorAC(actuator_custom_id, value):
    def sendCommand(actuator_custom_id, value, swing, temp, url_ac):
       headers = {"content-type": "application/json"} 

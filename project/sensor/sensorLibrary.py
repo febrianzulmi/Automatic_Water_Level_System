@@ -1488,6 +1488,46 @@ class Weather:
             print(f"Error koneksi ke weather station: {e}")
             return False
 
+    def map_wind_direction(self, direction_value):
+        """
+        Mapping wind direction dari angka 0-7 ke arah mata angin
+        0 = North, 1 = Northeast, 2 = East, 3 = Southeast, 
+        4 = South, 5 = Southwest, 6 = West, 7 = Northwest
+        """
+        direction_map = {
+            0: "North",
+            1: "Northeast", 
+            2: "East",
+            3: "Southeast",
+            4: "South",
+            5: "Southwest",
+            6: "West",
+            7: "Northwest"
+        }
+        return direction_map.get(direction_value, "Unknown")
+
+    def map_wind_strength_beaufort(self, strength_value):
+        """
+        Mapping wind strength berdasarkan skala Beaufort (0-12)
+        Mengembalikan description saja sesuai permintaan
+        """
+        beaufort_scale = {
+            0: "Calm",
+            1: "Light air",
+            2: "Light breeze",
+            3: "Gentle breeze",
+            4: "Moderate breeze",
+            5: "Fresh breeze",
+            6: "Strong breeze",
+            7: "Near gale",
+            8: "Gale",
+            9: "Strong gale",
+            10: "Storm",
+            11: "Violent storm",
+            12: "Hurricane"
+        }
+        return beaufort_scale.get(strength_value, "Unknown")
+
     def _fallback_to_last_data(self):
         """Fungsi fallback ketika weather station tidak bisa diakses sama sekali"""
         print("Menggunakan fallback: mengambil semua data terakhir yang valid dari database")
@@ -1500,12 +1540,48 @@ class Weather:
         for sensor_id in self.dataSensor["sensorId"]:
             last_valid_value, has_last_data = self.get_last_valid_data(sensor_id, max_age_hours=48)  # Lebih longgar untuk fallback
             if has_last_data:
+                # Terapkan mapping yang sama untuk data fallback
+                if "windDirection1" in sensor_id:
+                    # Cek apakah data sudah berupa string description atau masih numerik
+                    if isinstance(last_valid_value, str):
+                        # Data sudah berupa description, gunakan langsung
+                        last_valid_value = last_valid_value
+                        print(f"Wind Direction (Full Fallback): {last_valid_value} (already mapped)")
+                    else:
+                        # Data masih numerik, lakukan mapping
+                        direction_value = int(last_valid_value)
+                        mapped_direction = self.map_wind_direction(direction_value)
+                        last_valid_value = mapped_direction
+                        print(f"Wind Direction (Full Fallback): {mapped_direction} (from {direction_value})")
+                elif "windStrength" in sensor_id:
+                    # Cek apakah data sudah berupa string description atau masih numerik
+                    if isinstance(last_valid_value, str):
+                        # Data sudah berupa description, gunakan langsung
+                        last_valid_value = last_valid_value
+                        print(f"Wind Strength (Full Fallback): {last_valid_value} (already mapped)")
+                    else:
+                        # Data masih numerik, lakukan mapping
+                        strength_value = int(last_valid_value)
+                        beaufort_description = self.map_wind_strength_beaufort(strength_value)
+                        last_valid_value = beaufort_description
+                        print(f"Wind Strength (Full Fallback): {beaufort_description} (from {strength_value})")
+                
                 results.append(last_valid_value)
                 state.append(False)  # State False karena menggunakan data lama
                 success_count += 1
                 error_messages.append(f"{sensor_id} - Using last valid data: {last_valid_value}")
             else:
-                results.append(0.00)
+                # Set default value dengan mapping yang sesuai
+                if "windDirection1" in sensor_id:
+                    default_value = "Unknown"  # Default description text
+                    print(f"Wind Direction (Full Fallback Default): Unknown (N/A)")
+                elif "windStrength" in sensor_id:
+                    default_value = "Unknown"  # Default description text
+                    print(f"Wind Strength (Full Fallback Default): Unknown (N/A)")
+                else:
+                    default_value = 0.00
+                
+                results.append(default_value)
                 state.append(False)
                 failed_count += 1
                 error_messages.append(f"{sensor_id} - No valid data available")
@@ -1627,9 +1703,21 @@ class Weather:
                     value, success = self.read_register_safe(address, multiplier, description=description)
                     
                     if success:
-                        # Format nilai sesuai dengan tipe sensor
+                        # Format nilai sesuai dengan tipe sensor dan terapkan mapping
                         if "windSpeed" in sensor_id:
                             value = round(value, 2)
+                        elif "windDirection1" in sensor_id:
+                            # Mapping wind direction dari 0-7 ke arah mata angin
+                            direction_value = int(value)
+                            mapped_direction = self.map_wind_direction(direction_value)
+                            value = mapped_direction
+                            print(f"Wind Direction: {mapped_direction} (from {direction_value})")
+                        elif "windStrength" in sensor_id:
+                            # Mapping wind strength berdasarkan skala Beaufort
+                            strength_value = int(value)
+                            beaufort_description = self.map_wind_strength_beaufort(strength_value)
+                            value = beaufort_description
+                            print(f"Wind Strength: {beaufort_description} (from {strength_value})")
                         elif "humidity" in sensor_id or "temperature" in sensor_id:
                             value = round(value, 2)
                         elif "atmosphericPressure" in sensor_id:
@@ -1644,13 +1732,49 @@ class Weather:
                         # Jika sensor gagal terbaca, ambil data terakhir yang valid dari database
                         last_valid_value, has_last_data = self.get_last_valid_data(sensor_id, max_age_hours=24)
                         if has_last_data:
+                            # Terapkan mapping yang sama untuk data fallback
+                            if "windDirection1" in sensor_id:
+                                # Cek apakah data sudah berupa string description atau masih numerik
+                                if isinstance(last_valid_value, str):
+                                    # Data sudah berupa description, gunakan langsung
+                                    last_valid_value = last_valid_value
+                                    print(f"Wind Direction (Fallback): {last_valid_value} (already mapped)")
+                                else:
+                                    # Data masih numerik, lakukan mapping
+                                    direction_value = int(last_valid_value)
+                                    mapped_direction = self.map_wind_direction(direction_value)
+                                    last_valid_value = mapped_direction
+                                    print(f"Wind Direction (Fallback): {mapped_direction} (from {direction_value})")
+                            elif "windStrength" in sensor_id:
+                                # Cek apakah data sudah berupa string description atau masih numerik
+                                if isinstance(last_valid_value, str):
+                                    # Data sudah berupa description, gunakan langsung
+                                    last_valid_value = last_valid_value
+                                    print(f"Wind Strength (Fallback): {last_valid_value} (already mapped)")
+                                else:
+                                    # Data masih numerik, lakukan mapping
+                                    strength_value = int(last_valid_value)
+                                    beaufort_description = self.map_wind_strength_beaufort(strength_value)
+                                    last_valid_value = beaufort_description
+                                    print(f"Wind Strength (Fallback): {beaufort_description} (from {strength_value})")
+                            
                             results.append(last_valid_value)
                             state.append(False)  # State tetap False karena menggunakan data lama
                             failed_count += 1
                             all_sensors_success = False  # Set flag ke False
                             error_messages.append(f"{description} Error - Using last valid data: {last_valid_value}")
                         else:
-                            results.append(0.00)
+                            # Set default value dengan mapping yang sesuai
+                            if "windDirection1" in sensor_id:
+                                default_value = "Unknown"  # Default description text
+                                print(f"Wind Direction (Default): Unknown (N/A)")
+                            elif "windStrength" in sensor_id:
+                                default_value = "Unknown"  # Default description text
+                                print(f"Wind Strength (Default): Unknown (N/A)")
+                            else:
+                                default_value = 0.00
+                            
+                            results.append(default_value)
                             state.append(False)
                             failed_count += 1
                             all_sensors_success = False  # Set flag ke False
@@ -1737,3 +1861,86 @@ class Weather:
                 pass
         
         
+class TotalPower():
+    def __init__(self, groupId, dataSensor):
+        self.groupId = groupId
+        self.dataSensor = dataSensor
+        self.groupData = SensorGroupDB.selectOne(groupId)
+        self.parameterGroupSensor = CollectDataSensorFunction.getParameterGroupSensor(groupId)
+        self.parameterListSensor = CollectDataSensorFunction.getParameterListSensor(groupId)
+        self.sensorValue, self.sensorState = handleSensorValue(dataSensor)
+    
+    def main(self):
+        sensorMessage = ''
+        if self.dataSensor['numSensor'] > 0:
+            try:
+                # Ambil data sensor AC current langsung dari database
+                # Cari sensor acLoadCurrent1 sampai acLoadCurrent6
+                ac_current_sensors = []
+                totalPower = 0.0
+                voltage_standard = 220.0  # Tegangan standar 220V AC
+                # power_factor = 0.8  # Power factor standar
+                
+                # Ambil semua sensor dari database
+                all_sensors = CollectDataSensorFunction.all()
+                
+                # Cari sensor acLoadCurrent1 sampai acLoadCurrent6
+                for i in range(1, 7):  # Loop dari 1 sampai 6
+                    sensor_id = f'acLoadCurrent{i}'
+                    
+                    # Cari sensor ini di database
+                    sensor_found = False
+                    for j in range(all_sensors['numSensor']):
+                        if all_sensors['sensorId'][j] == sensor_id:
+                            # Ambil nilai current dari database
+                            current_value = all_sensors['sensorValue'][j]
+                            if current_value and current_value != 'N/A':
+                                try:
+                                    current_amp = float(current_value)
+                                    # Hitung daya untuk setiap load
+                                    # power = current_amp * voltage_standard * power_factor
+                                    power = current_amp * voltage_standard
+                                    totalPower += power
+                                    ac_current_sensors.append(current_amp)
+                                    sensor_found = True
+                                    print(f"DEBUG TotalPower: {sensor_id} = {current_amp} A, Power = {power} W")
+                                    break
+                                except (ValueError, TypeError):
+                                    ac_current_sensors.append(0.0)
+                                    sensor_found = True
+                                    print(f"DEBUG TotalPower: {sensor_id} = 0.0 A (invalid value)")
+                                    break
+                    
+                    if not sensor_found:
+                        ac_current_sensors.append(0.0)
+                        print(f"DEBUG TotalPower: {sensor_id} not found in database")
+                
+                if len(ac_current_sensors) > 0:
+                    # Konversi total daya ke kW dan bulatkan ke 2 desimal
+                    totalPower= round(totalPower, 2)
+                    
+                    # Debug print
+                    print(f"DEBUG TotalPower: AC Currents = {ac_current_sensors}")
+                    print(f"DEBUG TotalPower: totalPower (W) = {totalPower}")
+                  
+                    
+                    # Set sensor value untuk total power
+                    self.sensorValue = [totalPower]
+                    self.sensorState = [True]
+                    
+                    sensorMessage = f"{self.dataSensor['numSensor']} Sensors Success Sampling - Total Power: {totalPower} W (from {len(ac_current_sensors)} AC loads)"
+                else:
+                    # Jika tidak ada sensor AC current
+                    self.sensorValue = [0.0]
+                    self.sensorState = [False]
+                    sensorMessage = f"{self.dataSensor['numSensor']} Sensors Failed Sampling - No AC Current Sensors Found"
+            
+            except Exception as e:
+                self.sensorState = [False]
+                self.sensorValue = [0.0]
+                sensorMessage = f"{self.dataSensor['numSensor']} Sensors Failed Sampling - {str(e)}"
+        
+        else:
+            sensorMessage = f"No List Sensors Registered on Group Sensor {self.groupData[0]['name']}"
+        
+        return {"value": self.sensorValue, "message": sensorMessage, "state": self.sensorState}

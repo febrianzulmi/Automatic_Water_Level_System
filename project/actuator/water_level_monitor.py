@@ -868,10 +868,6 @@ def main():
     Main function untuk menjalankan monitoring dengan sync actuatorLibrary + API
     """
     print("🚰 Water Level Monitor - Sync actuatorLibrary + API Endpoint")
-    print("=" * 50)
-    print("Endpoint: https://dev-nearon.synapsis.id/api/projectnode/nodes/b949aecbf0f34bb48b94a7be960b78ce/actuators/5a6bc3a3efdc427ab9df7bfb3c82092e/value")
-    print("🎯 Fokus: Sync output actuatorLibrary + hit API endpoint")
-    print("=" * 50)
     
     try:
         # Buat monitor dengan parameter dari actuatorLibrary
