@@ -1,6 +1,7 @@
 # 🚰 Automatic Water Pump Control System
 
 An automated water level and pump control system using an RS485 Modbus sensor and Raspberry Pi GPIO.
+<img width="377" height="507" alt="image" src="https://github.com/user-attachments/assets/10ade186-8e01-46ad-8878-5db031a77223" />
 
 ## 📋 Features
 
